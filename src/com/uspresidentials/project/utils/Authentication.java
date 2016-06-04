@@ -13,8 +13,6 @@ public class Authentication {
 		final String consumer_key ="1HERcFVCy5SkpI23hl3FRpJy3";
 		final String consumer_secret ="5PFPlMp3NAsAT1Qbrk1RStXWLMX795ghSUfubtwILl5vR2keyW";
 
-		
-		
 		ConfigurationBuilder cfg= new ConfigurationBuilder();
 		cfg.setOAuthAccessToken(access_token);
 		cfg.setOAuthAccessTokenSecret(access_token_secret);
@@ -24,7 +22,4 @@ public class Authentication {
 		
 		return cfg;
 	}
-	
-	
-	
 }

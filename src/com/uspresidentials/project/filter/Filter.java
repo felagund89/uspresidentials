@@ -20,9 +20,7 @@ public class Filter {
 	
 	
 	public static void main(String[] args) throws TwitterException, IOException{
-				
-	
-		
+			
 		StatusListener listener = new StatusListener(){
 			public void onStatus(Status status) {
 				if (status.getLang().equals("en"))

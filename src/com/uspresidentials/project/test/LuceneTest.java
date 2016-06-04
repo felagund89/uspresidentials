@@ -14,6 +14,8 @@ public class LuceneTest {
 
 	public static void main(String []args){
 		
+		//commit by Alessio
+		
 ////		Directory dir= new RAMDirectory();
 //		Directory dir= new SimpleFSDirectory(new File("index"));
 //		Analyzer analyzer = new StandardAnalyzer(LUCENE_41);
