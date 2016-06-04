@@ -26,7 +26,7 @@ public class Filter {
 		StatusListener listener = new StatusListener(){
 			public void onStatus(Status status) {
 				if (status.getLang().equals("it"))
-				System.out.println(status.getUser().getName() + " : "+ status.getText());
+					System.out.println(status.getUser().getName() + " : "+ status.getText());
 			}
 			public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
 			public void onTrackLimitationNotice(int numberOfLimitedStatuses) {}
@@ -50,7 +50,9 @@ public class Filter {
 		// filter() method internally creates a thread which manipulates TwitterStream
 		// and calls these adequate listener methods continuously.
 		FilterQuery fq = new FilterQuery();
-		fq.track(new String[]{"renzi"});
+//		fq.track(new String[]{"renzi"});
+		fq.track(new String[]{"MuhammadAli"});
+
 		twitterStream.filter(fq);
 		}
 	
