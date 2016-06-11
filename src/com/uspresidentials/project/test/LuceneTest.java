@@ -15,11 +15,13 @@ import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -70,6 +72,8 @@ public class LuceneTest {
 		File currentFile;
 		String currentContent;
 		
+		
+		//LA RICERCA PER ORA AVVIENE SEMPRE SULLO STESSO FILE, IL 3 NEL MIO CASO
 		//for(int i=0;i<files.length;i++){    //ciclo su ogni File del dataset
 		
 			currentFile = files[3];
@@ -86,7 +90,7 @@ public class LuceneTest {
 			//Compongo oggetto tweetsEntity
 			int countElements = elementsP.size();
 			int count=0;
-			while(count <= 500){
+			while(count <= 1000){
 				
 				TweetsEntity tweetEnt = new TweetsEntity();
 				tweetEnt.setId(elementsT.get(count).text());
@@ -109,9 +113,9 @@ public class LuceneTest {
 				docLucene.add(new StringField("idTweet", element.getId(),Field.Store.YES));
 				docLucene.add(new StringField("languageTweet", element.getLanguage(),Field.Store.YES));
 				docLucene.add(new StringField("tweetUser", element.getTweetStatus().getUser().getName(),Field.Store.YES));
-				docLucene.add(new StringField("tweetText", element.getTweetStatus().getText(),Field.Store.YES));
+				docLucene.add(new StringField("tweetText", element.getTweetStatus().getText().toLowerCase(),Field.Store.YES));
 //				docLucene.add(new StringField("", element.getTweetStatus().getUser().getName(),Field.Store.YES));
-				
+				System.out.println("idTweet= "+element.getId()); //STAMPA DI PROVA
 				//AGGIUNGERE ALTRI CAMPI UTILI PER LE RICERCHE
 				
 				listaDocLucene.add(docLucene);
@@ -119,8 +123,9 @@ public class LuceneTest {
 			}
 			
 			indexWriter.addDocuments(listaDocLucene);
-			
 			System.out.println("indexWriter numero di doc lucene = " +indexWriter.numDocs());
+
+			
 			closeIndexWriter(indexWriter);			
 
 		//}
@@ -128,20 +133,36 @@ public class LuceneTest {
 	
 
 	
+	
+	/**
+	 * QUA CI SONO DEGLI ESEMPI PER LE QUERY https://gist.github.com/mocobeta/4640268
+	 * DIVERSI TIPI DI QUERY PER LUCENE
+	 * 
+	 * 
+	 * 
+	 */
 		
 	
     public static  void searchEngine() throws IOException, ParseException {
 //		 Directory indexDir = FSDirectory.open(new File("/home/felagund89/Scrivania/Progetto web and social/debates/resultQuery"));
 
     	 searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("/home/felagund89/Scrivania/Progetto web and social/debates/resultQuery"))));
-	     parser = new QueryParser("tweetText", new StandardAnalyzer());
+//	     parser = new QueryParser("tweetText", new StandardAnalyzer());
    
-	     TopDocs topDocs = performSearch("a", 2000); 
+	     //funziona cercando nel field language la parola en, ma se provo a cercare una parola nel contenuto tweetText trova sempre 0 risultati.
+	     //bisogna vedere bene come cercare le parole
+	     	Term t = new Term("tweetText", "trump");
+			Query query = new TermQuery(t);
+			TopDocs topDocs = searcher.search(query, 1000);
 	     
-	     // obtain the ScoreDoc (= documentID, relevanceScore) array from topDocs
+	     
+//	     TopDocs topDocs = performSearch("trump", 10); 
+//	     
+//	     // obtain the ScoreDoc (= documentID, relevanceScore) array from topDocs
 	     ScoreDoc[] hits = topDocs.scoreDocs;
-	     System.out.println("tweet in cui compare la parola cercata = "+hits.length);
-	     // retrieve each matching document from the ScoreDoc arry
+	     System.out.println("numero hits parola cercata = "+hits.length);
+//	     
+//	     // retrieve each matching document from the ScoreDoc array
 //	     for (int i = 0; i < hits.length; i++) {
 //	         Document doc = instance.getDocument(hits[i].doc);
 //	         String tweetID = doc.get("name");
@@ -161,6 +182,9 @@ public class LuceneTest {
 		
 
 	
+    
+    
+    
 	
 	
 	public static String readContentFile(File file) throws IOException{
