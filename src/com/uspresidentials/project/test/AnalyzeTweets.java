@@ -25,13 +25,10 @@ import org.apache.lucene.store.FSDirectory;
 public class AnalyzeTweets {
 
 	final static String PATH_DEBATES = "/home/felagund89/Scrivania/Progetto web and social/debates";
-	
-	
-	
-	
+
 	// path to lucene index
 	private final static String indexPath = PATH_DEBATES;
-//	private final static String indexPath = PATH_PRIMAR;
+	//	private final static String indexPath = PATH_PRIMAR;
 
 	// path to language profiles for classifier
 	private static String langProfileDirectory = "./src/profiles/";
