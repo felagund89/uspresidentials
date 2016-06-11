@@ -3,9 +3,7 @@ package com.uspresidentials.project.test;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -14,9 +12,15 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
@@ -24,22 +28,26 @@ import org.apache.lucene.util.Version;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 
-import entity.TweetsEntity;
 import twitter4j.Status;
 import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
+import entity.TweetsEntity;
 
 public class LuceneTest {
 	
 //	final static String PATH_DEBATES = "/Users/alessiocampanelli/Desktop/debates";
     final static String PATH_DEBATES = "/home/felagund89/Scrivania/Progetto web and social/debates";
-	
+    private static IndexSearcher searcher = null;
+    private static QueryParser parser = null;
     
-	public static void main(String []args) throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException{
+	public static void main(String []args) throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException, ParseException{
+		
+		
+		
 		
 		createIndex();
-	
-	
+		searchEngine();
+		
 	}
 	
 	public static void createIndex() throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException {
@@ -106,24 +114,52 @@ public class LuceneTest {
 				
 				//AGGIUNGERE ALTRI CAMPI UTILI PER LE RICERCHE
 				
-				indexWriter.addDocument(docLucene);
+				listaDocLucene.add(docLucene);
 
 			}
 			
-			System.out.println("indexWriter numero di doc lucene = " +indexWriter.numDocs());
+			indexWriter.addDocuments(listaDocLucene);
 			
+			System.out.println("indexWriter numero di doc lucene = " +indexWriter.numDocs());
+			closeIndexWriter(indexWriter);			
+
 		//}
 	}
 	
+
 	
-	public void indexTweetsEntity(List<TweetsEntity> listaTweet){
 		
-		
-		
-		
-		
-	}
 	
+    public static  void searchEngine() throws IOException, ParseException {
+//		 Directory indexDir = FSDirectory.open(new File("/home/felagund89/Scrivania/Progetto web and social/debates/resultQuery"));
+
+    	 searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("/home/felagund89/Scrivania/Progetto web and social/debates/resultQuery"))));
+	     parser = new QueryParser("tweetText", new StandardAnalyzer());
+   
+	     TopDocs topDocs = performSearch("a", 2000); 
+	     
+	     // obtain the ScoreDoc (= documentID, relevanceScore) array from topDocs
+	     ScoreDoc[] hits = topDocs.scoreDocs;
+	     System.out.println("tweet in cui compare la parola cercata = "+hits.length);
+	     // retrieve each matching document from the ScoreDoc arry
+//	     for (int i = 0; i < hits.length; i++) {
+//	         Document doc = instance.getDocument(hits[i].doc);
+//	         String tweetID = doc.get("name");
+//	        
+//	     }
+    
+    }
+
+    public static TopDocs performSearch(String queryString, int n)throws IOException, ParseException {
+        Query query = parser.parse(queryString);
+        return searcher.search(query, n);
+    }
+
+    public Document getDocument(int docId)throws IOException {
+        return searcher.doc(docId);
+    }
+		
+
 	
 	
 	
@@ -147,4 +183,13 @@ public class LuceneTest {
 	    }
 	    return content;
 	}
+	
+	
+	public static void closeIndexWriter(IndexWriter indexWriter) throws IOException {
+        if (indexWriter != null) {
+            indexWriter.close();
+        }
+   }
+	
+	
 }
