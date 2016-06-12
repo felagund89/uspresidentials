@@ -176,7 +176,10 @@ public class LuceneTest {
     
     	    QueryParser qp = new QueryParser("tweetText", new StandardAnalyzer());
     	    System.out.println("ha creato l'analyzer");
-    	    Query q1 = qp.parse("trump");
+    	    // se cerchi donald* trova il doc con dentro la parola donald perchè è la prima della stringa ma se sta in mezzo no.
+    	    
+    	    
+    	    Query q1 = qp.parse("donald*");
 
     	    System.out.println("sta facendo il parse");
 
@@ -188,13 +191,9 @@ public class LuceneTest {
     	      Document d = searcher.doc(sd.doc);
     	      System.out.println(String.format("#%d: %s (rating=%s)", ++num, d.get("idTweet"), d.get("tweetUser")));
     	    }
-    	 
-    	 
-    	 
-	     
+    	     
     }
 
-  
     
     public static TopDocs performSearch(String queryString, int n)throws IOException, ParseException {
         Query query = parser.parse(queryString);
