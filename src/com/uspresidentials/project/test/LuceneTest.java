@@ -44,6 +44,16 @@ public class LuceneTest {
     private static IndexSearcher searcher = null;
     private static QueryParser parser = null;
     
+    ArrayList<String> candidateStrings = new ArrayList<String>() {{
+        add("Donald J. Trump");
+        add("Hillary Clinton");
+        add("Bernie Sanders");
+        add("Marco Rubio");
+        add("Ted Cruz");
+        add("John Kasich");
+
+
+    }};
 	public static void main(String []args) throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException, ParseException{
 		
 		
@@ -214,6 +224,9 @@ public class LuceneTest {
     
     
 	
+
+    
+    
 	
 	public static String readContentFile(File file) throws IOException{
 		
