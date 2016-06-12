@@ -3,6 +3,7 @@ package com.uspresidentials.project.test;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
@@ -45,8 +47,6 @@ public class LuceneTest {
 	public static void main(String []args) throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException, ParseException{
 		
 		
-		
-		
 		createIndex();
 		searchEngine();
 		
@@ -54,12 +54,13 @@ public class LuceneTest {
 	
 	public static void createIndex() throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException {
 		
-		Analyzer analyzer = new StandardAnalyzer();	
 //		Directory indexDir = FSDirectory.open(new File("/Users/alessiocampanelli/Desktop/resultQuery"));
 		Directory indexDir = FSDirectory.open(new File("/home/felagund89/Scrivania/Progetto web and social/debates/resultQuery"));
 
 		IndexWriterConfig config = new IndexWriterConfig(Version.LATEST, new StandardAnalyzer());
 		IndexWriter indexWriter = new IndexWriter(indexDir, config);
+		
+		indexWriter.deleteAll();
 
 		List<TweetsEntity> listaTweet = new ArrayList<TweetsEntity>();
 		List<Document> listaDocLucene = new ArrayList<Document>();
@@ -88,44 +89,63 @@ public class LuceneTest {
 			      
 			
 			//Compongo oggetto tweetsEntity
-			int countElements = elementsP.size();
-			int count=0;
-			while(count <= 1000){
-				
+//			int countElements = elementsP.size();
+//			int count=0;
+//			while(count <= 1000){
+//				
+//				TweetsEntity tweetEnt = new TweetsEntity();
+//				tweetEnt.setId(elementsT.get(count).text());
+//				tweetEnt.setLanguage(elementsL.get(count).text());
+//
+//				//creazione dell'oggetto Tweet4J passando in input il contenuto json del tag 'p'  - ora prendo il primo tweet
+//				String jsonContent = elementsP.get(count).text();           
+//				Status status = TwitterObjectFactory.createStatus(jsonContent);
+//
+//				tweetEnt.setTweetStatus(status);
+//				listaTweet.add(tweetEnt);
+//				count++;
+//				
+//			}
+			
+//			for (int i = 0; i < elementsP.size(); i++) {
+			for (int i = 0; i < 1000; i++) {
+
 				TweetsEntity tweetEnt = new TweetsEntity();
-				tweetEnt.setId(elementsT.get(count).text());
-				tweetEnt.setLanguage(elementsL.get(count).text());
+				tweetEnt.setId(elementsT.get(i).text());
+				tweetEnt.setLanguage(elementsL.get(i).text());
 
 				//creazione dell'oggetto Tweet4J passando in input il contenuto json del tag 'p'  - ora prendo il primo tweet
-				String jsonContent = elementsP.get(count).text();           
+				String jsonContent = elementsP.get(i).text();           
 				Status status = TwitterObjectFactory.createStatus(jsonContent);
 
 				tweetEnt.setTweetStatus(status);
 				listaTweet.add(tweetEnt);
-				count++;
-				
 			}
 			
 			
 			//Creazione documenti per lucene
 			for (TweetsEntity element : listaTweet) {
-				
+				docLucene = new Document();
 				docLucene.add(new StringField("idTweet", element.getId(),Field.Store.YES));
 				docLucene.add(new StringField("languageTweet", element.getLanguage(),Field.Store.YES));
-				docLucene.add(new StringField("tweetUser", element.getTweetStatus().getUser().getName(),Field.Store.YES));
-				docLucene.add(new StringField("tweetText", element.getTweetStatus().getText().toLowerCase(),Field.Store.YES));
-//				docLucene.add(new StringField("", element.getTweetStatus().getUser().getName(),Field.Store.YES));
-				System.out.println("idTweet= "+element.getId()); //STAMPA DI PROVA
+				docLucene.add(new StringField("tweetUser", element.getTweetStatus().getUser().getName().toString().toLowerCase(),Field.Store.YES));
+				docLucene.add(new StringField("tweetText", element.getTweetStatus().getText().toString().toLowerCase(),Field.Store.YES ));
+
+				if(element.getTweetStatus().getText().toString().toLowerCase().contains("trump")){
+					System.out.println("contiene trump= "+element.getTweetStatus().getText().toLowerCase()); //STAMPA DI PROVA
+
+				}
 				//AGGIUNGERE ALTRI CAMPI UTILI PER LE RICERCHE
 				
 				listaDocLucene.add(docLucene);
 
 			}
-			
+			System.out.println("fine creazione documenti per lucene");
 			indexWriter.addDocuments(listaDocLucene);
+			System.out.println("aggiunti doc di lucene all'indexwriter");
+			indexWriter.commit();
+			System.out.println("commit dell'indexwriter effettuato");
 			System.out.println("indexWriter numero di doc lucene = " +indexWriter.numDocs());
-
-			
 			closeIndexWriter(indexWriter);			
 
 		//}
@@ -146,31 +166,36 @@ public class LuceneTest {
     public static  void searchEngine() throws IOException, ParseException {
 //		 Directory indexDir = FSDirectory.open(new File("/home/felagund89/Scrivania/Progetto web and social/debates/resultQuery"));
 
-    	 searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("/home/felagund89/Scrivania/Progetto web and social/debates/resultQuery"))));
+//    	 searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("/home/felagund89/Scrivania/Progetto web and social/debates/resultQuery"))));
 //	     parser = new QueryParser("tweetText", new StandardAnalyzer());
    
-	     //funziona cercando nel field language la parola en, ma se provo a cercare una parola nel contenuto tweetText trova sempre 0 risultati.
-	     //bisogna vedere bene come cercare le parole
-	     	Term t = new Term("tweetText", "trump");
-			Query query = new TermQuery(t);
-			TopDocs topDocs = searcher.search(query, 1000);
-	     
-	     
-//	     TopDocs topDocs = performSearch("trump", 10); 
-//	     
-//	     // obtain the ScoreDoc (= documentID, relevanceScore) array from topDocs
-	     ScoreDoc[] hits = topDocs.scoreDocs;
-	     System.out.println("numero hits parola cercata = "+hits.length);
-//	     
-//	     // retrieve each matching document from the ScoreDoc array
-//	     for (int i = 0; i < hits.length; i++) {
-//	         Document doc = instance.getDocument(hits[i].doc);
-//	         String tweetID = doc.get("name");
-//	        
-//	     }
+    	// search
+    	
+    	    IndexSearcher searcher = createSearcher();
+    	       	    
     
+    	    QueryParser qp = new QueryParser("tweetText", new StandardAnalyzer());
+    	    System.out.println("ha creato l'analyzer");
+    	    Query q1 = qp.parse("trump");
+
+    	    System.out.println("sta facendo il parse");
+
+    	    TopDocs hits = searcher.search(q1, 1000);
+    	    
+    	    System.out.println(hits.totalHits + " docs found for the query \"" + q1.toString() + "\"");
+    	    int num = 0;
+    	    for (ScoreDoc sd : hits.scoreDocs) {
+    	      Document d = searcher.doc(sd.doc);
+    	      System.out.println(String.format("#%d: %s (rating=%s)", ++num, d.get("idTweet"), d.get("tweetUser")));
+    	    }
+    	 
+    	 
+    	 
+	     
     }
 
+  
+    
     public static TopDocs performSearch(String queryString, int n)throws IOException, ParseException {
         Query query = parser.parse(queryString);
         return searcher.search(query, n);
@@ -181,8 +206,12 @@ public class LuceneTest {
     }
 		
 
-	
-    
+	//Creo un searcher
+    private static IndexSearcher createSearcher() throws IOException {
+        
+    	IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("/home/felagund89/Scrivania/Progetto web and social/debates/resultQuery"))));
+        return searcher;
+      }
     
     
 	
