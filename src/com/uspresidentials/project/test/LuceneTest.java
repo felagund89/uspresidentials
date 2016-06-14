@@ -60,6 +60,8 @@ public class LuceneTest {
 		createIndex();
 		searchEngine();
 		
+		
+		
 	}
 	
 	public static void createIndex() throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException {
