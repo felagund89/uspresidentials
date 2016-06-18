@@ -35,12 +35,15 @@ import entity.TweetsEntity;
 
 public class LuceneTest {
 	
-  final static String PATH_DEBATES = "/Users/alessiocampanelli/Desktop/debates";
-  final static String PATH_INDEXDIR = "/Users/alessiocampanelli/Desktop/resultQuery";
+//  final static String PATH_DEBATES = "/Users/alessiocampanelli/Desktop/debates";
+//  final static String PATH_INDEXDIR = "/Users/alessiocampanelli/Desktop/resultQuery";
 
-//final static String PATH_DEBATES = "/home/felagund89/Scrivania/Progetto web and social/debates";
-//final static String PATH_INDEXDIR = "/home/felagund89/Scrivania/Progetto web and social/debates/resultQuery";
-    
+final static String PATH_DEBATES = "/home/felagund89/Scrivania/Progetto web and social/debates";
+final static String PATH_PRIMARY = "/home/felagund89/Scrivania/Progetto web and social/DOCPRIMARYNY";
+
+final static String PATH_INDEXDIR = "/home/felagund89/Scrivania/Progetto web and social/resultQuery/resultQueryDebates";
+final static String PATH_INDEXDIR_PRIMAR = "/home/felagund89/Scrivania/Progetto web and social/resultQuery/resultQueryPrimary";
+
     private static IndexSearcher searcher = null;
     private static QueryParser parser = null;
     
@@ -61,39 +64,40 @@ public class LuceneTest {
 	
 	public static void createIndex() throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException {
 		
-		Directory indexDir = FSDirectory.open(new File(PATH_INDEXDIR));
+		Directory indexDir = FSDirectory.open(new File(PATH_INDEXDIR_PRIMAR));
 
 		IndexWriterConfig config = new IndexWriterConfig(Version.LATEST, new StandardAnalyzer());
 		IndexWriter indexWriter = new IndexWriter(indexDir, config);
 		
-		indexWriter.deleteAll();
+//		indexWriter.deleteAll();
 
 		List<TweetsEntity> listaTweet = new ArrayList<TweetsEntity>();
 		List<Document> listaDocLucene = new ArrayList<Document>();
 		
 		Document docLucene = new Document();     
 		
-		File dir = new File(PATH_DEBATES);
+		File dir = new File(PATH_PRIMARY);
 		File[] files = dir.listFiles();
-		
+		int numFile = files.length;
 		File currentFile;
 		String currentContent;
 		
 		
 		//Creazione documenti per LUCENE
 		//LA RICERCA PER ORA AVVIENE SEMPRE SULLO STESSO FILE, IL 3 NEL MIO CASO
-		//for(int i=0;i<files.length;i++){    //ciclo su ogni File del dataset
+		for(int j=0;j<258;j++){    //ciclo su ogni File del dataset
 		
-			currentFile = files[3];
+			currentFile = files[j];
 			currentContent = readContentFile(currentFile);
 	
 			//scraping di un singolo oggetto in un file del dataset
 			org.jsoup.nodes.Document docJsoup = Jsoup.parse(currentContent);
+			
 			Elements elementsP = docJsoup.select("p");					   
 			Elements elementsT = docJsoup.select("t");					   
 			Elements elementsL = docJsoup.select("l");					   
 
-			for (int i = 0; i < 5000; i++) {   //i < elementsP.size()
+			for (int i = 0; i < elementsP.size(); i++) {   
 
 				TweetsEntity tweetEnt = new TweetsEntity();
 				tweetEnt.setId(elementsT.get(i).text());
@@ -108,28 +112,32 @@ public class LuceneTest {
 				
 				docLucene = new Document();
 				docLucene.add(new StringField("idTweet", tweetEnt.getId(),Field.Store.YES));
-				docLucene.add(new StringField("languageTweet", tweetEnt.getLanguage(),Field.Store.YES));
-				docLucene.add(new StringField("tweetUser", tweetEnt.getTweetStatus().getUser().getName().toString().toLowerCase(),Field.Store.YES));
-				docLucene.add(new TextField("tweetText", tweetEnt.getTweetStatus().getText().toString().toLowerCase(),Field.Store.YES ));
+				docLucene.add(new StringField("languageTweet", tweetEnt.getLanguage(),Field.Store.NO));
+				docLucene.add(new TextField("tweetUser", tweetEnt.getTweetStatus().getUser().getName().toString().toLowerCase(),Field.Store.NO));
+				docLucene.add(new TextField("tweetText", tweetEnt.getTweetStatus().getText().toString().toLowerCase(),Field.Store.NO ));
 		
 				
-				if(tweetEnt.getTweetStatus().getText().toString().toLowerCase().contains("trump")){
-					System.out.println("contiene trump= "+ tweetEnt.getTweetStatus().getText().toLowerCase()); //STAMPA DI PROVA
-				}
+//				if(tweetEnt.getTweetStatus().getText().toString().toLowerCase().contains("trump")){
+//					System.out.println("contiene trump= "+ tweetEnt.getTweetStatus().getText().toLowerCase()); //STAMPA DI PROVA
+//				}
 				
 				//TODO: AGGIUNGERE ALTRI CAMPI UTILI PER LE RICERCHE
 				listaDocLucene.add(docLucene);
-			}
-					
-			System.out.println("fine creazione documenti per lucene");
-			indexWriter.addDocuments(listaDocLucene);
-			System.out.println("aggiunti doc di lucene all'indexwriter");
-			indexWriter.commit();
-			System.out.println("commit dell'indexwriter effettuato");
-			System.out.println("indexWriter numero di doc lucene = " +indexWriter.numDocs());
-			closeIndexWriter(indexWriter);			
+//				System.out.println("docLucene aggiunto --->"+currentFile.getName());
 
-		//}
+			}
+
+			indexWriter.addDocuments(listaDocLucene);
+//			System.out.println("aggiunti doc di lucene all'indexwriter");
+			indexWriter.commit();
+//			System.out.println("commit dell'indexwriter effettuato");
+			System.out.println("indexWriter numero di doc lucene = " +indexWriter.numDocs());
+			System.out.println(258 -j);
+
+		}
+		closeIndexWriter(indexWriter);			
+		System.out.println("fine creazione documenti per lucene");
+
 	}
 		
 	/* QUA CI SONO DEGLI ESEMPI PER LE QUERY https://gist.github.com/mocobeta/4640268 */
@@ -164,7 +172,7 @@ public class LuceneTest {
 		
 	//Creo un searcher
     private static IndexSearcher createSearcher() throws IOException {
-    	IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(PATH_INDEXDIR))));
+    	IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(PATH_INDEXDIR_PRIMAR))));
         return searcher;
       }
     
