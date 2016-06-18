@@ -39,8 +39,12 @@ import entity.TweetsEntity;
 
 public class LuceneTest {
 	
-//	final static String PATH_DEBATES = "/Users/alessiocampanelli/Desktop/debates";
-    final static String PATH_DEBATES = "/home/felagund89/Scrivania/Progetto web and social/debates";
+  final static String PATH_DEBATES = "/Users/alessiocampanelli/Desktop/debates";
+  final static String PATH_INDEXDIR = "/Users/alessiocampanelli/Desktop/resultQuery";
+	
+//   final static String PATH_DEBATES = "/home/felagund89/Scrivania/Progetto web and social/debates";
+//    final static String PATH_INDEXDIR = "/home/felagund89/Scrivania/Progetto web and social/debates/resultQuery";
+    
     private static IndexSearcher searcher = null;
     private static QueryParser parser = null;
     
@@ -66,8 +70,7 @@ public class LuceneTest {
 	
 	public static void createIndex() throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException {
 		
-//		Directory indexDir = FSDirectory.open(new File("/Users/alessiocampanelli/Desktop/resultQuery"));
-		Directory indexDir = FSDirectory.open(new File("/home/felagund89/Scrivania/Progetto web and social/debates/resultQuery"));
+		Directory indexDir = FSDirectory.open(new File(PATH_INDEXDIR));
 
 		IndexWriterConfig config = new IndexWriterConfig(Version.LATEST, new StandardAnalyzer());
 		IndexWriter indexWriter = new IndexWriter(indexDir, config);
