@@ -59,7 +59,7 @@ final static String PATH_INDEXDIR_PRIMAR = "/home/felagund89/Scrivania/Progetto 
 	public static void main(String []args) throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException, ParseException{
 		
 		createIndex();
-		searchEngine();	
+//		searchEngine();	
 	}
 	
 	public static void createIndex() throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException {
@@ -85,7 +85,7 @@ final static String PATH_INDEXDIR_PRIMAR = "/home/felagund89/Scrivania/Progetto 
 		
 		//Creazione documenti per LUCENE
 		//LA RICERCA PER ORA AVVIENE SEMPRE SULLO STESSO FILE, IL 3 NEL MIO CASO
-		for(int j=0;j<258;j++){    //ciclo su ogni File del dataset
+		for(int j=0;j<516;j++){    //ciclo su ogni File del dataset
 		
 			currentFile = files[j];
 			currentContent = readContentFile(currentFile);
@@ -96,7 +96,7 @@ final static String PATH_INDEXDIR_PRIMAR = "/home/felagund89/Scrivania/Progetto 
 			Elements elementsP = docJsoup.select("p");					   
 			Elements elementsT = docJsoup.select("t");					   
 			Elements elementsL = docJsoup.select("l");					   
-
+			System.out.println("<--- elementi nel file corrente : " + elementsP.size());
 			for (int i = 0; i < elementsP.size(); i++) {   
 
 				TweetsEntity tweetEnt = new TweetsEntity();
@@ -108,7 +108,7 @@ final static String PATH_INDEXDIR_PRIMAR = "/home/felagund89/Scrivania/Progetto 
 				Status status = TwitterObjectFactory.createStatus(jsonContent);
 
 				tweetEnt.setTweetStatus(status);
-				listaTweet.add(tweetEnt);
+//				listaTweet.add(tweetEnt);
 				
 				docLucene = new Document();
 				docLucene.add(new StringField("idTweet", tweetEnt.getId(),Field.Store.YES));
@@ -122,17 +122,18 @@ final static String PATH_INDEXDIR_PRIMAR = "/home/felagund89/Scrivania/Progetto 
 //				}
 				
 				//TODO: AGGIUNGERE ALTRI CAMPI UTILI PER LE RICERCHE
-				listaDocLucene.add(docLucene);
+				
+//				listaDocLucene.add(docLucene);
 //				System.out.println("docLucene aggiunto --->"+currentFile.getName());
-
+				indexWriter.addDocument(docLucene);
 			}
 
-			indexWriter.addDocuments(listaDocLucene);
+//			indexWriter.addDocuments(listaDocLucene);
 //			System.out.println("aggiunti doc di lucene all'indexwriter");
 			indexWriter.commit();
 //			System.out.println("commit dell'indexwriter effettuato");
-			System.out.println("indexWriter numero di doc lucene = " +indexWriter.numDocs());
-			System.out.println(258 -j);
+			System.out.println("indexWriter numero di doc lucene = " + indexWriter.numDocs());
+			System.out.println(516 -j +"--->");
 
 		}
 		closeIndexWriter(indexWriter);			
