@@ -112,9 +112,9 @@ final static String PATH_INDEXDIR_PRIMAR = "/home/felagund89/Scrivania/Progetto 
 				
 				docLucene = new Document();
 				docLucene.add(new StringField("idTweet", tweetEnt.getId(),Field.Store.YES));
-				docLucene.add(new StringField("languageTweet", tweetEnt.getLanguage(),Field.Store.NO));
-				docLucene.add(new TextField("tweetUser", tweetEnt.getTweetStatus().getUser().getName().toString().toLowerCase(),Field.Store.NO));
-				docLucene.add(new TextField("tweetText", tweetEnt.getTweetStatus().getText().toString().toLowerCase(),Field.Store.NO ));
+				docLucene.add(new StringField("languageTweet", tweetEnt.getLanguage(),Field.Store.YES));
+				docLucene.add(new TextField("tweetUser", tweetEnt.getTweetStatus().getUser().getName().toString().toLowerCase(),Field.Store.YES));
+				docLucene.add(new TextField("tweetText", tweetEnt.getTweetStatus().getText().toString().toLowerCase(),Field.Store.YES ));
 		
 				
 //				if(tweetEnt.getTweetStatus().getText().toString().toLowerCase().contains("trump")){
