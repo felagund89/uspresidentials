@@ -58,8 +58,8 @@ final static String PATH_INDEXDIR_PRIMAR = "/home/felagund89/Scrivania/Progetto 
     
 	public static void main(String []args) throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException, ParseException{
 		
-		createIndex();
-//		searchEngine();	
+//		createIndex();
+		searchEngine();	
 	}
 	
 	public static void createIndex() throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException {
@@ -150,9 +150,9 @@ final static String PATH_INDEXDIR_PRIMAR = "/home/felagund89/Scrivania/Progetto 
     	    QueryParser qp = new QueryParser("tweetText", new StandardAnalyzer());
     	    System.out.println("ha creato l'analyzer");
     	    
-    	    String qstring = "trump* OR clinton*";
+    	    String qstring = "trump* OR clinton OR donald OR hillary*";
     	    Query q1 = qp.parse(qstring);
-    	    TopDocs hits = searcher.search(q1, 1000);
+    	    TopDocs hits = searcher.search(q1, 10000000);
     	    
     	    System.out.println(hits.totalHits + " docs found for the query \"" + q1.toString() + "\"");
     	    int num = 0;
