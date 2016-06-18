@@ -13,9 +13,7 @@ public class TweetsEntity implements Serializable {
 
 	
 	private String id;
-	
 	private String language;
-	
 	private Status tweetStatus;
 	
 	

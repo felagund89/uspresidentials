@@ -1,0 +1,69 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf470
+{\fonttbl\f0\fswiss\fcharset0 ArialMT;\f1\froman\fcharset0 TimesNewRomanPSMT;}
+{\colortbl;\red255\green255\blue255;\red26\green26\blue26;\red255\green255\blue255;\red251\green0\blue7;
+\red82\green0\blue192;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f0\fs26 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 I just added on Twiki the link to download the Twitter US Presidential dataset (we cut quite a bit to make it manageable for you)\
+\
+here is what you are expected to do:\
+\
+\pard\pardeftab720\sl560\sa260\partightenfactor0
+
+\fs48 \cf4 \strokec4 Project 2016: US Presidentials
+\fs26 \cf2 \strokec2 \
+\pard\pardeftab720\sl300\sa260\partightenfactor0
+\cf2 1) Identify mentions of candidates\
+\'a0\
+1.
+\f1\fs18 \'a0\'a0\'a0\'a0 
+\f0\fs26 From the entire dataset, identify tweets of users that mention one of the U.S. presidential candidates. How many users you get? How many tweets? Let M be the set of such users and let T(M) be the set of related tweets.\
+2.
+\f1\fs18 \'a0\'a0\'a0\'a0 
+\f0\fs26 Crawl these users\'92 friendship relations. You will get a (likely highly disconnected) graph G. \'a0Find the largest connected component and compute Page Rank\'a0 on this graph. Then,\'a0 and find the 10 highest ranked users.\'a0 Who are they? \'a0\
+\'a0\
+To identify connected component use: JGraphT ({\field{\*\fldinst{HYPERLINK "http://jgrapht.org/"}}{\fldrslt \cf5 \strokec5 http://jgrapht.org/}}) and\
+\pard\pardeftab720\sl300\sa260\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "http://jgrapht.org/javadoc/org/jgrapht/alg/ConnectivityInspector.html"}}{\fldrslt \cf5 \strokec5 http://jgrapht.org/javadoc/org/jgrapht/alg/ConnectivityInspector.html}}\
+\'a0\
+For Page Rank use\'a0 {\field{\*\fldinst{HYPERLINK "http://jung.sourceforge.net/"}}{\fldrslt \cf5 \strokec5 Jung}}\'a0({\field{\*\fldinst{HYPERLINK "http://jung.sourceforge.net/"}}{\fldrslt \cf5 \strokec5 http://jung.sourceforge.net/}}):\'a0\
+{\field{\*\fldinst{HYPERLINK "http://jung.sourceforge.net/doc/api/edu/uci/ics/jung/algorithms/scoring/PageRank.html"}}{\fldrslt \cf5 \strokec5 http://jung.sourceforge.net/doc/api/edu/uci/ics/jung/algorithms/scoring/PageRank.html}}\
+\'a0\
+\'a0\
+\'a0\
+\'a0\
+3.
+\f1\fs18 \'a0\'a0\'a0\'a0 
+\f0\fs26 Partition the users in M according to the candidates they mention (each user can mention more that one candidate more than one time). Identify the users mentioning more frequently each candidate and measure their centrality. Find the 10 (for each candidate) \'a0who both mention the candidate frequently and are highly central (define some combined measure to select such candidates). Let M' in M be these users.\
+\'a0\
+2) Supporters and Opponents\
+Now we would like to know if those M\'92 users are supporters of the candidate, opponents or neutral.\
+1.
+\f1\fs18 \'a0\'a0\'a0\'a0 
+\f0\fs26 You can download Sentiwordnet from {\field{\*\fldinst{HYPERLINK "http://sentiwordnet.isti.cnr.it/"}}{\fldrslt \cf5 \strokec5 http://sentiwordnet.isti.cnr.it/}}\'a0 and apply\'a0 some \ul very simple\ulnone  algorithm (e.g. sum of opinionated words in a tweet). Take care of negations: a negation changes the sign of the sentiment of the following word.\'a0\
+2.
+\f1\fs18 \'a0\'a0\'a0\'a0 
+\f0\fs26 You can also modify Sentiwordnet weights if you feel that, in this domain, the sentiment of certain words should be different wrt Sentiwordnet. Any other solution you can think of is ok. Just explain what you did and why. The result should be a reliable classification (NOT MANUAL!!) of those users into supporters, opponents and neutral. If you feel you can apply the same procedure to all users mentioning a candidate you get extra credit.\
+\'a0\
+3)Co-occurrence analisys\
+For each candidate, analyze (on the full set of mentions T(M)) the most frequently co-occurring words. You should use Jaccard to avoid selecting words that co-occur by chance.\
+\'a0\
+4)Scrape news about one candidate\
+\'a0\
+Select one candidate and scrape Google News (don\'92t be banned!) to create a dataset N of news mentioning the candidate. Describe how you performed the task, the dimension of the dataset, etc.\'a0 Perform co-occurrence analysis as before. Do you note differences when comparing with words extracted from Twitter?\
+\'a0\
+5)Predict the winner\
+\'a0\
+Use the whatever method to predict the winner. Temporal series of candidate mentions, Google Trends, Twitter sentiment on candidates.. A \ul very simple\ulnone  method is fully ok, provided it is better than guessing, but you must explain your method or heuristics.\
+\'a0\
+\'a0\
+IMPORTANT NOTE: You \ul MUST\ulnone  use Java \cb1 \uc0\u8232 \cb3 \
+\pard\pardeftab720\sl300\sa260\partightenfactor0
+\cf2 \cb1 \uc0\u8232 \cb3 \
+IMPORTANT NOTE: You are allowed to make teams of 3 rather than 2, and share the load. Provided you all are aware of each other tasks.\'a0\
+\cb1 \uc0\u8232 \cb3 \
+IMPORTANT: Projects must be handled by DECEMBER 2016 at the latest\cb1 \uc0\u8232 \cb3 \
+}
