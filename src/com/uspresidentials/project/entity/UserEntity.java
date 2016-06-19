@@ -12,8 +12,7 @@ public class UserEntity implements Serializable{
 	 */
 	private static final long serialVersionUID = -4524559254542516269L;
 	
-	
-	
+
 	private String nickName;
 	private List<TweetInfoEntity> tweetsEntities;
 	

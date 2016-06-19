@@ -40,6 +40,8 @@ import com.uspresidentials.project.entity.TweetsEntity;
 import twitter4j.Status;
 import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
+import twitter4j.User;
+import twitter4j.UserList;
 
 public class LuceneCore {
 
@@ -48,9 +50,8 @@ public class LuceneCore {
     private static QueryParser parser = null;
     
 	final static Logger logger = Logger.getLogger(LuceneCore.class);
+	Set<User> userList = null;
 
-    
-    
     ArrayList<String> candidateStrings = new ArrayList<String>() {{
         add("Donald J. Trump");
         add("Hillary Clinton");
@@ -60,8 +61,7 @@ public class LuceneCore {
         add("John Kasich");
     }};
 	
-	
-	
+
 	public static void createIndex(String pathDataset, String pathIndexer) throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException {
 			
 			Directory indexDir = FSDirectory.open(new File(pathIndexer));
@@ -69,7 +69,7 @@ public class LuceneCore {
 			IndexWriterConfig config = new IndexWriterConfig(Version.LATEST, new StandardAnalyzer());
 			IndexWriter indexWriter = new IndexWriter(indexDir, config);
 			
-	//		indexWriter.deleteAll();
+			indexWriter.deleteAll();
 	
 			List<TweetsEntity> listaTweet = new ArrayList<TweetsEntity>();
 			List<Document> listaDocLucene = new ArrayList<Document>();
@@ -78,18 +78,17 @@ public class LuceneCore {
 			
 			File dir = new File(pathDataset);
 			File[] files = dir.listFiles();
-			int numFile = files.length;
 			File currentFile;
 			String currentContent;
 			
 			
 			//Creazione documenti per LUCENE
 			//LA RICERCA PER ORA AVVIENE SEMPRE SULLO STESSO FILE, IL 3 NEL MIO CASO
-			for(int j=0;j<516;j++){    //ciclo su ogni File del dataset
+			for(int j=0;j<files.length;j++){    //ciclo su ogni File del dataset
 			
 				currentFile = files[j];
 				currentContent = readContentFile(currentFile);
-		
+					
 				//scraping di un singolo oggetto in un file del dataset
 				org.jsoup.nodes.Document docJsoup = Jsoup.parse(currentContent);
 				
@@ -108,7 +107,10 @@ public class LuceneCore {
 					//creazione dell'oggetto Tweet4J passando in input il contenuto json del tag 'p'  - ora prendo il primo tweet
 					String jsonContent = elementsP.get(i).text();           
 					Status status = TwitterObjectFactory.createStatus(jsonContent);
-	
+				
+					User currentUser = TwitterObjectFactory.createUser(jsonContent);
+					logger.info("currentUser: " + currentUser.getName());
+				
 					tweetEnt.setTweetStatus(status);
 	//				listaTweet.add(tweetEnt);
 					
@@ -129,17 +131,11 @@ public class LuceneCore {
 	//			indexWriter.addDocuments(listaDocLucene);
 				indexWriter.commit();
 				logger.info("indexWriter numero di doc lucene = " + indexWriter.numDocs());
-				logger.info(516 -j +"--->");
-
-	
-	
+				logger.info(files.length -j +"--->");	
 			}
+			
 			closeIndexWriter(indexWriter);			
 			logger.info("fine creazione documenti per lucene");
-
-			
-			
-	
 		}
 		
 	
@@ -163,8 +159,6 @@ public class LuceneCore {
  	    
 		logger.info("##### "+hits.totalHits + " Docs found for the query \"" + q1.toString() + "\"");
 
-		
- 	    
  	    int num = 0;
  	    for (ScoreDoc sd : hits.scoreDocs) {
  	      Document d = searcher.doc(sd.doc);
@@ -193,21 +187,17 @@ public class LuceneCore {
 			
 
 		 Set<String> uniqueUsers = new HashSet<String>();
-
+		 
 		 for (ScoreDoc sd : resultDocs.scoreDocs) {
-	 	      Document d = searcher.doc(sd.doc);
-	 	      
+			 
+	 	      Document d = searcher.doc(sd.doc); 
 	 	     uniqueUsers.add(d.getField("tweetUser").stringValue());
-	 		
 	 	    }
 		 
 
 	 	 logger.info("##### Number of different user in this set of documents:" +uniqueUsers.size() );
 
-			
 		 return uniqueUsers;
-			
-			
 		}
 	 
 	 
@@ -217,23 +207,23 @@ public class LuceneCore {
 		 long numOfTweet;
 
 		 numOfTweet= resultDocs.totalHits;
+	 	 logger.info("##### Number of tweet in this set of documents:" + numOfTweet);
 
-	 	 logger.info("##### Number of tweet in this set of documents:" +numOfTweet );
-
-			
-		 return numOfTweet;
-			
-			
+		 return numOfTweet;			
 	}
-	 
 	 
 	public static TweetInfoEntity getUserAndRelTweets(Set<String> usersName, TopDocs resultDocs) throws IOException, ParseException{
 		
 		TweetInfoEntity userAndTweets = new TweetInfoEntity();
-		
-		
+		TopDocs hits;
 		QueryParser qp = new QueryParser("tweetUser", new StandardAnalyzer());
- 	    
+		for (ScoreDoc sd : resultDocs.scoreDocs) {
+			Document d = searcher.doc(sd.doc);
+			Query q1 = qp.parse(d.getField("tweetUser").stringValue());
+			hits = searcher.search(q1, 10000000);
+			
+			logger.info("##### hits for user" + d.getField("tweetUser").stringValue() + ": " + hits.totalHits);
+		}
 		
 // 	   
 //		
