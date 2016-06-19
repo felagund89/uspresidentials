@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -28,16 +29,21 @@ import org.apache.lucene.util.Version;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 
+import com.uspresidentials.project.entity.TweetsEntity;
+
 import twitter4j.Status;
 import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
-import entity.TweetsEntity;
 
 public class LuceneCore {
 
 
     private static IndexSearcher searcher = null;
     private static QueryParser parser = null;
+    
+	final static Logger logger = Logger.getLogger(LuceneCore.class);
+
+    
     
     ArrayList<String> candidateStrings = new ArrayList<String>() {{
         add("Donald J. Trump");
@@ -83,8 +89,10 @@ public class LuceneCore {
 				
 				Elements elementsP = docJsoup.select("p");					   
 				Elements elementsT = docJsoup.select("t");					   
-				Elements elementsL = docJsoup.select("l");					   
-				System.out.println("<--- elementi nel file corrente : " + elementsP.size());
+				Elements elementsL = docJsoup.select("l");		
+				
+				logger.info("<--- elementi nel file corrente : " + elementsP.size());
+				
 				for (int i = 0; i < elementsP.size(); i++) {   
 	
 					TweetsEntity tweetEnt = new TweetsEntity();
@@ -109,19 +117,22 @@ public class LuceneCore {
 					//TODO: AGGIUNGERE ALTRI CAMPI UTILI PER LE RICERCHE
 					
 	//				listaDocLucene.add(docLucene);
-	//				System.out.println("docLucene aggiunto --->"+currentFile.getName());
 					indexWriter.addDocument(docLucene);
 				}
 	
 	//			indexWriter.addDocuments(listaDocLucene);
-	//			System.out.println("aggiunti doc di lucene all'indexwriter");
 				indexWriter.commit();
-				System.out.println("indexWriter numero di doc lucene = " + indexWriter.numDocs());
-				System.out.println(516 -j +"--->");
+				logger.info("indexWriter numero di doc lucene = " + indexWriter.numDocs());
+				logger.info(516 -j +"--->");
+
+	
 	
 			}
 			closeIndexWriter(indexWriter);			
-			System.out.println("fine creazione documenti per lucene");
+			logger.info("fine creazione documenti per lucene");
+
+			
+			
 	
 		}
 		
@@ -134,17 +145,20 @@ public class LuceneCore {
 
 		
  	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
- 	    System.out.println("ha creato l'analyzer");
  	    
-// 	    String qstring = "trump* OR clinton OR donald OR hillary*";
  	    Query q1 = qp.parse(queryLucene);
  	    TopDocs hits = searcher.search(q1, 10000000);
  	    
- 	    System.out.println(hits.totalHits + " docs found for the query \"" + q1.toString() + "\"");
+		logger.info("##### "+hits.totalHits + " Docs found for the query \"" + q1.toString() + "\"");
+
+		
+ 	    
  	    int num = 0;
  	    for (ScoreDoc sd : hits.scoreDocs) {
  	      Document d = searcher.doc(sd.doc);
- 	      System.out.println(String.format("#%d: %s (rating=%s) - user: %s - tweet: %s", ++num, d.get("idTweet"), sd.score, d.get("tweetUser"), d.get("tweetText")));
+// 		logger.info(String.format("#%d: %s (rating=%s) - user: %s - tweet: %s", ++num, d.get("idTweet"), sd.score, d.get("tweetUser"), d.get("tweetText")));
+
+ 		
  	    }
 	 }
 	 

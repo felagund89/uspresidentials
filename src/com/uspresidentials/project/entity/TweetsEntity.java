@@ -1,4 +1,4 @@
-package entity;
+package com.uspresidentials.project.entity;
 
 import java.io.Serializable;
 

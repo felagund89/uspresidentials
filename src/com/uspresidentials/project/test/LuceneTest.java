@@ -28,10 +28,11 @@ import org.apache.lucene.util.Version;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 
+import com.uspresidentials.project.entity.TweetsEntity;
+
 import twitter4j.Status;
 import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
-import entity.TweetsEntity;
 
 public class LuceneTest {
 	
