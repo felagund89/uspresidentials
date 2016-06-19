@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -14,8 +16,11 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -137,8 +142,14 @@ public class LuceneCore {
 		}
 		
 	
+	public static IndexSearcher getIndexSearcher(String pathIndexer) throws IOException{
+	 	IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
+	 	return searcher;
+	}
 	
-	public static  void searchEngine(String pathIndexer, String fieldForQuery, String queryLucene) throws IOException, ParseException {
+	
+	
+	public static  TopDocs searchEngine(String pathIndexer, String fieldForQuery, String queryLucene) throws IOException, ParseException {
     	
  	       	    
 	 	IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
@@ -156,10 +167,14 @@ public class LuceneCore {
  	    int num = 0;
  	    for (ScoreDoc sd : hits.scoreDocs) {
  	      Document d = searcher.doc(sd.doc);
-// 		logger.info(String.format("#%d: %s (rating=%s) - user: %s - tweet: %s", ++num, d.get("idTweet"), sd.score, d.get("tweetUser"), d.get("tweetText")));
-
+ 			logger.info(String.format("#%d: %s (rating=%s) - user: %s - tweet: %s", ++num, d.get("idTweet"), sd.score, d.get("tweetUser"), d.get("tweetText")));
+ 			
  		
  	    }
+ 	    
+ 	    
+ 	    	    
+ 	    return hits;
 	 }
 	 
 	 public static TopDocs performSearch(String queryString, int n)throws IOException, ParseException {
@@ -170,7 +185,45 @@ public class LuceneCore {
 	 public Document getDocument(int docId)throws IOException {
 	     return searcher.doc(docId);
 	 }
+	 
+	 
+	 
+	 public static long numberOfUser (IndexSearcher searcher, TopDocs resultDocs) throws IOException{
 			
+
+		 Set<String> uniqueTerms = new HashSet<String>();
+
+		 for (ScoreDoc sd : resultDocs.scoreDocs) {
+	 	      Document d = searcher.doc(sd.doc);
+	 	      
+	 	      uniqueTerms.add(d.getField("tweetUser").stringValue());
+	 		
+	 	    }
+		 
+
+	 	 logger.info("##### Number of different user in this set of documents:" +uniqueTerms.size() );
+
+			
+		 return uniqueTerms.size();
+			
+			
+		}
+	 
+	 
+	 
+	 public static long numberOfTweets (IndexSearcher searcher, TopDocs resultDocs) throws IOException{
+			
+		 long numOfTweet;
+
+		 numOfTweet= resultDocs.totalHits;
+
+	 	 logger.info("##### Number of tweet in this set of documents:" +numOfTweet );
+
+			
+		 return numOfTweet;
+			
+			
+		}
 	
 	
 	public static String readContentFile(File file) throws IOException{
