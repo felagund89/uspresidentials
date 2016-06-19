@@ -3,6 +3,7 @@ package com.uspresidentials.project.task1;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
@@ -85,8 +86,9 @@ public class IdentifyUsers {
 			
 			
 			//calcolo il numero degli utenti twitter 
-		    long numeroUniqUser = LuceneCore.numberOfUser(LuceneCore.getIndexSearcher(PATH_INDEXDIR_PRIMAR), resultDocs);
+		    Set<String> setUniqUser = LuceneCore.numberOfUser(LuceneCore.getIndexSearcher(PATH_INDEXDIR_PRIMAR), resultDocs);
 			
+		    long numeroUniqUser = setUniqUser.size();
 		    long numeroTweet = LuceneCore.numberOfTweets(LuceneCore.getIndexSearcher(PATH_INDEXDIR_PRIMAR), resultDocs);
 		
 	}

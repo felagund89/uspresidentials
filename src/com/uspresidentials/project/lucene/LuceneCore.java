@@ -34,6 +34,7 @@ import org.apache.lucene.util.Version;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 
+import com.uspresidentials.project.entity.TweetInfoEntity;
 import com.uspresidentials.project.entity.TweetsEntity;
 
 import twitter4j.Status;
@@ -188,23 +189,23 @@ public class LuceneCore {
 	 
 	 
 	 
-	 public static long numberOfUser (IndexSearcher searcher, TopDocs resultDocs) throws IOException{
+	 public static Set<String> numberOfUser (IndexSearcher searcher, TopDocs resultDocs) throws IOException{
 			
 
-		 Set<String> uniqueTerms = new HashSet<String>();
+		 Set<String> uniqueUsers = new HashSet<String>();
 
 		 for (ScoreDoc sd : resultDocs.scoreDocs) {
 	 	      Document d = searcher.doc(sd.doc);
 	 	      
-	 	      uniqueTerms.add(d.getField("tweetUser").stringValue());
+	 	     uniqueUsers.add(d.getField("tweetUser").stringValue());
 	 		
 	 	    }
 		 
 
-	 	 logger.info("##### Number of different user in this set of documents:" +uniqueTerms.size() );
+	 	 logger.info("##### Number of different user in this set of documents:" +uniqueUsers.size() );
 
 			
-		 return uniqueTerms.size();
+		 return uniqueUsers;
 			
 			
 		}
@@ -223,7 +224,44 @@ public class LuceneCore {
 		 return numOfTweet;
 			
 			
-		}
+	}
+	 
+	 
+	public static TweetInfoEntity getUserAndRelTweets(Set<String> usersName, TopDocs resultDocs) throws IOException, ParseException{
+		
+		TweetInfoEntity userAndTweets = new TweetInfoEntity();
+		
+		
+		QueryParser qp = new QueryParser("tweetUser", new StandardAnalyzer());
+ 	    
+		
+// 	   
+//		
+//		
+//		TopDocs hits
+//		
+//		 for (ScoreDoc sd : resultDocs.scoreDocs) {
+//			 
+//	 	     Document d = searcher.doc(sd.doc);
+//
+//			 Query q1 = qp.parse(d.getField("tweetUser").stringValue());
+//		 	  hits = searcher.search(q1, 10000000);
+//			 
+//		 	 
+//	 	     
+//	 		
+//	 	    }
+		 
+
+//	 	 logger.info("##### Number of different user in this set of documents:" +uniqueUsers.size() );
+		
+		
+		
+		
+		
+		return userAndTweets;
+	}
+	 
 	
 	
 	public static String readContentFile(File file) throws IOException{
