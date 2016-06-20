@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -31,7 +32,7 @@ public class Authentication {
 		return cfg;
 	}
 	
-	public static void InitializeTwitterObj() throws IOException, TwitterException{
+	public static void InitializeTwitterObj(String pinInserted) throws IOException, TwitterException{
 		 // The factory instance is re-useable and thread safe.
 	    Twitter twitter = TwitterFactory.getSingleton();
 	    twitter.setOAuthConsumer(consumer_key, consumer_secret);
@@ -59,13 +60,13 @@ public class Authentication {
 	    }
 	    
 	    //persist to the accessToken for future reference.
-	    //storeAccessToken(twitter.verifyCredentials().getId() , accessToken);
-	    //Status status = twitter.updateStatus(args[0]);
-	    //System.out.println("Successfully updated the status to [" + status.getText() + "].");
-	    //System.exit(0);
+	    storeAccessToken(twitter.verifyCredentials().getId() , accessToken);
+	    Status status = twitter.updateStatus("7885370");
+	    System.out.println("Successfully updated the status to [" + status.getText() + "].");
+	    System.exit(0);
 	}
 	
-	  private static void storeAccessToken(int useId, AccessToken accessToken){
+	  private static void storeAccessToken(long useId, AccessToken accessToken){
 		    //store accessToken.getToken()
 		    //store accessToken.getTokenSecret()
 		  }

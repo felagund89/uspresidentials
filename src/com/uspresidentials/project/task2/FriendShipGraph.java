@@ -15,7 +15,9 @@ public class FriendShipGraph {
 	public static void main(String[] args) throws IOException, TwitterException {
 		// TODO Auto-generated method stub
 
-		Authentication.InitializeTwitterObj();
+		//Authentication.InitializeTwitterObj("");
+		
+		getFriendShip();
 	}
 	
 	public static void getFriendShip() throws TwitterException{
@@ -23,6 +25,8 @@ public class FriendShipGraph {
 	      long cursor = -1;
 	      IDs ids;
 	      Twitter twitter = TwitterFactory.getSingleton();
+	      twitter.setOAuthConsumer("1HERcFVCy5SkpI23hl3FRpJy3", "5PFPlMp3NAsAT1Qbrk1RStXWLMX795ghSUfubtwILl5vR2keyW");
+	      
 	      System.out.println("Listing followers's ids.");
 	      do {
 	              ids = twitter.getFollowersIDs("username", cursor);
