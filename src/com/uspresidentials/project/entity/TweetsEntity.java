@@ -11,7 +11,6 @@ public class TweetsEntity implements Serializable {
 	 */
 	private static final long serialVersionUID = 2352776552646468586L;
 
-	
 	private String id;
 	private String language;
 	private Status tweetStatus;

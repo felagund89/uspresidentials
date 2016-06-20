@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,7 +70,7 @@ public class LuceneCore {
 			IndexWriterConfig config = new IndexWriterConfig(Version.LATEST, new StandardAnalyzer());
 			IndexWriter indexWriter = new IndexWriter(indexDir, config);
 			
-			indexWriter.deleteAll();
+			//indexWriter.deleteAll();
 	
 			List<TweetsEntity> listaTweet = new ArrayList<TweetsEntity>();
 			List<Document> listaDocLucene = new ArrayList<Document>();
@@ -80,7 +81,6 @@ public class LuceneCore {
 			File[] files = dir.listFiles();
 			File currentFile;
 			String currentContent;
-			
 			
 			//Creazione documenti per LUCENE
 			//LA RICERCA PER ORA AVVIENE SEMPRE SULLO STESSO FILE, IL 3 NEL MIO CASO
@@ -108,8 +108,8 @@ public class LuceneCore {
 					String jsonContent = elementsP.get(i).text();           
 					Status status = TwitterObjectFactory.createStatus(jsonContent);
 				
-					User currentUser = TwitterObjectFactory.createUser(jsonContent);
-					logger.info("currentUser: " + currentUser.getName());
+					//User currentUser = TwitterObjectFactory.createUser(jsonContent);
+					//logger.info("currentUser: " + status.getUser().getStatus().);
 				
 					tweetEnt.setTweetStatus(status);
 	//				listaTweet.add(tweetEnt);
@@ -149,8 +149,8 @@ public class LuceneCore {
 	public static  TopDocs searchEngine(String pathIndexer, String fieldForQuery, String queryLucene) throws IOException, ParseException {
     	
  	       	    
-	 	IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
-
+	 	//IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
+		searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
 		
  	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
  	    
@@ -200,8 +200,7 @@ public class LuceneCore {
 		 return uniqueUsers;
 		}
 	 
-	 
-	 
+	
 	 public static long numberOfTweets (IndexSearcher searcher, TopDocs resultDocs) throws IOException{
 			
 		 long numOfTweet;
@@ -216,39 +215,40 @@ public class LuceneCore {
 		
 		TweetInfoEntity userAndTweets = new TweetInfoEntity();
 		TopDocs hits;
+		
+		HashMap<String, ArrayList<String>> hashMapUser = new HashMap<String, ArrayList<String>>();
+		String currentUserName = null;
+		String currentTweet = null;
+		ArrayList<String> tempArrayTweets = null;
+		
 		QueryParser qp = new QueryParser("tweetUser", new StandardAnalyzer());
 		for (ScoreDoc sd : resultDocs.scoreDocs) {
-			Document d = searcher.doc(sd.doc);
-			Query q1 = qp.parse(d.getField("tweetUser").stringValue());
-			hits = searcher.search(q1, 10000000);
 			
-			logger.info("##### hits for user" + d.getField("tweetUser").stringValue() + ": " + hits.totalHits);
+			Document d = searcher.doc(sd.doc);
+			currentUserName =  d.getField("tweetUser").stringValue();
+			currentTweet = d.getField("tweetText").stringValue();
+			
+			
+			if(!hashMapUser.containsKey(currentUserName)){
+				tempArrayTweets = new ArrayList<String>();
+				tempArrayTweets.add(currentTweet);
+				hashMapUser.put(currentUserName, tempArrayTweets);
+				
+				logger.info("appena aggiunto user: " + currentUserName);
+				
+			}else{
+				hashMapUser.get(currentUserName).add(currentTweet);
+				
+				logger.info("aggiunto tweet for user: " + currentUserName);
+			}
+			
+			logger.info("");
+			
+			//Query q1 = qp.parse(d.getField("tweetUser").name());
+			//hits = searcher.search(q1, 10000000);
+			//logger.info("##### hits for user" + d.getField("tweetUser").stringValue() + ": " + hits.totalHits);
 		}
-		
-// 	   
-//		
-//		
-//		TopDocs hits
-//		
-//		 for (ScoreDoc sd : resultDocs.scoreDocs) {
-//			 
-//	 	     Document d = searcher.doc(sd.doc);
-//
-//			 Query q1 = qp.parse(d.getField("tweetUser").stringValue());
-//		 	  hits = searcher.search(q1, 10000000);
-//			 
-//		 	 
-//	 	     
-//	 		
-//	 	    }
-		 
-
-//	 	 logger.info("##### Number of different user in this set of documents:" +uniqueUsers.size() );
-		
-		
-		
-		
-		
+	
 		return userAndTweets;
 	}
 	 
