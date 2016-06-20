@@ -237,7 +237,6 @@ public class LuceneCore {
 				
 			}else{
 				hashMapUser.get(currentUserName).add(currentTweet);
-				
 				logger.info("aggiunto tweet for user: " + currentUserName);
 			}
 				
