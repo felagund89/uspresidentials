@@ -2,6 +2,7 @@ package com.uspresidentials.project.task1;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -80,11 +81,9 @@ public class IdentifyUsers {
 			//LuceneCore.createIndex(PATH_PRIMARY, PATH_INDEXDIR_PRIMAR);
 		    //LuceneCore.createIndex(PATH_DEBATES, PATH_INDEXDIR);
 		
-	
 			//1)identify tweets of users that mention one of the U.S. presidential candidates. How many users you get? How many tweets?
 			//Richiamo il searcher con la query voluta
 			TopDocs resultDocs = LuceneCore.searchEngine(PATH_INDEXDIR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
-			
 			
 			//calcolo il numero degli utenti twitter 
 		    Set<String> setUniqUser = LuceneCore.numberOfUser(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
@@ -92,8 +91,9 @@ public class IdentifyUsers {
 		    long numeroUniqUser = setUniqUser.size();
 		    long numeroTweet = LuceneCore.numberOfTweets(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
 		
-		    LuceneCore.getUserAndRelTweets(new HashSet<String>(), resultDocs);
+		    HashMap<String, ArrayList<String>> hashMapUsersTweets = LuceneCore.getUserAndRelTweets(new HashSet<String>(), resultDocs);
 		    
+		    String s = null;
 		    
 	}
 }

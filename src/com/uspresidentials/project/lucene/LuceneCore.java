@@ -211,7 +211,7 @@ public class LuceneCore {
 		 return numOfTweet;			
 	}
 	 
-	public static TweetInfoEntity getUserAndRelTweets(Set<String> usersName, TopDocs resultDocs) throws IOException, ParseException{
+	public static HashMap<String, ArrayList<String>> getUserAndRelTweets(Set<String> usersName, TopDocs resultDocs) throws IOException, ParseException{
 		
 		TweetInfoEntity userAndTweets = new TweetInfoEntity();
 		TopDocs hits;
@@ -228,7 +228,6 @@ public class LuceneCore {
 			currentUserName =  d.getField("tweetUser").stringValue();
 			currentTweet = d.getField("tweetText").stringValue();
 			
-			
 			if(!hashMapUser.containsKey(currentUserName)){
 				tempArrayTweets = new ArrayList<String>();
 				tempArrayTweets.add(currentTweet);
@@ -241,15 +240,14 @@ public class LuceneCore {
 				
 				logger.info("aggiunto tweet for user: " + currentUserName);
 			}
-			
-			logger.info("");
-			
+				
 			//Query q1 = qp.parse(d.getField("tweetUser").name());
 			//hits = searcher.search(q1, 10000000);
 			//logger.info("##### hits for user" + d.getField("tweetUser").stringValue() + ": " + hits.totalHits);
 		}
-	
-		return userAndTweets;
+		
+		return hashMapUser;
+		//return userAndTweets;
 	}
 	 
 	
