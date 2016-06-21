@@ -42,6 +42,9 @@ public class FriendShipGraph {
 	              System.out.println(user.getName());
 	          }
 	      } while ((cursor = ids.getNextCursor()) != 0);
+	      
+	      //writeUsersOnFile();  //scrive su file tutte le relationship dei vari utenti
+	      //crea il grafo leggendo tale file
 	}
 	
 	public static ListenableGraph<String, DefaultEdge> createGraph(){
@@ -50,10 +53,12 @@ public class FriendShipGraph {
 		 String v1 = "Vertex1";
 		 String v2 = "Vertex2";
 		 String v3 = "Vertex3";
+		 String v4 = "Vertex4";
 		 
 		 g.addVertex(v1);
 		 g.addVertex(v2);
 		 g.addVertex(v3);
+		 g.addVertex(v4);
 	
 		 g.addEdge(v1, v2);
 		 g.addEdge(v1, v3);
@@ -63,4 +68,14 @@ public class FriendShipGraph {
 		 
 		 return g;
 	}	
+	
+	public static void writeUsersOnFile(){
+		//nomeUtente1:amico1;amico2;amico3
+		//nomeUtente2:amico1;amico2;amico3
+	}
+	
+	public static void writeCandidatesOnFile(){
+		//trump:ut1;ut2;ut3
+		//clinton:ut2;ut8;ut6
+	}
 }

@@ -55,11 +55,12 @@ public class SwingContainerDemo {
 	      msglabel = new JLabel("Welcome to TutorialsPoint SWING Tutorial.", JLabel.CENTER);
 
 	      controlPanel = new JPanel();
-	      controlPanel.setLayout(new FlowLayout());
+	      //controlPanel.setLocation(0,0);
+	      //controlPanel.setLayout(new FlowLayout());
 
 	      mainFrame.add(headerLabel);
 	      mainFrame.add(controlPanel);
-	      mainFrame.setVisible(true);  
+	     // mainFrame.setVisible(true);  
 	   }
 
 	   private void showJFrameDemo(){
@@ -67,7 +68,9 @@ public class SwingContainerDemo {
 
 	      final JFrame frame = new JFrame();
 	      frame.setSize(700, 700);
-	      frame.setLayout(new FlowLayout());       
+	      controlPanel.setLocation(100, 100);
+	      
+	      //frame.setLayout(new FlowLayout());       
 	      frame.add(msglabel);
 	      frame.addWindowListener(new WindowAdapter() {
 	         public void windowClosing(WindowEvent windowEvent){
@@ -81,7 +84,7 @@ public class SwingContainerDemo {
 	      mainFrame.setVisible(true);  
 	      
 	      adjustDisplaySettings(jgraph);
-	      controlPanel.add(jgraph);
+	      mainFrame.add(jgraph);
 	      
 	      //mainFrame.getContentPane().add(jgraph);
 	   }
