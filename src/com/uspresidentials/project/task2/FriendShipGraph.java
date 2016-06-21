@@ -1,14 +1,11 @@
 package com.uspresidentials.project.task2;
 
-import java.awt.Frame;
 import java.io.IOException;
 
-import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.ListenableGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.ListenableDirectedGraph;
 
-import com.uspresidentials.project.utils.Authentication;
-
-import edu.uci.ics.jung.graph.DirectedGraph;
 import twitter4j.IDs;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -47,9 +44,9 @@ public class FriendShipGraph {
 	      } while ((cursor = ids.getNextCursor()) != 0);
 	}
 	
-	public static void createGraph(){
+	public static ListenableGraph<String, DefaultEdge> createGraph(){
 		
-		 DefaultDirectedGraph<String, DefaultEdge> g = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+		ListenableGraph<String, DefaultEdge> g = new ListenableDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
 		 String v1 = "Vertex1";
 		 String v2 = "Vertex2";
 		 String v3 = "Vertex3";
@@ -64,41 +61,6 @@ public class FriendShipGraph {
 		 
 		 System.out.println("created graph: " + g.toString());
 		 
-		 //adjustDisplaySettings(g);
-		 //getContentPane(  ).add( g );
-	}
-	
-	/*
-	 *  private void adjustDisplaySettings( JGraph jg ) {
-        jg.setPreferredSize( DEFAULT_SIZE );
-
-        Color  c        = DEFAULT_BG_COLOR;
-        String colorStr = null;
-
-        try {
-            colorStr = getParameter( "bgcolor" );
-        }
-         catch( Exception e ) {}
-
-        if( colorStr != null ) {
-            c = Color.decode( colorStr );
-        }
-
-        jg.setBackground( c );
-    }
-
-
-    private void positionVertexAt( Object vertex, int x, int y ) {
-        DefaultGraphCell cell = m_jgAdapter.getVertexCell( vertex );
-        Map              attr = cell.getAttributes(  );
-        Rectangle        b    = GraphConstants.getBounds( attr );
-
-        GraphConstants.setBounds( attr, new Rectangle( x, y, b.width, b.height ) );
-
-        Map cellAttr = new HashMap(  );
-        cellAttr.put( cell, attr );
-        m_jgAdapter.edit( cellAttr, null, null, null, null );
-    }
-    */
-	
+		 return g;
+	}	
 }
