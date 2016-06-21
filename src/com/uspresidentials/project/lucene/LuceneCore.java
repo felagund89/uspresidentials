@@ -269,9 +269,7 @@ public class LuceneCore {
 //		            }
 //		        }
 //		    }
-		}
-		
-		
+		}	
 	}
 	
 	
