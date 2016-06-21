@@ -43,11 +43,11 @@ public class IdentifyUsers {
 	/**
 	 * PATH per dataset e indexer
 	 */	
-	  final static String PATH_DEBATES = "/Users/alessiocampanelli/Desktop/debates";
-	  final static String PATH_INDEXDIR = "/Users/alessiocampanelli/Desktop/resultQuery";
+//	  final static String PATH_DEBATES = "/Users/alessiocampanelli/Desktop/debates";
+//	  final static String PATH_INDEXDIR = "/Users/alessiocampanelli/Desktop/resultQuery";
 
 	//final static String PATH_DEBATES = "/home/felagund89/Scrivania/Progetto web and social/debates";
-	final static String PATH_PRIMARY = "/home/felagund89/Scrivania/Progetto web and social/DOCPRIMARYNY";
+//	final static String PATH_PRIMARY = "/home/felagund89/Scrivania/Progetto web and social/DOCPRIMARYNY";
 
 	//final static String PATH_INDEXDIR = "/home/felagund89/Scrivania/Progetto web and social/resultQuery/resultQueryDebates";
 	final static String PATH_INDEXDIR_PRIMAR = "/home/felagund89/Scrivania/Progetto web and social/resultQuery/resultQueryPrimary";
@@ -81,17 +81,20 @@ public class IdentifyUsers {
 		
 			//1)identify tweets of users that mention one of the U.S. presidential candidates. How many users you get? How many tweets?
 			//Richiamo il searcher con la query voluta
-			TopDocs resultDocs = LuceneCore.searchEngine(PATH_INDEXDIR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
+			TopDocs resultDocs = LuceneCore.searchEngine(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
 			
 			//calcolo il numero degli utenti twitter 
-		    Set<String> setUniqUser = LuceneCore.numberOfUser(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
+//		    Set<String> setUniqUser = LuceneCore.numberOfUser(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
 			
-		    long numeroUniqUser = setUniqUser.size();
-		    long numeroTweet = LuceneCore.numberOfTweets(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
+//		    long numeroUniqUser = setUniqUser.size();
+//		    long numeroTweet = LuceneCore.numberOfTweets(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
 		
 		    HashMap<String, ArrayList<String>> hashMapUsersTweets = LuceneCore.getUserAndRelTweets(new HashSet<String>(), resultDocs);
 		    
-		    String s = null;
+		    
+		    
+		    
+		    
 		    
 	}
 }
