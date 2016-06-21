@@ -239,16 +239,40 @@ public class LuceneCore {
 				hashMapUser.get(currentUserName).add(currentTweet);
 				logger.info("aggiunto tweet for user: " + currentUserName);
 			}
-				
-			//Query q1 = qp.parse(d.getField("tweetUser").name());
-			//hits = searcher.search(q1, 10000000);
-			//logger.info("##### hits for user" + d.getField("tweetUser").stringValue() + ": " + hits.totalHits);
+			
+			printHashMap(hashMapUser);
+			
+//			logger.info("L'utente: "+)
 		}
 		
 		return hashMapUser;
 		//return userAndTweets;
 	}
 	 
+	
+	
+	private static void printHashMap(HashMap<String, ArrayList<String>> hashMapUser){
+		
+		for (String key : hashMapUser.keySet()) {
+		    // gets the value
+		    List<String> value = hashMapUser.get(key);
+		    // checks for null value
+//		    if (value != null) {
+		        // iterates over String elements of value
+//		        for (Object element : value) {
+		            // checks for null 
+//		            if (element != null) {
+		                // prints whether the key is equal to the String 
+		                // representation of that List's element
+//		                System.out.println(key.equals(element.toString()));
+		        	logger.info("L'utente :"+key.toString()+" ha scritto "+value.size()+" tweet.");
+//		            }
+//		        }
+//		    }
+		}
+		
+		
+	}
 	
 	
 	public static String readContentFile(File file) throws IOException{
