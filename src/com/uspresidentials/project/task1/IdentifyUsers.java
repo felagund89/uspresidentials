@@ -52,8 +52,7 @@ public class IdentifyUsers {
 	//final static String PATH_INDEXDIR = "/home/felagund89/Scrivania/Progetto web and social/resultQuery/resultQueryDebates";
 	final static String PATH_INDEXDIR_PRIMAR = "/home/felagund89/Scrivania/Progetto web and social/resultQuery/resultQueryPrimary";
 
-		
-
+	
 	/**
 	 * QUERY
 	 */
@@ -73,8 +72,7 @@ public class IdentifyUsers {
 		        add("Ted Cruz");
 		        add("John Kasich");
 		    }};
-		
-		
+	
 		    List<TweetsEntity> listaTweetsEntities = new ArrayList<TweetsEntity>();
 		
 			//Richiamo l'indexer, commentare se già fatto
