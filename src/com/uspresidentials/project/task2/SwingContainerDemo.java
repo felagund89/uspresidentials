@@ -1,11 +1,14 @@
 package com.uspresidentials.project.task2;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Rectangle;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -13,11 +16,8 @@ import javax.swing.JPanel;
 import org.jgraph.JGraph;
 import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.GraphConstants;
-import org.jgrapht.ListenableGraph;
 import org.jgrapht.ext.JGraphModelAdapter;
-import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.ListenableDirectedGraph;
 
 
 public class SwingContainerDemo {
