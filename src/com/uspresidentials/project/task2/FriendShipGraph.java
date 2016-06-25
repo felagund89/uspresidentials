@@ -24,24 +24,25 @@ public class FriendShipGraph {
 		// TODO Auto-generated method stub
 
 		//Authentication.InitializeTwitterObj("");
+		  Twitter twitter = TwitterFactory.getSingleton();
+	      twitter.setOAuthConsumer("1HERcFVCy5SkpI23hl3FRpJy3", "5PFPlMp3NAsAT1Qbrk1RStXWLMX795ghSUfubtwILl5vR2keyW");
+	      AccessToken accessToken = new AccessToken("2977694199-o286ySyyQbCTJsMXcxSfoeSwQ6CkVGQSNl8ILMO", "SKo5MvolhkJxmoG3ADgb2tzW5oOFV7p6A44hmcHY1Pzz1");
+	      twitter.setOAuthAccessToken(accessToken);
 		
-		getFriendShipRecursive("felagund89", -1);
+		
+		getFriendShipRecursive(twitter,"felagund89", -1,-1,"felagund89");
 		//createGraph();
 		//writeUsersOnFile();
 	}
 	
-	public static void getFriendShipRecursive(String userName, long cursor) throws TwitterException, FileNotFoundException, UnsupportedEncodingException{
+	public static void getFriendShipRecursive(Twitter twitter, String userName, long cursor, long currentCursor, String currentUser) throws TwitterException, FileNotFoundException, UnsupportedEncodingException{
 		
-		  User u1 = null ;
 	      IDs ids;
-	      Twitter twitter = TwitterFactory.getSingleton();
-	      twitter.setOAuthConsumer("1HERcFVCy5SkpI23hl3FRpJy3", "5PFPlMp3NAsAT1Qbrk1RStXWLMX795ghSUfubtwILl5vR2keyW");
-	      AccessToken accessToken = new AccessToken("2977694199-o286ySyyQbCTJsMXcxSfoeSwQ6CkVGQSNl8ILMO", "SKo5MvolhkJxmoG3ADgb2tzW5oOFV7p6A44hmcHY1Pzz1");
-	      twitter.setOAuthAccessToken(accessToken);
+	     
 	      String listFriends = "";
 	      String content;
-	      long currentCursor = 0;
-	      
+	      userName = currentUser;
+	      cursor = currentCursor;
 	      System.out.println("Listing followers's ids.");
 	      
 	      try {
@@ -51,8 +52,8 @@ public class FriendShipGraph {
 			      for (long id : ids.getIDs()) {
 			          System.out.println(id);
 			          User user = twitter.showUser(id);
-			          System.out.println(user.getName()); 
-			          
+			          System.out.println(id +":"+ user.getName()); 
+			          currentUser = user.getName();
 			          listFriends = listFriends + user.getName() + ";" ;
 			      }
 			      
@@ -61,11 +62,11 @@ public class FriendShipGraph {
 			
 		} catch (TwitterException e) {
 			
-			if(e.getStatusCode() != 429)
-            {
-				System.out.println("Users " + userName + " has a private list. Extraction denied!");
-                break;
-            }
+//			if(e.getStatusCode() != 429)
+//            {
+//				System.out.println("Users " + userName + " has a private list. Extraction denied!");
+//              break;
+//            }
 			
 			content = userName + ":" + listFriends;
 		    writeUsersOnFile(content);  //scrive su file tutte le relationship dei vari utenti
@@ -75,7 +76,7 @@ public class FriendShipGraph {
 				int toSleep = twitter.getRateLimitStatus().get("/friends/ids").getSecondsUntilReset() + 1;
 				System.out.println("Sleeping for " + toSleep + " seconds.");
 				Thread.sleep(toSleep * 1000);
-				
+				getFriendShipRecursive(twitter,"", 0L, currentCursor, currentUser);
 				
 				
 			} catch (InterruptedException e1) {
@@ -115,7 +116,9 @@ public class FriendShipGraph {
 		//nomeUtente1:amico1;amico2;amico3
 		//nomeUtente2:amico1;amico2;amico3
 		
-		PrintWriter writer = new PrintWriter("/Users/alessiocampanelli/Desktop/friendshipTwitter.txt", "UTF-8");
+//		PrintWriter writer = new PrintWriter("/Users/alessiocampanelli/Desktop/friendshipTwitter.txt", "UTF-8");
+		PrintWriter writer = new PrintWriter("/home/felagund89/Scrivania/friendshipTwitter.txt", "UTF-8");
+
 		writer.println(content);
 		writer.close();
 	}
