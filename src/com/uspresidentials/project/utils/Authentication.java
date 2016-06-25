@@ -20,6 +20,12 @@ public class Authentication {
 			final static String access_token_secret ="SKo5MvolhkJxmoG3ADgb2tzW5oOFV7p6A44hmcHY1Pzz1";
 			final static String consumer_key ="1HERcFVCy5SkpI23hl3FRpJy3";
 			final static String consumer_secret ="5PFPlMp3NAsAT1Qbrk1RStXWLMX795ghSUfubtwILl5vR2keyW";
+			
+	//Per l'accesso a USPresidentials_Test app, con account Alessio
+			//final static String access_token ="1676105413-EO6Rhu6D0cp7xGH7UkoZxktLasMhHo24uupczRn";
+			//final static String access_token_secret ="xuGm37VDuIjGl02XqBl6x9aKqnoaqnKaqIqcCQ4BQDVw2";
+			//final static String consumer_key ="wJXRIxwvk6ndFQ2KYJqmPs0MS";
+			//final static String consumer_secret ="daeFR8AsQFBfd5PHmfFYwl0tiAJYVn2U4KVEypYp6RyWnaMQqR";		
 	
 	public static ConfigurationBuilder getAuthtentication(){
 		

@@ -23,7 +23,7 @@ public class FriendShipGraph {
 
 		//Authentication.InitializeTwitterObj("");
 		
-		getFriendShip("Carlo Pisani");
+		getFriendShip("felagund89");
 		//createGraph();
 		//writeUsersOnFile();
 	}
