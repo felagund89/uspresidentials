@@ -1,6 +1,9 @@
 package com.uspresidentials.project.task2;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 import org.jgrapht.ListenableGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -19,11 +22,13 @@ public class FriendShipGraph {
 		// TODO Auto-generated method stub
 
 		//Authentication.InitializeTwitterObj("");
-		//getFriendShip();
-		createGraph();
+		
+		getFriendShip("Carlo Pisani");
+		//createGraph();
+		//writeUsersOnFile();
 	}
 	
-	public static void getFriendShip() throws TwitterException{
+	public static void getFriendShip(String userName) throws TwitterException, FileNotFoundException, UnsupportedEncodingException{
 		
 		  User u1 = null ;
 	      long cursor = -1;
@@ -32,18 +37,24 @@ public class FriendShipGraph {
 	      twitter.setOAuthConsumer("1HERcFVCy5SkpI23hl3FRpJy3", "5PFPlMp3NAsAT1Qbrk1RStXWLMX795ghSUfubtwILl5vR2keyW");
 	      AccessToken accessToken = new AccessToken("2977694199-o286ySyyQbCTJsMXcxSfoeSwQ6CkVGQSNl8ILMO", "SKo5MvolhkJxmoG3ADgb2tzW5oOFV7p6A44hmcHY1Pzz1");
 	      twitter.setOAuthAccessToken(accessToken);
+	      String listFriends = "";
 	      
 	      System.out.println("Listing followers's ids.");
 	      do {
-	              ids = twitter.getFollowersIDs("Carlo Pisani", cursor);  //felagund89
+	              ids = twitter.getFollowersIDs(userName, cursor);  //felagund89
+	      
 	          for (long id : ids.getIDs()) {
 	              System.out.println(id);
 	              User user = twitter.showUser(id);
 	              System.out.println(user.getName());
+	              
+	              listFriends = listFriends + user.getName() + ";" ;
 	          }
 	      } while ((cursor = ids.getNextCursor()) != 0);
 	      
-	      //writeUsersOnFile();  //scrive su file tutte le relationship dei vari utenti
+	      
+	      String content = userName + ":" + listFriends;
+	      writeUsersOnFile(content);  //scrive su file tutte le relationship dei vari utenti
 	      //crea il grafo leggendo tale file
 	}
 	
@@ -69,9 +80,13 @@ public class FriendShipGraph {
 		 return g;
 	}	
 	
-	public static void writeUsersOnFile(){
+	public static void writeUsersOnFile(String content) throws FileNotFoundException, UnsupportedEncodingException{
 		//nomeUtente1:amico1;amico2;amico3
 		//nomeUtente2:amico1;amico2;amico3
+		
+		PrintWriter writer = new PrintWriter("/Users/alessiocampanelli/Desktop/friendshipTwitter.txt", "UTF-8");
+		writer.println(content);
+		writer.close();
 	}
 	
 	public static void writeCandidatesOnFile(){
