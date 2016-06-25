@@ -88,6 +88,11 @@ public class LuceneTest {
 		String currentContent;
 		
 		
+		
+		
+		
+		
+		
 		//Creazione documenti per LUCENE
 		//LA RICERCA PER ORA AVVIENE SEMPRE SULLO STESSO FILE, IL 3 NEL MIO CASO
 		for(int j=0;j<516;j++){    //ciclo su ogni File del dataset
