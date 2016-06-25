@@ -18,44 +18,74 @@ import twitter4j.auth.AccessToken;
 
 public class FriendShipGraph {
 
+	final long MAX_USERS = 500;
+	
 	public static void main(String[] args) throws IOException, TwitterException {
 		// TODO Auto-generated method stub
 
 		//Authentication.InitializeTwitterObj("");
 		
-		getFriendShip("felagund89");
+		getFriendShipRecursive("felagund89", -1);
 		//createGraph();
 		//writeUsersOnFile();
 	}
 	
-	public static void getFriendShip(String userName) throws TwitterException, FileNotFoundException, UnsupportedEncodingException{
+	public static void getFriendShipRecursive(String userName, long cursor) throws TwitterException, FileNotFoundException, UnsupportedEncodingException{
 		
 		  User u1 = null ;
-	      long cursor = -1;
 	      IDs ids;
 	      Twitter twitter = TwitterFactory.getSingleton();
 	      twitter.setOAuthConsumer("1HERcFVCy5SkpI23hl3FRpJy3", "5PFPlMp3NAsAT1Qbrk1RStXWLMX795ghSUfubtwILl5vR2keyW");
 	      AccessToken accessToken = new AccessToken("2977694199-o286ySyyQbCTJsMXcxSfoeSwQ6CkVGQSNl8ILMO", "SKo5MvolhkJxmoG3ADgb2tzW5oOFV7p6A44hmcHY1Pzz1");
 	      twitter.setOAuthAccessToken(accessToken);
 	      String listFriends = "";
+	      String content;
+	      long currentCursor = 0;
 	      
 	      System.out.println("Listing followers's ids.");
-	      do {
-	              ids = twitter.getFollowersIDs(userName, cursor);  //felagund89
 	      
-	          for (long id : ids.getIDs()) {
-	              System.out.println(id);
-	              User user = twitter.showUser(id);
-	              System.out.println(user.getName());
-	              
-	              listFriends = listFriends + user.getName() + ";" ;
-	          }
-	      } while ((cursor = ids.getNextCursor()) != 0);
+	      try {
+			do {
+			          ids = twitter.getFriendsIDs(userName, cursor);  //felagund89
+			          
+			      for (long id : ids.getIDs()) {
+			          System.out.println(id);
+			          User user = twitter.showUser(id);
+			          System.out.println(user.getName()); 
+			          
+			          listFriends = listFriends + user.getName() + ";" ;
+			      }
+			      
+			      currentCursor = cursor;    						//salvo il cursore per i prossimi 180 ids
+			  } while ((cursor = ids.getNextCursor()) != 0);
+			
+		} catch (TwitterException e) {
+			
+			if(e.getStatusCode() != 429)
+            {
+				System.out.println("Users " + userName + " has a private list. Extraction denied!");
+                break;
+            }
+			
+			content = userName + ":" + listFriends;
+		    writeUsersOnFile(content);  //scrive su file tutte le relationship dei vari utenti
+		    
+		    try {
+		    	
+				int toSleep = twitter.getRateLimitStatus().get("/friends/ids").getSecondsUntilReset() + 1;
+				System.out.println("Sleeping for " + toSleep + " seconds.");
+				Thread.sleep(toSleep * 1000);
+				
+				
+				
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+		    
+			e.printStackTrace();
+		}
 	      
-	      
-	      String content = userName + ":" + listFriends;
-	      writeUsersOnFile(content);  //scrive su file tutte le relationship dei vari utenti
-	      //crea il grafo leggendo tale file
+	    //crea il grafo leggendo tale file
 	}
 	
 	public static ListenableGraph<String, DefaultEdge> createGraph(){
@@ -76,6 +106,7 @@ public class FriendShipGraph {
 		 g.addEdge(v2, v3);
 		 
 		 System.out.println("created graph: " + g.toString());
+		 
 		 
 		 return g;
 	}	
