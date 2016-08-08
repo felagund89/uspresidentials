@@ -1,4 +1,4 @@
-package com.uspresidentials.project.task2;
+package com.uspresidentials.project.task1;
 
 import static java.lang.System.out;
 import java.util.Arrays;
@@ -125,7 +125,7 @@ public class FriendsCrawler extends Crawler
 	    {
 	        graph.addEdge(new Edge(user0, user1));
 	    }
-	    
+	    	
 	    @Override
 	    protected int getUsersListSize(User user) 
 	    {        

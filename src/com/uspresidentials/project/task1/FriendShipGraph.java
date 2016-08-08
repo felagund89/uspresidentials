@@ -1,4 +1,4 @@
-package com.uspresidentials.project.task2;
+package com.uspresidentials.project.task1;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,14 +18,7 @@ import twitter4j.auth.AccessToken;
 
 public class FriendShipGraph {
 
-<<<<<<< Updated upstream
 	final long MAX_USERS = 500;
-=======
-	
-	final static String PATH_FRIENDS_FILE = "/home/felagund89/Scrivania/FriendsFile.txt";
-
-	
->>>>>>> Stashed changes
 	
 	public static void main(String[] args) throws IOException, TwitterException {
 		// TODO Auto-generated method stub
@@ -119,7 +112,6 @@ public class FriendShipGraph {
 		 return g;
 	}	
 	
-<<<<<<< Updated upstream
 	public static void writeUsersOnFile(String content) throws FileNotFoundException, UnsupportedEncodingException{
 		//nomeUtente1:amico1;amico2;amico3
 		//nomeUtente2:amico1;amico2;amico3
@@ -129,17 +121,6 @@ public class FriendShipGraph {
 
 		writer.println(content);
 		writer.close();
-=======
-	public static void writeUsersOnFile() throws FileNotFoundException, UnsupportedEncodingException{
-		//nomeUtente1:amico1;amico2;amico3
-		//nomeUtente2:amico1;amico2;amico3
-		PrintWriter writer = new PrintWriter(PATH_FRIENDS_FILE, "UTF-8");
-		writer.println("The first line");
-		writer.println("The second line");
-		writer.close();
-		
-		
->>>>>>> Stashed changes
 	}
 	
 	public static void writeCandidatesOnFile(){

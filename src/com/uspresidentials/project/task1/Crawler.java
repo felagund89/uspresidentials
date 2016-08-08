@@ -1,4 +1,4 @@
-package com.uspresidentials.project.task2;
+package com.uspresidentials.project.task1;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
