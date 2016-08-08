@@ -4,8 +4,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.Set;
 
 import org.jgrapht.ListenableGraph;
+import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
@@ -28,7 +30,6 @@ public class FriendShipGraph {
 	      twitter.setOAuthConsumer("1HERcFVCy5SkpI23hl3FRpJy3", "5PFPlMp3NAsAT1Qbrk1RStXWLMX795ghSUfubtwILl5vR2keyW");
 	      AccessToken accessToken = new AccessToken("2977694199-o286ySyyQbCTJsMXcxSfoeSwQ6CkVGQSNl8ILMO", "SKo5MvolhkJxmoG3ADgb2tzW5oOFV7p6A44hmcHY1Pzz1");
 	      twitter.setOAuthAccessToken(accessToken);
-		
 		
 		getFriendShipRecursive(twitter,"felagund89", -1,-1,"felagund89");
 		//createGraph();
@@ -106,11 +107,18 @@ public class FriendShipGraph {
 		 g.addEdge(v1, v3);
 		 g.addEdge(v2, v3);
 		 
+		
 		 System.out.println("created graph: " + g.toString());
 		 
-		 
 		 return g;
-	}	
+	}
+	
+	public static void searchConnectedComponents(ListenableDirectedGraph<String, DefaultEdge> g)
+	{
+		ConnectivityInspector conn = new ConnectivityInspector(g);
+		Set<String> listVertexConnected = conn.connectedSetOf(g.vertexSet().iterator().next());
+		System.out.println("list connected vertex: " + listVertexConnected.toString());
+	}
 	
 	public static void writeUsersOnFile(String content) throws FileNotFoundException, UnsupportedEncodingException{
 		//nomeUtente1:amico1;amico2;amico3

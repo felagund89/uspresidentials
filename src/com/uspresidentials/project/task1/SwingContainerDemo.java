@@ -18,6 +18,7 @@ import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.GraphConstants;
 import org.jgrapht.ext.JGraphModelAdapter;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.ListenableDirectedGraph;
 
 
 public class SwingContainerDemo {
@@ -79,7 +80,10 @@ public class SwingContainerDemo {
 	      });
 	      
 	     
-	      m_jgAdapter = new JGraphModelAdapter<String, DefaultEdge>(FriendShipGraph.createGraph());
+	      ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraph();
+	      FriendShipGraph.searchConnectedComponents(myGraph);
+	      
+	      m_jgAdapter = new JGraphModelAdapter<String, DefaultEdge>(myGraph);
 	      JGraph jgraph = new JGraph( m_jgAdapter);
 	      mainFrame.setVisible(true);  
 	      
