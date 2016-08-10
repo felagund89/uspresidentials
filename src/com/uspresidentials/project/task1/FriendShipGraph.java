@@ -14,6 +14,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
 import twitter4j.IDs;
+import twitter4j.PagableResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -66,21 +67,37 @@ public class FriendShipGraph {
 	      System.out.println("Listing followers's ids.");
 	      
 	      try {
-			do {
-			          ids = twitter.getFriendsIDs(userName, cursor);  //felagund89
-			          
-			      for (long id : ids.getIDs()) {
-			          System.out.println(id);
-			          User user = twitter.showUser(id);
-			          System.out.println(id +":"+ user.getName()); 
-			          currentUser = user.getName();
-			          listFriends = listFriends + user.getName() + ";" ;
-			      }
-			      
-			      currentCursor = cursor;    						//salvo il cursore per i prossimi 180 ids
-			  } while ((cursor = ids.getNextCursor()) != 0);
+//			do {
+//			          ids = twitter.getFriendsIDs(userName, cursor);  //felagund89
+//			          
+//			      for (long id : ids.getIDs()) {
+//			          System.out.println(id);
+//			          User user = twitter.showUser(id);
+//			          System.out.println(id +":"+ user.getName()); 
+//				      currentUser = user.getName();
+//			          currentCursor=ids.getNextCursor();
+//
+//			          listFriends = listFriends + user.getName() + ";" ;
+//			      }
+////			      currentCursor = cursor;    						//salvo il cursore per i prossimi 180 ids
+//			  } while ((cursor = ids.getNextCursor()) != 0);
+	    	  
+//	    	  long cursor = -1;
+	            PagableResponseList<User> pagableFollowings;
+	            do {
+	                pagableFollowings = twitter.getFriendsList(twitter.getId(), cursor);
+	                for (User user : pagableFollowings) {
+//	                    listFriends.add(user.getName()); // ArrayList<User>
+	                	listFriends = listFriends + user.getName() + ";";
+	                	
+	                }
+	            } while ((cursor = pagableFollowings.getNextCursor()) != 0);
 			
 		} catch (TwitterException e) {
+			
+			
+			 
+			
 			
 //			if(e.getStatusCode() != 429)
 //            {
@@ -164,7 +181,7 @@ public class FriendShipGraph {
 //		PrintWriter writer = new PrintWriter("/Users/alessiocampanelli/Desktop/friendshipTwitter.txt", "UTF-8");
 //		PrintWriter writer = new PrintWriter("/home/felagund89/Scrivania/friendshipTwitter.txt", "UTF-8");
 
-		PrintWriter writer = new PrintWriter(new FileOutputStream(new File("/home/felagund89/Scrivania/friendshipTwitter.txt"),true));
+		PrintWriter writer = new PrintWriter(new FileOutputStream(new File("/home/felagund89/Scrivania/friendshipTwitterAll.txt"),true));
 		
 		writer.println(content);
 		writer.close();
