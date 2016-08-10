@@ -7,8 +7,10 @@ import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import javax.swing.JApplet;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,7 +23,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
 
-public class SwingContainerDemo {
+public class SwingContainerDemo extends JApplet {
 
 	  private static final Color     DEFAULT_BG_COLOR = Color.decode( "#FAFBFF" );
 	  private static final Dimension DEFAULT_SIZE = new Dimension( 600, 600 );
@@ -79,7 +81,8 @@ public class SwingContainerDemo {
 	         }        
 	      });
 	      
-	     
+	     int distx = 0;
+	     int disty = 0;
 	      ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraph();
 	      FriendShipGraph.searchConnectedComponents(myGraph);
 	      
@@ -89,7 +92,29 @@ public class SwingContainerDemo {
 	      
 	      adjustDisplaySettings(jgraph);
 	      mainFrame.add(jgraph);
+	      int sizeMygraph = myGraph.vertexSet().size();
 	      
+//	      for(int i = 0; i< sizeMygraph ; i++){
+//		      positionVertexAt( myGraph.vertexSet().iterator().next() ,distx+5, disty+15 );
+//
+//	    	  
+//	      }
+	      Iterator<String> iterator = myGraph.vertexSet().iterator();
+	      while(iterator.hasNext()) {
+		      positionVertexAt( iterator.next() ,distx+5, disty+15 );
+	      }
+
+	      
+	      
+//	      positionVertexAt( "Vertex1", distx, disty );
+//	      positionVertexAt( "Vertex1", distx, disty );
+//	      positionVertexAt( "Vertex1", distx, disty );
+//	      positionVertexAt( "Vertex1", distx, disty );
+//	      positionVertexAt( "Vertex1", distx, disty );
+//	      positionVertexAt( "Vertex1", distx, disty );
+
+//	      positionVertexAt( "Vertex1", 130, 40 );
+
 	      //mainFrame.getContentPane().add(jgraph);
 	   }
 	   
@@ -97,25 +122,27 @@ public class SwingContainerDemo {
 	        jg.setPreferredSize( DEFAULT_SIZE );
 	        Color  c        = DEFAULT_BG_COLOR;
 	        String colorStr = null;
-
+//	        jg.setHandleSize (5);
+	        jg.setScale (1.5);
+	        jg.setAutoResizeGraph(true);
+	    
 	        try {
 	            colorStr = "#FAFBFF";//getParameter( "bgcolor" );
 	        }
 	         catch( Exception e ) {}
 
 	        if( colorStr != null ) {
-	            c = Color.decode( colorStr );
+	            c = Color.decode( colorStr );	
 	        }
-
 	        jg.setBackground( c );
 	    }
 	   
 	   private void positionVertexAt( Object vertex, int x, int y ) {
 	        DefaultGraphCell cell = m_jgAdapter.getVertexCell( vertex );
 	        Map              attr = cell.getAttributes(  );
-	        Rectangle        b    = (Rectangle) GraphConstants.getBounds( attr );
+//	        Rectangle        b    = (Rectangle) GraphConstants.getBounds( attr );
 
-	        GraphConstants.setBounds( attr, new Rectangle( x, y, b.width, b.height ) );
+	        GraphConstants.setBounds( attr, new Rectangle( x, y, 50, 50 ) );
 
 	        Map cellAttr = new HashMap(  );
 	        cellAttr.put( cell, attr );

@@ -1,6 +1,8 @@
 package com.uspresidentials.project.task1;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -18,10 +20,17 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
 
+/*
+ * Costruire grafo delle amicizie e cercare la componente connessa piu grande, 
+ * per il momento non disegnamo il grafo delle amicizie.
+ * 
+ *  */
+
+
 public class FriendShipGraph {
 
 	final long MAX_USERS = 500;
-	
+
 	public static void main(String[] args) throws IOException, TwitterException {
 		// TODO Auto-generated method stub
 
@@ -31,7 +40,17 @@ public class FriendShipGraph {
 	      AccessToken accessToken = new AccessToken("2977694199-o286ySyyQbCTJsMXcxSfoeSwQ6CkVGQSNl8ILMO", "SKo5MvolhkJxmoG3ADgb2tzW5oOFV7p6A44hmcHY1Pzz1");
 	      twitter.setOAuthAccessToken(accessToken);
 		
-		getFriendShipRecursive(twitter,"felagund89", -1,-1,"felagund89");
+	      //recupero gli amici a partire da un account specifico 180 amici alla volta, trovare modo per automatizzare il crawling 
+	      //per trovare e salvare tutti gli amici su file
+	      getFriendShipRecursive(twitter,"felagund89", -1,-1,"felagund89");
+
+			
+		//Creo grafo e cerco la componente connessa piu grande
+	    ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraph();
+	    //dato un grafo cerco la componente connessa piu grande
+	    FriendShipGraph.searchConnectedComponents(myGraph);
+	    
+	    
 		//createGraph();
 		//writeUsersOnFile();
 	}
@@ -97,15 +116,33 @@ public class FriendShipGraph {
 		 String v2 = "Vertex2";
 		 String v3 = "Vertex3";
 		 String v4 = "Vertex4";
+		 String v5 = "Vertex5";
+		 String v6 = "Vertex6";
+		 String v7 = "Vertex7";
+		 String v8 = "Vertex8";
+		 String v9 = "Vertex9";
+
 		 
 		 g.addVertex(v1);
 		 g.addVertex(v2);
 		 g.addVertex(v3);
 		 g.addVertex(v4);
-	
+		 g.addVertex(v5);
+		 g.addVertex(v6);
+		 g.addVertex(v7);
+		 g.addVertex(v8);
+		 g.addVertex(v9);
+
 		 g.addEdge(v1, v2);
 		 g.addEdge(v1, v3);
 		 g.addEdge(v2, v3);
+//		 g.addEdge(v2, v4);
+		 g.addEdge(v2, v5);
+		 g.addEdge(v2, v6);
+		 g.addEdge(v2, v7);
+		 g.addEdge(v2, v8);
+		 g.addEdge(v2, v9);
+
 		 
 		
 		 System.out.println("created graph: " + g.toString());
@@ -125,11 +162,15 @@ public class FriendShipGraph {
 		//nomeUtente2:amico1;amico2;amico3
 		
 //		PrintWriter writer = new PrintWriter("/Users/alessiocampanelli/Desktop/friendshipTwitter.txt", "UTF-8");
-		PrintWriter writer = new PrintWriter("/home/felagund89/Scrivania/friendshipTwitter.txt", "UTF-8");
+//		PrintWriter writer = new PrintWriter("/home/felagund89/Scrivania/friendshipTwitter.txt", "UTF-8");
 
+		PrintWriter writer = new PrintWriter(new FileOutputStream(new File("/home/felagund89/Scrivania/friendshipTwitter.txt"),true));
+		
 		writer.println(content);
 		writer.close();
 	}
+	
+
 	
 	public static void writeCandidatesOnFile(){
 		//trump:ut1;ut2;ut3
