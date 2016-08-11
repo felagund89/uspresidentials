@@ -40,10 +40,10 @@ public class FriendShipGraph {
 	      twitter.setOAuthConsumer("1HERcFVCy5SkpI23hl3FRpJy3", "5PFPlMp3NAsAT1Qbrk1RStXWLMX795ghSUfubtwILl5vR2keyW");
 	      AccessToken accessToken = new AccessToken("2977694199-o286ySyyQbCTJsMXcxSfoeSwQ6CkVGQSNl8ILMO", "SKo5MvolhkJxmoG3ADgb2tzW5oOFV7p6A44hmcHY1Pzz1");
 	      twitter.setOAuthAccessToken(accessToken);
-		
+	      long idUser = twitter.getId() ;
 	      //recupero gli amici a partire da un account specifico 180 amici alla volta, trovare modo per automatizzare il crawling 
 	      //per trovare e salvare tutti gli amici su file
-	      getFriendShipRecursive(twitter,"felagund89", -1,-1,"felagund89");
+	      getFriendShipRecursive(twitter,"felagund89",idUser, -1,-1,"felagund89");
 
 			
 		//Creo grafo e cerco la componente connessa piu grande
@@ -56,7 +56,7 @@ public class FriendShipGraph {
 		//writeUsersOnFile();
 	}
 	
-	public static void getFriendShipRecursive(Twitter twitter, String userName, long cursor, long currentCursor, String currentUser) throws TwitterException, FileNotFoundException, UnsupportedEncodingException{
+	public static void getFriendShipRecursive(Twitter twitter, String userName, long idUser, long cursor, long currentCursor, String currentUser) throws TwitterException, FileNotFoundException, UnsupportedEncodingException{
 		
 	      IDs ids;
 	     
@@ -85,10 +85,10 @@ public class FriendShipGraph {
 //	    	  long cursor = -1;
 	            PagableResponseList<User> pagableFollowings;
 	            do {
-	                pagableFollowings = twitter.getFriendsList(twitter.getId(), cursor);
+	                pagableFollowings = twitter.getFriendsList(idUser, cursor);
 	                for (User user : pagableFollowings) {
 //	                    listFriends.add(user.getName()); // ArrayList<User>
-	                	listFriends = listFriends + user.getName() + ";";
+	                	listFriends = listFriends + user.getName() +";";
 	                	
 	                }
 	            } while ((cursor = pagableFollowings.getNextCursor()) != 0);

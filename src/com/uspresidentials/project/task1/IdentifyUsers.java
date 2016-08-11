@@ -1,6 +1,7 @@
 package com.uspresidentials.project.task1;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,12 +47,12 @@ public class IdentifyUsers {
 //	  final static String PATH_DEBATES = "/Users/alessiocampanelli/Desktop/debates";
 //	  final static String PATH_INDEXDIR = "/Users/alessiocampanelli/Desktop/resultQuery";
 
-	//final static String PATH_DEBATES = "/home/felagund89/Scrivania/Progetto web and social/debates";
-//	final static String PATH_PRIMARY = "/home/felagund89/Scrivania/Progetto web and social/DOCPRIMARYNY";
+	final static String PATH_DEBATES = "/home/felagund89/Scrivania/Progetto web and social/debates";
+	final static String PATH_PRIMARY = "/home/felagund89/Scrivania/Progetto web and social/DOCPRIMARYNY";
 
 	//final static String PATH_INDEXDIR = "/home/felagund89/Scrivania/Progetto web and social/resultQuery/resultQueryDebates";
-	final static String PATH_INDEXDIR_PRIMAR = "/home/felagund89/Scrivania/Progetto web and social/resultQuery/resultQueryPrimary";
-
+	final static String PATH_INDEXDIR_PRIMAR = "/home/felagund89/Scrivania/Progetto web and social/resultQuery/resultQueryPrimary_update";
+	final static String PATH_FILE_UTENTI_ID = "/home/felagund89/Scrivania/utentiTwitter.txt";
 	
 	/**
 	 * QUERY
@@ -74,10 +75,10 @@ public class IdentifyUsers {
 		    }};
 	
 		    List<TweetsEntity> listaTweetsEntities = new ArrayList<TweetsEntity>();
-		
-			//Richiamo l'indexer, commentare se già fatto
-			//LuceneCore.createIndex(PATH_PRIMARY, PATH_INDEXDIR_PRIMAR);
-		    //LuceneCore.createIndex(PATH_DEBATES, PATH_INDEXDIR);
+//		
+//			Richiamo l'indexer, commentare se già fatto
+			LuceneCore.createIndex(PATH_PRIMARY, PATH_INDEXDIR_PRIMAR);
+//		    LuceneCore.createIndex(PATH_DEBATES, PATH_INDEXDIR);
 		
 			//1)identify tweets of users that mention one of the U.S. presidential candidates. How many users you get? How many tweets?
 			//Richiamo il searcher con la query voluta
@@ -89,7 +90,11 @@ public class IdentifyUsers {
 //		    long numeroUniqUser = setUniqUser.size();
 //		    long numeroTweet = LuceneCore.numberOfTweets(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
 		
-		    HashMap<String, ArrayList<String>> hashMapUsersTweets = LuceneCore.getUserAndRelTweets(new HashSet<String>(), resultDocs);
+			
+			//creo la lista contenente utenti-idutente e relativi tweet
+		    HashMap<String, ArrayList<String>> hashMapUsersTweets = LuceneCore.getUserAndRelTweets(new HashSet<String>(), resultDocs, PATH_FILE_UTENTI_ID);  // aggiunto path per scrivere su file
+		    
+		    
 		    
 		    
 		    

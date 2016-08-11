@@ -3,6 +3,7 @@ package com.uspresidentials.project.lucene;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.CorruptIndexException;
@@ -118,6 +120,7 @@ public class LuceneCore {
 					docLucene.add(new StringField("idTweet", tweetEnt.getId(),Field.Store.YES));
 					docLucene.add(new StringField("languageTweet", tweetEnt.getLanguage(),Field.Store.YES));
 					docLucene.add(new TextField("tweetUser", tweetEnt.getTweetStatus().getUser().getName().toString().toLowerCase(),Field.Store.YES));
+					docLucene.add(new LongField("tweetUserId", tweetEnt.getTweetStatus().getUser().getId(),Field.Store.YES)); //aggiunto il campo id
 					docLucene.add(new TextField("tweetText", tweetEnt.getTweetStatus().getText().toString().toLowerCase(),Field.Store.YES ));
 			
 					
@@ -211,11 +214,15 @@ public class LuceneCore {
 		 return numOfTweet;			
 	}
 	 
-	public static HashMap<String, ArrayList<String>> getUserAndRelTweets(Set<String> usersName, TopDocs resultDocs) throws IOException, ParseException{
+	public static HashMap<String, ArrayList<String>> getUserAndRelTweets(Set<String> usersName, TopDocs resultDocs, String pathFileUtenti) throws IOException, ParseException{
 		
 		TweetInfoEntity userAndTweets = new TweetInfoEntity();
 		TopDocs hits;
-		
+		PrintWriter writer = new PrintWriter(pathFileUtenti, "UTF-8");
+		   
+	    
+		        	
+//		           
 		HashMap<String, ArrayList<String>> hashMapUser = new HashMap<String, ArrayList<String>>();
 		String currentUserName = null;
 		String currentTweet = null;
@@ -225,7 +232,7 @@ public class LuceneCore {
 		for (ScoreDoc sd : resultDocs.scoreDocs) {
 			
 			Document d = searcher.doc(sd.doc);
-			currentUserName =  d.getField("tweetUser").stringValue();
+			currentUserName =  d.getField("tweetUser").stringValue()+";"+d.getField("tweetUserId").stringValue(); //aggiunto l'id
 			currentTweet = d.getField("tweetText").stringValue();
 			
 			if(!hashMapUser.containsKey(currentUserName)){
@@ -234,17 +241,19 @@ public class LuceneCore {
 				hashMapUser.put(currentUserName, tempArrayTweets);
 				
 				logger.info("appena aggiunto user: " + currentUserName);
+				writer.println((currentUserName+";"));   //salvo anche su file la lista di utenti/idutente
 				
 			}else{
 				hashMapUser.get(currentUserName).add(currentTweet);
 				logger.info("aggiunto tweet for user: " + currentUserName);
 			}
 			
-			printHashMap(hashMapUser);
+//			printHashMap(hashMapUser);
 			
 //			logger.info("L'utente: "+)
 		}
-		
+	    writer.close();
+
 		return hashMapUser;
 		//return userAndTweets;
 	}
