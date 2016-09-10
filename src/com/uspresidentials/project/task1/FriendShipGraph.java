@@ -113,7 +113,7 @@ public class FriendShipGraph {
 				int toSleep = twitter.getRateLimitStatus().get("/friends/ids").getSecondsUntilReset() + 1;
 				System.out.println("Sleeping for " + toSleep + " seconds.");
 				Thread.sleep(toSleep * 1000);
-				getFriendShipRecursive(twitter,"", 0L, currentCursor, currentUser);
+				getFriendShipRecursive(twitter,"", 0L, currentCursor, idUser, currentUser);
 				
 				
 			} catch (InterruptedException e1) {
