@@ -1,11 +1,18 @@
 package com.uspresidentials.project.task1;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Set;
 
 import org.jgrapht.ListenableGraph;
@@ -31,7 +38,10 @@ import twitter4j.auth.AccessToken;
 public class FriendShipGraph {
 
 	final long MAX_USERS = 500;
-
+	final static String PATH_FILE_UTENTI_ID = "/home/felagund89/Scrivania/utentiTwitter.txt";
+	static int NUMERO_UTENTI;
+	static Boolean isPrivateFriends=false;
+	
 	public static void main(String[] args) throws IOException, TwitterException {
 		// TODO Auto-generated method stub
 
@@ -43,88 +53,140 @@ public class FriendShipGraph {
 	      long idUser = twitter.getId() ;
 	      //recupero gli amici a partire da un account specifico 180 amici alla volta, trovare modo per automatizzare il crawling 
 	      //per trovare e salvare tutti gli amici su file
-	      getFriendShipRecursive(twitter,"felagund89",idUser, -1,-1,"felagund89");
+		  getGlobalFriendship(twitter,"Alex_Campanels",1676105413L, -1,-1,"Alex_campanels");
 
+	      
+	     
 			
 		//Creo grafo e cerco la componente connessa piu grande
-	    ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraph();
+	    //ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraph();
 	    //dato un grafo cerco la componente connessa piu grande
-	    FriendShipGraph.searchConnectedComponents(myGraph);
+	    //FriendShipGraph.searchConnectedComponents(myGraph);
 	    
 	    
 		//createGraph();
 		//writeUsersOnFile();
 	}
 	
-	public static void getFriendShipRecursive(Twitter twitter, String userName, long idUser, long cursor, long currentCursor, String currentUser) throws TwitterException, FileNotFoundException, UnsupportedEncodingException{
+	
+	public static void getGlobalFriendship(Twitter twitter, String userName, long idUser, long cursor, long currentCursor, String currentUser) throws TwitterException, FileNotFoundException, IOException{
 		
-	      IDs ids;
+		
+		
+	     try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_UTENTI_ID))) {
+			    String line;
+			    
+			    while ((line = br.readLine()) != null  ) {
+			    	//definiamo l'id utente, split[0] è il nome utente
+
+			    	 idUser= Long.parseLong((line.split(";")[1]));
+					 IDs ids = twitter.getFriendsIDs(idUser, -1);  //calcola il numero totale degli amici relativi a idUser 
+
+			    	 userName=line.split(";")[0];
+			    	 isPrivateFriends=false;
+			    	 NUMERO_UTENTI=ids.getIDs().length;
+			    	 int numberOfFriends= ids.getIDs().length;
+			         System.out.println("IDS COUNT " + numberOfFriends);
+		             writeUsersOnFile(userName+":");
+
+				     getFriendShipRecursive(twitter,userName,idUser, -1,-1,"Alex_campanels",numberOfFriends);
+			    	
+			    	
+			    }
+	     }
+		
+	}
+	
+	
+	
+	public static void getFriendShipRecursive(Twitter twitter, String userName, long idUser, long cursor, long currentCursor, String currentUser,int numberOfFriends) throws TwitterException, IOException{
+		
 	     
 	      String listFriends = "";
 	      String content;
-	      userName = currentUser;
-	      cursor = currentCursor;
 	      System.out.println("Listing followers's ids.");
+	     
+	
+	     
+			    	  try {
+			    		  if(isPrivateFriends)
+			    			  return;
+				            
+			    		  PagableResponseList<User> pagableFollowings;
+				            do {
+				            	listFriends="";
+				                pagableFollowings = twitter.getFriendsList(idUser, cursor);
+				                
+				                for (User user : pagableFollowings) {
+//				                    listFriends.add(user.getName()); // ArrayList<User>
+				                	listFriends = listFriends + user.getName() +";";
+				                	//System.out.println(listFriends);
+				                }
+				                content =  listFriends;
+			     			    writeUsersOnFile(content);  //scrive su file tutte le relationship dei vari utenti
+				                numberOfFriends-= pagableFollowings.size();
+				                if(numberOfFriends <=0  ){
+				                	break;
+				                }
+				            } while ((cursor = pagableFollowings.getNextCursor()) != 0);
+						
+				           
+				            
+				            
+					} catch (TwitterException e) {
+						
+				
+						if(e.getStatusCode() != 429)
+			            {
+							isPrivateFriends=true;
+							System.out.println("Users " + userName + " has a private list. Extraction denied!");
+							
+							//scorre al prossimo idUser e azzera currentCursor (-1)
+			            }
+							    
+					    try {
+					    	
+							int toSleep = twitter.getRateLimitStatus().get("/friends/ids").getSecondsUntilReset() + 1;
+							System.out.println("Sleeping for " + toSleep + " seconds.");
+							Thread.sleep(toSleep * 1000);
+							getFriendShipRecursive(twitter,userName, 0L, cursor, idUser, currentUser,numberOfFriends);
+							
+							
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();
+						}
+					    
+						e.printStackTrace();
+					}
+			    	
+			    
+			
 	      
-	      try {
-//			do {
-//			          ids = twitter.getFriendsIDs(userName, cursor);  //felagund89
-//			          
-//			      for (long id : ids.getIDs()) {
-//			          System.out.println(id);
-//			          User user = twitter.showUser(id);
-//			          System.out.println(id +":"+ user.getName()); 
-//				      currentUser = user.getName();
-//			          currentCursor=ids.getNextCursor();
-//
-//			          listFriends = listFriends + user.getName() + ";" ;
-//			      }
-////			      currentCursor = cursor;    						//salvo il cursore per i prossimi 180 ids
-//			  } while ((cursor = ids.getNextCursor()) != 0);
-	    	  
-//	    	  long cursor = -1;
-	            PagableResponseList<User> pagableFollowings;
-	            do {
-	                pagableFollowings = twitter.getFriendsList(idUser, cursor);
-	                for (User user : pagableFollowings) {
-//	                    listFriends.add(user.getName()); // ArrayList<User>
-	                	listFriends = listFriends + user.getName() +";";
-	                	
-	                }
-	            } while ((cursor = pagableFollowings.getNextCursor()) != 0);
-			
-		} catch (TwitterException e) {
-			
-			
-			 
-			
-			
-//			if(e.getStatusCode() != 429)
-//            {
-//				System.out.println("Users " + userName + " has a private list. Extraction denied!");
-//              break;
-//            }
-			
-			content = userName + ":" + listFriends;
-		    writeUsersOnFile(content);  //scrive su file tutte le relationship dei vari utenti
-		    
-		    try {
-		    	
-				int toSleep = twitter.getRateLimitStatus().get("/friends/ids").getSecondsUntilReset() + 1;
-				System.out.println("Sleeping for " + toSleep + " seconds.");
-				Thread.sleep(toSleep * 1000);
-				getFriendShipRecursive(twitter,"", 0L, currentCursor, idUser, currentUser);
-				
-				
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-		    
-			e.printStackTrace();
-		}
+	    
 	      
 	    //crea il grafo leggendo tale file
 	}
+	
+	
+	public static Hashtable<String, String> getUserFromFileAndSplit(Integer maxNumUser,String  PATH_FILE_UTENTI_ID, int cursor) throws FileNotFoundException, IOException{
+		
+		Hashtable<String, String> hashUsers = new Hashtable<String,String>();
+		
+		int countUsers = 0;
+		try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_UTENTI_ID))) {
+		    String line;
+		    
+		    while ((line = br.readLine()) != null && countUsers < maxNumUser ) {
+		    	
+		    	hashUsers.put(line.split(";")[1], line.split(";")[0]);
+		    
+		    	countUsers++;
+		    }
+		}
+		return hashUsers;
+		
+	}
+	
 	
 	public static ListenableGraph<String, DefaultEdge> createGraph(){
 		
