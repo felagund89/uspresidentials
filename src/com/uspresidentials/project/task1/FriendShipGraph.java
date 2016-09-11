@@ -53,7 +53,7 @@ public class FriendShipGraph {
 	      long idUser = twitter.getId() ;
 	      //recupero gli amici a partire da un account specifico 180 amici alla volta, trovare modo per automatizzare il crawling 
 	      //per trovare e salvare tutti gli amici su file
-		  getGlobalFriendship(twitter,"Alex_Campanels",1676105413L, -1,-1,"Alex_campanels");
+		  getGlobalFriendship(twitter,"Alex_Campanels",1676105413L, -1,-1);
 
 	      
 	     
@@ -69,8 +69,7 @@ public class FriendShipGraph {
 	}
 	
 	
-	public static void getGlobalFriendship(Twitter twitter, String userName, long idUser, long cursor, long currentCursor, String currentUser) throws TwitterException, FileNotFoundException, IOException{
-		
+	public static void getGlobalFriendship(Twitter twitter, String userName, long idUser, long cursor, long currentCursor) throws TwitterException, FileNotFoundException, IOException{
 		
 		
 	     try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_UTENTI_ID))) {
@@ -84,27 +83,27 @@ public class FriendShipGraph {
 
 			    	 userName=line.split(";")[0];
 			    	 isPrivateFriends=false;
-			    	 NUMERO_UTENTI=ids.getIDs().length;
 			    	 int numberOfFriends= ids.getIDs().length;
-			         System.out.println("IDS COUNT " + numberOfFriends);
-		             writeUsersOnFile(userName+":");
-
-				     getFriendShipRecursive(twitter,userName,idUser, -1,-1,"Alex_campanels",numberOfFriends);
+			         System.out.println("Utente " +userName+"ha "+numberOfFriends+ " amici.");
+		             //scrivo su file il nome dell'utente che stiamo analizzando
+			         writeUsersOnFile(userName+":");
+				     getFriendShipRecursive(twitter,userName,idUser, -1,numberOfFriends);
 			    	
 			    	
 			    }
+			    System.out.println("FINE ANALISI FILE UTENTI");
 	     }
 		
 	}
 	
 	
 	
-	public static void getFriendShipRecursive(Twitter twitter, String userName, long idUser, long cursor, long currentCursor, String currentUser,int numberOfFriends) throws TwitterException, IOException{
+	public static void getFriendShipRecursive(Twitter twitter, String userName, long idUser, long cursor,int numberOfFriends) throws TwitterException, IOException{
 		
 	     
 	      String listFriends = "";
 	      String content;
-	      System.out.println("Listing followers's ids.");
+	      System.out.println("Analizzo amici...");
 	     
 	
 	     
@@ -118,13 +117,13 @@ public class FriendShipGraph {
 				                pagableFollowings = twitter.getFriendsList(idUser, cursor);
 				                
 				                for (User user : pagableFollowings) {
-//				                    listFriends.add(user.getName()); // ArrayList<User>
 				                	listFriends = listFriends + user.getName() +";";
 				                	//System.out.println(listFriends);
+				                	numberOfFriends--;
 				                }
 				                content =  listFriends;
 			     			    writeUsersOnFile(content);  //scrive su file tutte le relationship dei vari utenti
-				                numberOfFriends-= pagableFollowings.size();
+//				                numberOfFriends = numberOfFriends - pagableFollowings.size();
 				                if(numberOfFriends <=0  ){
 				                	break;
 				                }
@@ -138,18 +137,18 @@ public class FriendShipGraph {
 				
 						if(e.getStatusCode() != 429)
 			            {
-							isPrivateFriends=true;
 							System.out.println("Users " + userName + " has a private list. Extraction denied!");
-							
+							isPrivateFriends=true;
+							writeUsersOnFile("PRIVATE_FRIENDS;");
 							//scorre al prossimo idUser e azzera currentCursor (-1)
 			            }
 							    
 					    try {
 					    	
-							int toSleep = twitter.getRateLimitStatus().get("/friends/ids").getSecondsUntilReset() + 1;
+							int toSleep = twitter.getRateLimitStatus().get("/friends/list").getSecondsUntilReset() + 1;
 							System.out.println("Sleeping for " + toSleep + " seconds.");
 							Thread.sleep(toSleep * 1000);
-							getFriendShipRecursive(twitter,userName, 0L, cursor, idUser, currentUser,numberOfFriends);
+							getFriendShipRecursive(twitter,userName,idUser, cursor,numberOfFriends);
 							
 							
 						} catch (InterruptedException e1) {
