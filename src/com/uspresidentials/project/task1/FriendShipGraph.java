@@ -122,6 +122,7 @@ public class FriendShipGraph {
 				                	numberOfFriends--;
 				                }
 				                content =  listFriends;
+				                System.out.println("numero di amici restanti da aggiungere: "+numberOfFriends);
 			     			    writeUsersOnFile(content);  //scrive su file tutte le relationship dei vari utenti
 //				                numberOfFriends = numberOfFriends - pagableFollowings.size();
 				                if(numberOfFriends <=0  ){
