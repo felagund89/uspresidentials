@@ -41,14 +41,26 @@ public class FriendShipGraph {
 	final static String PATH_FILE_UTENTI_ID = "/home/felagund89/Scrivania/utentiTwitter.txt";
 	static int NUMERO_UTENTI;
 	static Boolean isPrivateFriends=false;
+	static String outhConsumerKeyClaudio="KqYc0PQ1seDR36glxMwxgSq5O";
+	static String outhConsumerSecretClaudio ="v05RdurBZRCVmeKc6Tig4eeWdghQXrvubtb1GR7PTOFSKfjWnK";
+	static String accesTOkenClaudioString="access token: 469453578-MeraM7YtOFHKYAiAVBNRG676ZHEgnHAUqaYVGx35";
+	static String accestokenSecretCLaudioString="OFx87bY2GSxaTkIHKNR9ddST8XChoTg4M4aHQw6PZRA91";
 	
+
+	static String outhConsumerKeyAntonio="1HERcFVCy5SkpI23hl3FRpJy3";
+	static String outhConsumerSecretAntonio ="5PFPlMp3NAsAT1Qbrk1RStXWLMX795ghSUfubtwILl5vR2keyW";
+	static String accesTOkenAntonioString="2977694199-o286ySyyQbCTJsMXcxSfoeSwQ6CkVGQSNl8ILMO";
+	static String accestokenSecretAntonioString="SKo5MvolhkJxmoG3ADgb2tzW5oOFV7p6A44hmcHY1Pzz1";
 	public static void main(String[] args) throws IOException, TwitterException {
 		// TODO Auto-generated method stub
 
 		//Authentication.InitializeTwitterObj("");
 		  Twitter twitter = TwitterFactory.getSingleton();
-	      twitter.setOAuthConsumer("1HERcFVCy5SkpI23hl3FRpJy3", "5PFPlMp3NAsAT1Qbrk1RStXWLMX795ghSUfubtwILl5vR2keyW");
-	      AccessToken accessToken = new AccessToken("2977694199-o286ySyyQbCTJsMXcxSfoeSwQ6CkVGQSNl8ILMO", "SKo5MvolhkJxmoG3ADgb2tzW5oOFV7p6A44hmcHY1Pzz1");
+//	      twitter.setOAuthConsumer("1HERcFVCy5SkpI23hl3FRpJy3", "5PFPlMp3NAsAT1Qbrk1RStXWLMX795ghSUfubtwILl5vR2keyW");
+//	      AccessToken accessToken = new AccessToken("2977694199-o286ySyyQbCTJsMXcxSfoeSwQ6CkVGQSNl8ILMO", "SKo5MvolhkJxmoG3ADgb2tzW5oOFV7p6A44hmcHY1Pzz1");
+		  twitter.setOAuthConsumer(outhConsumerKeyAntonio, outhConsumerSecretAntonio);
+	      AccessToken accessToken = new AccessToken(accesTOkenAntonioString, accestokenSecretAntonioString);
+
 	      twitter.setOAuthAccessToken(accessToken);
 	      long idUser = twitter.getId() ;
 	      //recupero gli amici a partire da un account specifico 180 amici alla volta, trovare modo per automatizzare il crawling 
