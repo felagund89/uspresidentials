@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -21,6 +22,9 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
 import twitter4j.IDs;
+import twitter4j.JSONArray;
+import twitter4j.JSONException;
+import twitter4j.JSONObject;
 import twitter4j.PagableResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -38,8 +42,8 @@ import twitter4j.auth.AccessToken;
 public class FriendShipGraph {
 
 	final long MAX_USERS = 500;
-	//final static String PATH_FILE_UTENTI_ID = "/home/felagund89/Scrivania/utentiTwitter.txt";
-	final static String PATH_FILE_UTENTI_ID = "D:/Users/aacciard/Desktop/utentiTwitter.txt";
+	final static String PATH_FILE_UTENTI_ID = "/home/felagund89/Scrivania/utentiTwitter.txt";
+	//final static String PATH_FILE_UTENTI_ID = "D:/Users/aacciard/Desktop/utentiTwitter.txt";
 	static int NUMERO_UTENTI;
 	static Boolean isPrivateFriends=false;
 	static String outhConsumerKeyClaudio="KqYc0PQ1seDR36glxMwxgSq5O";
@@ -57,7 +61,13 @@ public class FriendShipGraph {
 	static String outhConsumerSecretAlessia ="MffW9BNFSSo9eKPHGddokTREiUoJXAu93hpOVHcqGMXq8E6Dor";
 	static String accesTOkenAlessiaString="872321179-FoPaVqfdIf7JP4GwrXRP2TCJSncItXQK6oTBYioW";
 	static String accestokenSecretAlessiaString="L1gusbWbNvl52CQ965JZpvhCnsHli8royqgVnQllwhLYb";
-	public static void main(String[] args) throws IOException, TwitterException {
+	
+	static JSONObject objFather = new JSONObject();
+	static List<JSONObject> objUtenti = new ArrayList<JSONObject>();
+	static JSONObject objUtente;
+
+	
+	public static void main(String[] args) throws IOException, TwitterException, JSONException {
 		// TODO Auto-generated method stub
 
 		//Authentication.InitializeTwitterObj("");
@@ -71,7 +81,10 @@ public class FriendShipGraph {
 	      //long idUser = twitter.getId() ;
 	      //recupero gli amici a partire da un account specifico 180 amici alla volta, trovare modo per automatizzare il crawling 
 	      //per trovare e salvare tutti gli amici su file
-		  getGlobalFriendship(twitter);
+		  
+	      
+
+	      getGlobalFriendship(twitter);
 
 	
 		//Creo grafo e cerco la componente connessa piu grande
@@ -85,7 +98,7 @@ public class FriendShipGraph {
 	}
 	
 	
-	public static void getGlobalFriendship(Twitter twitter) throws TwitterException, FileNotFoundException, IOException{
+	public static void getGlobalFriendship(Twitter twitter) throws TwitterException, FileNotFoundException, IOException, JSONException{
 		
 		
 	     try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_UTENTI_ID))) {
@@ -101,12 +114,17 @@ public class FriendShipGraph {
 			    	 userName=line.split(";")[0];
 			    	 isPrivateFriends=false;
 			    	 int numberOfFriends= ids.getIDs().length;
+			    	//creo l'oggetto per lutente corrente con i campi nome e id, 
+			    	 //verra accodato un jsonarray per ogni utente contenente tutti gli amici
+			    	 objUtente = new JSONObject();
+			    	 objUtente.put(userName, idUser);
+			    	 
 			         System.out.println("Utente " +userName+" ha "+numberOfFriends+ " amici.");
 		             //scrivo su file il nome dell'utente che stiamo analizzando
 			         writeUsersOnFile(userName+":");
 				     getFriendShipRecursive(twitter,userName,idUser, -1,numberOfFriends);
-			    	
-			    	
+				     
+				     writeJsonUserOnFile(objUtente);
 			    }
 			    System.out.println("FINE ANALISI FILE UTENTI");
 	     }
@@ -115,13 +133,14 @@ public class FriendShipGraph {
 	
 	
 	
-	public static void getFriendShipRecursive(Twitter twitter, String userName, long idUser, long cursor,int numberOfFriends) throws TwitterException, IOException{
+	public static void getFriendShipRecursive(Twitter twitter, String userName, long idUser, long cursor,int numberOfFriends) throws TwitterException, IOException, JSONException{
 		
 	     
 	      String listFriends = "";
 	      String content;
 	      System.out.println("Analizzo amici...");
-	     
+		  JSONArray jsonArrayFriends = new JSONArray();
+
 	
 	     
 			    	  try {
@@ -130,11 +149,13 @@ public class FriendShipGraph {
 				            
 			    		  PagableResponseList<User> pagableFollowings;
 				            do {
+				            	
 				            	listFriends="";
 				                pagableFollowings = twitter.getFriendsList(idUser, cursor);
 				                
 				                for (User user : pagableFollowings) {
 				                	listFriends = listFriends + user.getName() +";";
+				                	jsonArrayFriends.put(user.getName()+";"+user.getId()+";");
 				                	//System.out.println(listFriends);
 				                	numberOfFriends--;
 				                }
@@ -143,6 +164,7 @@ public class FriendShipGraph {
 			     			    writeUsersOnFile(content);  //scrive su file tutte le relationship dei vari utenti
 //				                numberOfFriends = numberOfFriends - pagableFollowings.size();
 				                if(numberOfFriends <=0  ){
+				                	objUtente.put("friends", jsonArrayFriends);
 				                	break;
 				                }
 				            } while ((cursor = pagableFollowings.getNextCursor()) != 0);
@@ -162,7 +184,7 @@ public class FriendShipGraph {
 			            }
 							    
 					    try {
-					    	twitter = getFastCredentialsForQuery(twitter);
+					    	//twitter = getFastCredentialsForQuery(twitter);
 							int toSleep = twitter.getRateLimitStatus().get("/friends/list").getSecondsUntilReset() + 1;
 							System.out.println("Sleeping for " + toSleep + " seconds.");
 							Thread.sleep(toSleep * 1000);
@@ -308,13 +330,20 @@ public class FriendShipGraph {
 //		PrintWriter writer = new PrintWriter("/Users/alessiocampanelli/Desktop/friendshipTwitter.txt", "UTF-8");
 //		PrintWriter writer = new PrintWriter("/home/felagund89/Scrivania/friendshipTwitter.txt", "UTF-8");
 
-		PrintWriter writer = new PrintWriter(new FileOutputStream(new File("D:/Users/aacciard/Desktop/friendshipTwitterAll.txt"),true));
+		PrintWriter writer = new PrintWriter(new FileOutputStream(new File("/home/felagund89/Scrivania/friendshipTwitterAll.txt"),true));
 		
 		writer.println(content);
 		writer.close();
 	}
 	
 
+	public static void writeJsonUserOnFile(JSONObject jsonUser) throws IOException{
+		
+		FileWriter file = new FileWriter("/home/felagund89/Scrivania/testJson.json");
+		file.write(jsonUser.toString());
+		file.flush();
+		file.close();
+	}
 	
 	public static void writeCandidatesOnFile(){
 		//trump:ut1;ut2;ut3
