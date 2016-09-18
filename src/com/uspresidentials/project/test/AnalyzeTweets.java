@@ -26,8 +26,8 @@ public class AnalyzeTweets {
 
 	  final static String PATH_DEBATES = "/Users/alessiocampanelli/Desktop/debates";
 	  final static String PATH_INDEXDIR = "/Users/alessiocampanelli/Desktop/resultQuery";
-		
-	//   final static String PATH_DEBATES = "/home/felagund89/Scrivania/Progetto web and social/debates";
+	
+	//  final static String PATH_DEBATES = "/home/felagund89/Scrivania/Progetto web and social/debates";
 //	    final static String PATH_INDEXDIR = "/home/felagund89/Scrivania/Progetto web and social/debates/resultQuery";
 
 	// path to lucene index
@@ -36,7 +36,7 @@ public class AnalyzeTweets {
 
 	// path to language profiles for classifier
 	private static String langProfileDirectory = "./src/profiles/";
-
+ 
 	// lucene queryParser for saving
 	private static QueryParser queryParser;
 

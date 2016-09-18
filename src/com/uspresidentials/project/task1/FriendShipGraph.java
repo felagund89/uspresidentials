@@ -148,11 +148,7 @@ public class FriendShipGraph {
 				                	objUtente.put("friends", jsonArrayFriends);
 				                	break;
 				                }
-				            } while ((cursor = pagableFollowings.getNextCursor()) != 0);
-						
-				           
-				            
-				            
+				            } while ((cursor = pagableFollowings.getNextCursor()) != 0);            
 					} catch (TwitterException e) {
 						
 				
@@ -180,7 +176,6 @@ public class FriendShipGraph {
 									getFriendShipRecursive(authenticationManager.twitter,userName,idUser, cursor,numberOfFriends);
 									
 			                }else{
-								
 			            	    	getFriendShipRecursive(authenticationManager.twitter,userName,idUser, cursor,numberOfFriends);
 			               }
 		                } catch (InterruptedException e1) {

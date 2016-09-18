@@ -27,7 +27,7 @@ public class Authentication {
 			//final static String consumer_key ="wJXRIxwvk6ndFQ2KYJqmPs0MS";
 			//final static String consumer_secret ="daeFR8AsQFBfd5PHmfFYwl0tiAJYVn2U4KVEypYp6RyWnaMQqR";		
 	
-	public static ConfigurationBuilder getAuthtentication(){
+	public static ConfigurationBuilder getAuthtentication() {
 		
 		ConfigurationBuilder cfg= new ConfigurationBuilder();
 		cfg.setOAuthAccessToken(access_token);
