@@ -20,6 +20,7 @@ import twitter4j.TwitterException;
 
 import com.uspresidentials.project.entity.TweetsEntity;
 import com.uspresidentials.project.lucene.LuceneCore;
+import com.uspresidentials.project.utils.PropertiesManager;
 /**
  * 
  * @author felagund89
@@ -44,15 +45,11 @@ public class IdentifyUsers {
 	/**
 	 * PATH per dataset e indexer
 	 */	
-//	  final static String PATH_DEBATES = "/Users/alessiocampanelli/Desktop/debates";
-//	  final static String PATH_INDEXDIR = "/Users/alessiocampanelli/Desktop/resultQuery";
+	final static String PATH_DEBATES = PropertiesManager.getPropertiesFromFile("PATH_DEBATES");
+	final static String PATH_PRIMARY = PropertiesManager.getPropertiesFromFile("PATH_PRIMARY");
 
-	final static String PATH_DEBATES = "/home/felagund89/Scrivania/Progetto web and social/debates";
-	final static String PATH_PRIMARY = "/home/felagund89/Scrivania/Progetto web and social/DOCPRIMARYNY";
-
-	//final static String PATH_INDEXDIR = "/home/felagund89/Scrivania/Progetto web and social/resultQuery/resultQueryDebates";
-	final static String PATH_INDEXDIR_PRIMAR = "/home/felagund89/Scrivania/Progetto web and social/resultQuery/resultQueryPrimary_update";
-	final static String PATH_FILE_UTENTI_ID = "/home/felagund89/Scrivania/utentiTwitter.txt";
+	final static String PATH_INDEXDIR_PRIMAR = PropertiesManager.getPropertiesFromFile("PATH_INDEXDIR_PRIMAR");
+	final static String PATH_FILE_UTENTI_ID = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID");
 	
 	/**
 	 * QUERY

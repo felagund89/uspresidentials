@@ -22,6 +22,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
 import com.uspresidentials.project.utils.AuthenticationManager;
+import com.uspresidentials.project.utils.PropertiesManager;
 
 import twitter4j.IDs;
 import twitter4j.JSONArray;
@@ -44,8 +45,7 @@ import twitter4j.auth.AccessToken;
 public class FriendShipGraph {
 
 	final long MAX_USERS = 500;
-	final static String PATH_FILE_UTENTI_ID = "/home/felagund89/Scrivania/utentiTwitter.txt";
-	//final static String PATH_FILE_UTENTI_ID = "D:/Users/aacciard/Desktop/utentiTwitter.txt";
+	final static String PATH_FILE_UTENTI_ID = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID");
 	static int NUMERO_UTENTI;
 	static Boolean isPrivateFriends=false;
 
@@ -313,10 +313,7 @@ public class FriendShipGraph {
 		//nomeUtente1:amico1;amico2;amico3
 		//nomeUtente2:amico1;amico2;amico3
 		
-//		PrintWriter writer = new PrintWriter("/Users/alessiocampanelli/Desktop/friendshipTwitter.txt", "UTF-8");
-//		PrintWriter writer = new PrintWriter("/home/felagund89/Scrivania/friendshipTwitter.txt", "UTF-8");
-
-		PrintWriter writer = new PrintWriter(new FileOutputStream(new File("/home/felagund89/Scrivania/friendshipTwitterAll.txt"),true));
+		PrintWriter writer = new PrintWriter(new FileOutputStream(new File(PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP")),true));
 		writer.println(content);
 		writer.close();
 	}
@@ -324,7 +321,7 @@ public class FriendShipGraph {
 
 	public static void writeJsonUserOnFile(JSONObject jsonUser) throws IOException{
 		
-		FileWriter file = new FileWriter("/home/felagund89/Scrivania/testJson.json");
+		FileWriter file = new FileWriter(PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON"));
 		file.write(jsonUser.toString());
 		file.flush();
 		file.close();

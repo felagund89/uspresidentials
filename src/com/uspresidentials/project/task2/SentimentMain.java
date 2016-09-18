@@ -2,6 +2,8 @@ package com.uspresidentials.project.task2;
 
 import java.io.IOException;
 
+import com.uspresidentials.project.utils.PropertiesManager;
+
 
 /*           ********Supporters and Opponents********
  * 
@@ -19,7 +21,7 @@ import java.io.IOException;
 
 public class SentimentMain {
 
-	private static final String PATHS_ENTIMENT_WORDNET_FILE="/home/felagund89/Scrivania/Progetto web and social/swn/www/admin/dump/SentiWordNet_3.0.0_20130122.txt";
+	private static final String PATHS_ENTIMENT_WORDNET_FILE = PropertiesManager.getPropertiesFromFile("PATHS_ENTIMENT_WORDNET_FILE");
 	
 	
 	public static void main(String[] args) throws IOException {
