@@ -21,6 +21,8 @@ import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
+import com.uspresidentials.project.utils.AuthenticationManager;
+
 import twitter4j.IDs;
 import twitter4j.JSONArray;
 import twitter4j.JSONException;
@@ -46,21 +48,10 @@ public class FriendShipGraph {
 	//final static String PATH_FILE_UTENTI_ID = "D:/Users/aacciard/Desktop/utentiTwitter.txt";
 	static int NUMERO_UTENTI;
 	static Boolean isPrivateFriends=false;
-	static String outhConsumerKeyClaudio="KqYc0PQ1seDR36glxMwxgSq5O";
-	static String outhConsumerSecretClaudio ="v05RdurBZRCVmeKc6Tig4eeWdghQXrvubtb1GR7PTOFSKfjWnK";
-	static String accesTOkenClaudioString="access token: 469453578-MeraM7YtOFHKYAiAVBNRG676ZHEgnHAUqaYVGx35";
-	static String accestokenSecretCLaudioString="OFx87bY2GSxaTkIHKNR9ddST8XChoTg4M4aHQw6PZRA91";
-	
 
-	static String outhConsumerKeyAntonio="1HERcFVCy5SkpI23hl3FRpJy3";
-	static String outhConsumerSecretAntonio ="5PFPlMp3NAsAT1Qbrk1RStXWLMX795ghSUfubtwILl5vR2keyW";
-	static String accesTOkenAntonioString="2977694199-o286ySyyQbCTJsMXcxSfoeSwQ6CkVGQSNl8ILMO";
-	static String accestokenSecretAntonioString="SKo5MvolhkJxmoG3ADgb2tzW5oOFV7p6A44hmcHY1Pzz1";
 	
-	static String outhConsumerKeyAlessia="FzkBBBPes89nojrjfiVgzyrmy";
-	static String outhConsumerSecretAlessia ="MffW9BNFSSo9eKPHGddokTREiUoJXAu93hpOVHcqGMXq8E6Dor";
-	static String accesTOkenAlessiaString="872321179-FoPaVqfdIf7JP4GwrXRP2TCJSncItXQK6oTBYioW";
-	static String accestokenSecretAlessiaString="L1gusbWbNvl52CQ965JZpvhCnsHli8royqgVnQllwhLYb";
+	
+	static AuthenticationManager authenticationManager = new AuthenticationManager();
 	
 	static JSONObject objFather = new JSONObject();
 	static List<JSONObject> objUtenti = new ArrayList<JSONObject>();
@@ -68,23 +59,13 @@ public class FriendShipGraph {
 
 	
 	public static void main(String[] args) throws IOException, TwitterException, JSONException {
-		// TODO Auto-generated method stub
 
-		//Authentication.InitializeTwitterObj("");
-		  Twitter twitter = TwitterFactory.getSingleton();
-//	      twitter.setOAuthConsumer("1HERcFVCy5SkpI23hl3FRpJy3", "5PFPlMp3NAsAT1Qbrk1RStXWLMX795ghSUfubtwILl5vR2keyW");
-//	      AccessToken accessToken = new AccessToken("2977694199-o286ySyyQbCTJsMXcxSfoeSwQ6CkVGQSNl8ILMO", "SKo5MvolhkJxmoG3ADgb2tzW5oOFV7p6A44hmcHY1Pzz1");
-		  twitter.setOAuthConsumer(outhConsumerKeyAntonio, outhConsumerSecretAntonio);
-	      AccessToken accessToken = new AccessToken(accesTOkenAntonioString, accestokenSecretAntonioString);
 
-	      twitter.setOAuthAccessToken(accessToken);
-	      //long idUser = twitter.getId() ;
-	      //recupero gli amici a partire da un account specifico 180 amici alla volta, trovare modo per automatizzare il crawling 
-	      //per trovare e salvare tutti gli amici su file
+		//recupero gli amici a partire da un account specifico 180 amici alla volta
+		//per trovare e salvare tutti gli amici su file
 		  
-	      
-
-	      getGlobalFriendship(twitter);
+	     
+	    getGlobalFriendship(authenticationManager.twitter); //verificare se serve ancora passare l'argomento
 
 	
 		//Creo grafo e cerco la componente connessa piu grande
@@ -110,7 +91,7 @@ public class FriendShipGraph {
 			    	 String userName;
 			    	 long idUser; 
 			    	 idUser= Long.parseLong((line.split(";")[1]));
-					 IDs ids = twitter.getFriendsIDs(idUser, -1);  //calcola il numero totale degli amici relativi a idUser 
+					 IDs ids = authenticationManager.twitter.getFriendsIDs(idUser, -1);  //calcola il numero totale degli amici relativi a idUser 
 			    	 userName=line.split(";")[0];
 			    	 isPrivateFriends=false;
 			    	 int numberOfFriends= ids.getIDs().length;
@@ -122,7 +103,7 @@ public class FriendShipGraph {
 			         System.out.println("Utente " +userName+" ha "+numberOfFriends+ " amici.");
 		             //scrivo su file il nome dell'utente che stiamo analizzando
 			         writeUsersOnFile(userName+":");
-				     getFriendShipRecursive(twitter,userName,idUser, -1,numberOfFriends);
+				     getFriendShipRecursive(authenticationManager.twitter,userName,idUser, -1,numberOfFriends);
 				     
 				     writeJsonUserOnFile(objUtente);
 			    }
@@ -142,16 +123,16 @@ public class FriendShipGraph {
 		  JSONArray jsonArrayFriends = new JSONArray();
 
 	
-	     
+		  int prevIndex = authenticationManager.getAccountIndex(); 
 			    	  try {
 			    		  if(isPrivateFriends)
 			    			  return;
-				            
+			    		   
 			    		  PagableResponseList<User> pagableFollowings;
 				            do {
 				            	
 				            	listFriends="";
-				                pagableFollowings = twitter.getFriendsList(idUser, cursor);
+				                pagableFollowings =authenticationManager.twitter.getFriendsList(idUser, cursor);
 				                
 				                for (User user : pagableFollowings) {
 				                	listFriends = listFriends + user.getName() +";";
@@ -175,26 +156,36 @@ public class FriendShipGraph {
 					} catch (TwitterException e) {
 						
 				
-						if(e.getStatusCode() != 429)
-			            {
+						if(e.getStatusCode() != 429){
 							System.out.println("Users " + userName + " has a private list. Extraction denied!");
 							isPrivateFriends=true;
 							writeUsersOnFile("PRIVATE_FRIENDS;");
 							//scorre al prossimo idUser e azzera currentCursor (-1)
 			            }
-							    
-					    try {
-					    	//twitter = getFastCredentialsForQuery(twitter);
-							int toSleep = twitter.getRateLimitStatus().get("/friends/list").getSecondsUntilReset() + 1;
-							System.out.println("Sleeping for " + toSleep + " seconds.");
-							Thread.sleep(toSleep * 1000);
-							getFriendShipRecursive(twitter,userName,idUser, cursor,numberOfFriends);
-							
-							
-						} catch (InterruptedException e1) {
+						
+						//System.out.println(e.getMessage() + "Status code: " + e.getStatusCode() + "\n");
+		                
+		                //System.out.println("Richieste esaurite per l'account: " + twitter.getScreenName() + ".");
+		                authenticationManager.setAuthentication(authenticationManager.getAccountIndex() + 1);
+						
+						//vecchio modo
+		                //twitter = getFastCredentialsForQuery(twitter);   
+		                try {
+			                if(authenticationManager.getAccountIndex() == authenticationManager.ACCOUNTS_NUMBER-1){ 
+				              
+							    	//
+									int toSleep = authenticationManager.twitter.getRateLimitStatus().get("/friends/list").getSecondsUntilReset() + 1;
+									System.out.println("Sleeping for " + toSleep + " seconds.");
+									Thread.sleep(toSleep * 1000);
+									getFriendShipRecursive(authenticationManager.twitter,userName,idUser, cursor,numberOfFriends);
+									
+			                }else{
+								
+			            	    	getFriendShipRecursive(authenticationManager.twitter,userName,idUser, cursor,numberOfFriends);
+			               }
+		                } catch (InterruptedException e1) {
 							e1.printStackTrace();
 						}
-					    
 						e.printStackTrace();
 					}
 			    	
@@ -207,52 +198,52 @@ public class FriendShipGraph {
 	}
 	
 	
-	private static Twitter getFastCredentialsForQuery(Twitter twitter) throws TwitterException{
-		//cambia le credenziali di attesa e setta le credenziali col tempo di attesa minore
-		
-		//verifico tra i vari account il tempo minore e ritorno l'oggetto twitter settato correttamente
-		
-		//account antonio
-		twitter.setOAuthConsumer(outhConsumerKeyAntonio, outhConsumerSecretAntonio);
-	    AccessToken accessToken = new AccessToken(accesTOkenAntonioString, accestokenSecretAntonioString);
-	    twitter.setOAuthAccessToken(accessToken);
-		int toSleep = twitter.getRateLimitStatus().get("/friends/list").getSecondsUntilReset() + 1;
-
-		//account claudio
-		twitter.setOAuthConsumer(outhConsumerKeyClaudio, outhConsumerSecretClaudio);
-	    accessToken = new AccessToken(accesTOkenClaudioString, accestokenSecretCLaudioString);
-	    twitter.setOAuthAccessToken(accessToken);
-		int toSleep2 = twitter.getRateLimitStatus().get("/friends/list").getSecondsUntilReset() + 1;
-		
-		//account alessia
-		twitter.setOAuthConsumer(outhConsumerKeyAlessia, outhConsumerSecretAlessia);
-	    accessToken = new AccessToken(accesTOkenAlessiaString, accestokenSecretAlessiaString);
-	    twitter.setOAuthAccessToken(accessToken);
-		int toSleep3 = twitter.getRateLimitStatus().get("/friends/list").getSecondsUntilReset() + 1;
-		
-		if(toSleep2 < toSleep){
-			
-			if(toSleep2 > toSleep3){
-				return twitter;
-			}else {
-				twitter.setOAuthConsumer(outhConsumerKeyClaudio, outhConsumerSecretClaudio);
-			    accessToken = new AccessToken(accesTOkenClaudioString, accestokenSecretCLaudioString);
-			    twitter.setOAuthAccessToken(accessToken);
-			    return twitter;
-			}
-		}else if(toSleep < toSleep3) {
-			twitter.setOAuthConsumer(outhConsumerKeyAntonio, outhConsumerSecretAntonio);
-		    accessToken = new AccessToken(accesTOkenAntonioString, accestokenSecretAntonioString);
-		    twitter.setOAuthAccessToken(accessToken);
-			return twitter;
-		}else{	
-			return twitter;
-		}
-		
-		
-		
-
-	}
+//	private static Twitter getFastCredentialsForQuery(Twitter twitter) throws TwitterException{
+//		//cambia le credenziali di attesa e setta le credenziali col tempo di attesa minore
+//		
+//		//verifico tra i vari account il tempo minore e ritorno l'oggetto twitter settato correttamente
+//		twitter = TwitterFactory.getSingleton();
+//		//account antonio
+//		twitter.setOAuthConsumer(outhConsumerKeyAntonio, outhConsumerSecretAntonio);
+//	    AccessToken accessToken = new AccessToken(accesTOkenAntonioString, accestokenSecretAntonioString);
+//	    twitter.setOAuthAccessToken(accessToken);
+//		int toSleep = twitter.getRateLimitStatus().get("/friends/list").getSecondsUntilReset() + 1;
+//
+//		//account claudio
+//		twitter.setOAuthConsumer(outhConsumerKeyClaudio, outhConsumerSecretClaudio);
+//	    accessToken = new AccessToken(accesTOkenClaudioString, accestokenSecretCLaudioString);
+//	    twitter.setOAuthAccessToken(accessToken);
+//		int toSleep2 = twitter.getRateLimitStatus().get("/friends/list").getSecondsUntilReset() + 1;
+//		
+//		//account alessia
+//		twitter.setOAuthConsumer(outhConsumerKeyAlessia, outhConsumerSecretAlessia);
+//	    accessToken = new AccessToken(accesTOkenAlessiaString, accestokenSecretAlessiaString);
+//	    twitter.setOAuthAccessToken(accessToken);
+//		int toSleep3 = twitter.getRateLimitStatus().get("/friends/list").getSecondsUntilReset() + 1;
+//		
+//		if(toSleep2 < toSleep){
+//			
+//			if(toSleep2 > toSleep3){
+//				return twitter;
+//			}else {
+//				twitter.setOAuthConsumer(outhConsumerKeyClaudio, outhConsumerSecretClaudio);
+//			    accessToken = new AccessToken(accesTOkenClaudioString, accestokenSecretCLaudioString);
+//			    twitter.setOAuthAccessToken(accessToken);
+//			    return twitter;
+//			}
+//		}else if(toSleep < toSleep3) {
+//			twitter.setOAuthConsumer(outhConsumerKeyAntonio, outhConsumerSecretAntonio);
+//		    accessToken = new AccessToken(accesTOkenAntonioString, accestokenSecretAntonioString);
+//		    twitter.setOAuthAccessToken(accessToken);
+//			return twitter;
+//		}else{	
+//			return twitter;
+//		}
+//		
+//		
+//		
+//
+//	}
 	
 	
 	public static Hashtable<String, String> getUserFromFileAndSplit(Integer maxNumUser,String  PATH_FILE_UTENTI_ID, int cursor) throws FileNotFoundException, IOException{

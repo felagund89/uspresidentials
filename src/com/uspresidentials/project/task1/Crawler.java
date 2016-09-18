@@ -16,7 +16,10 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import edu.uci.ics.jung.graph.Graph;
+import org.jgrapht.Graph;
+
+import com.uspresidentials.project.utils.AuthenticationManager;
+
 import twitter4j.IDs;
 import twitter4j.TwitterException;
 import twitter4j.User;
@@ -26,7 +29,7 @@ public abstract class Crawler {
 //private static final int GRAPH_DEGREE = 25;
     
     private LinkedList<Long> frontier;
-    protected TwitterAccountManager accountManager;
+    protected AuthenticationManager accountManager;
     
     private final static float PERCENT = 1.5f;
     private final static int MAX_USERS = 3000;
@@ -40,7 +43,7 @@ public abstract class Crawler {
     public Crawler(LinkedList<Long> frontier)
     {
         this.frontier = frontier;
-        accountManager = new TwitterAccountManager();
+        accountManager = new AuthenticationManager();
         
         graph = new Graph();
         

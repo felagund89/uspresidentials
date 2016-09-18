@@ -1,6 +1,7 @@
 package com.uspresidentials.project.task1;
 
 import static java.lang.System.out;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -8,60 +9,17 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.uci.ics.jung.graph.event.GraphEvent.Edge;
 import twitter4j.IDs;
 import twitter4j.RateLimitStatus;
 import twitter4j.TwitterException;
 import twitter4j.User;
 
-public class FriendsCrawler extends Crawler
-	{
-	    public FriendsCrawler(LinkedList<Long> frontier)
-	    {
+public class FriendsCrawler extends Crawler{
+	    public FriendsCrawler(LinkedList<Long> frontier){
 	        super(frontier);
 	    }
 
-//	    @Override
-//	    protected int getRemainingExtractionRequests()
-//	    {
-//	        try
-//	        {
-//	            return accountManager.twitter.getRateLimitStatus().get("/friends/ids").getRemaining();
-//	        }
-//	        catch (TwitterException e)
-//	        {
-//	            e.printStackTrace();
-//	        }
-//	        
-//	        return -1;
-//	    }
-
-//	    @Override
-//	    protected long[] getIDs(long id, long cursor)
-//	    {
-//	        long[] ids = new long[0];
-//	        
-//	        //se non ho più richieste rimanenti
-//	        if(remainingExtractionRequests == 0)
-//	        {
-//	            //cambio i token di twitter
-//	            changeAppId();
-//	        }
-//	        
-//	        try 
-//	        {
-//	            ids = accountManager.twitter.getFriendsIDs(id, cursor).getIDs();
-//	            remainingExtractionRequests--; //decremento le richieste rimanenti
-//	        }
-//	        catch (TwitterException ex)
-//	        {
-//	            if (ex.equals("a0c96a69-1935c143"))
-//	            {
-//	                out.println("Users extraction denied!");
-//	            }
-//	        }
-//	        
-//	        return ids;
-//	    }
 	    
 	    @Override
 	    protected long[] getIDs(long id, long cursor)
@@ -100,8 +58,7 @@ public class FriendsCrawler extends Crawler
 //	                    continue;
 //	                }
 	                
-	                if(accountManager.getAccountIndex() == prevIndex)
-	                {
+	                if(accountManager.getAccountIndex() == prevIndex){
 	                    try 
 	                    {
 	                        int toSleep = accountManager.twitter.getRateLimitStatus().get("/friends/ids").getSecondsUntilReset() + 1;
@@ -123,7 +80,7 @@ public class FriendsCrawler extends Crawler
 	    @Override
 	    protected void addEdge(Long user0, Long user1)
 	    {
-	        graph.addEdge(new Edge(user0, user1));
+//	        graph.addEdge(new Edge(user0, user1));
 	    }
 	    	
 	    @Override
@@ -134,48 +91,5 @@ public class FriendsCrawler extends Crawler
 	        return size;
 	    }
 	    
-//	    protected int oldGetAdjacentUsersListSize(long id) 
-//	    {
-//	        int count = 0;
-//	        
-//	        try 
-//	        {
-//	            count = accountManager.twitter.showUser(id).getFriendsCount();
-//	        } 
-//	        catch (TwitterException ex) 
-//	        {
-//	            //Logger.getLogger(FriendsCrawler.class.getName()).log(Level.SEVERE, null, ex);
-//	            
-//	            int toSleep = ex.getRateLimitStatus().getSecondsUntilReset();
-//	            toSleep = toSleep < 0 ? 0 : toSleep;
-//	            
-//	            System.out.println("Sleeping for " + toSleep + " seconds.");
-//	            
-//	            try 
-//	            {
-//	                Thread.sleep(toSleep * 1000);
-//	            } 
-//	            catch (InterruptedException ex1) 
-//	            {
-//	                Logger.getLogger(FriendsCrawler.class.getName()).log(Level.SEVERE, null, ex1);
-//	            }
-//	        }
-//	        
-//	        return count;
-//	    }
 
-//	    @Override
-//	    protected int getAdjacentUsersListSizeRequests() 
-//	    {
-//	        try
-//	        {
-//	            return accountManager.twitter.getRateLimitStatus().get("/friends/ids").getRemaining();
-//	        }
-//	        catch (TwitterException e)
-//	        {
-//	            e.printStackTrace();
-//	        }
-//	        
-//	        return -1;
-//	    }
 }
