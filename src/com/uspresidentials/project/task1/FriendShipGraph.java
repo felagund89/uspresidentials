@@ -317,7 +317,6 @@ public class FriendShipGraph {
 //		PrintWriter writer = new PrintWriter("/home/felagund89/Scrivania/friendshipTwitter.txt", "UTF-8");
 
 		PrintWriter writer = new PrintWriter(new FileOutputStream(new File("/home/felagund89/Scrivania/friendshipTwitterAll.txt"),true));
-		
 		writer.println(content);
 		writer.close();
 	}
