@@ -16,9 +16,6 @@ import twitter4j.conf.ConfigurationBuilder;
 
 public class Filter {
 
-	
-	
-	
 	public static void main(String[] args) throws TwitterException, IOException{
 			
 		StatusListener listener = new StatusListener(){

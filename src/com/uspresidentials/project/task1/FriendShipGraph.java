@@ -66,8 +66,8 @@ public class FriendShipGraph {
 		//per trovare e salvare tutti gli amici su file
 		  
 	     
-	    getGlobalFriendship(authenticationManager.twitter); //verificare se serve ancora passare l'argomento
-	    //createGraphFromFriendShip();
+	    //getGlobalFriendship(authenticationManager.twitter); //verificare se serve ancora passare l'argomento
+	    createGraphFromFriendShip();
 	
 		//Creo grafo e cerco la componente connessa piu grande
 	    //ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraph();
@@ -194,11 +194,12 @@ public class FriendShipGraph {
 		JSONParser parser = new JSONParser();
 		Object obj = parser.parse(new FileReader(PATH_FILE_FRIENDSHIP));
 		JSONObject jsonObjectUser = (JSONObject) obj;
+		
 		JSONArray listUsers = (JSONArray) jsonObjectUser.get("ListUsers");
 		for(int i = 0; i < listUsers.length(); i++){
 			JSONObject currentObj = listUsers.getJSONObject(i);
 			currentObj.get("");
-		}
+		} 
 	}
 	
 	
