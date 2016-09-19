@@ -53,6 +53,4 @@ public class Filter {
 
 		twitterStream.filter(fq);
 		}
-	
-	
 }

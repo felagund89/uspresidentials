@@ -25,7 +25,7 @@ import org.jgrapht.graph.ListenableDirectedGraph;
 
 public class SwingContainerDemo extends JApplet {
 
-	  private static final Color     DEFAULT_BG_COLOR = Color.decode( "#FAFBFF" );
+	  private static final Color DEFAULT_BG_COLOR = Color.decode( "#FAFBFF" );
 	  private static final Dimension DEFAULT_SIZE = new Dimension( 600, 600 );
 	  private JFrame mainFrame;
 	  private JLabel headerLabel;

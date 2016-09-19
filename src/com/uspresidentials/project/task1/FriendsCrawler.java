@@ -26,7 +26,7 @@ public class FriendsCrawler extends Crawler{
 	    {
 	        long[] ids = new long[0];
 	        int prevIndex = accountManager.getAccountIndex();
-	        
+	      
 	        while(true)
 	        {
 	            try 
@@ -58,7 +58,7 @@ public class FriendsCrawler extends Crawler{
 //	                    continue;
 //	                }
 	                
-	                if(accountManager.getAccountIndex() == prevIndex){
+	                if(accountManager.getAccountIndex() == prevIndex) {
 	                    try 
 	                    {
 	                        int toSleep = accountManager.twitter.getRateLimitStatus().get("/friends/ids").getSecondsUntilReset() + 1;

@@ -17,7 +17,7 @@ public class PropertiesManager {
 		System.out.println("File path prop letto " + prop);
 		PrintWriter writer = new PrintWriter(new FileOutputStream(new File(prop + "/ciao.txt"),true));
 		
-		writer.println("Hello");
+		writer.println("Hello My World!");
 		writer.flush();
 		writer.close();
 	}

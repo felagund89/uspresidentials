@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +21,8 @@ import org.jgrapht.ListenableGraph;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.uspresidentials.project.utils.AuthenticationManager;
 import com.uspresidentials.project.utils.PropertiesManager;
@@ -46,19 +49,17 @@ public class FriendShipGraph {
 
 	final long MAX_USERS = 500;
 	final static String PATH_FILE_UTENTI_ID = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID");
+	final static String PATH_FILE_FRIENDSHIP = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP");
 	static int NUMERO_UTENTI;
 	static Boolean isPrivateFriends=false;
 
-	
-	
 	static AuthenticationManager authenticationManager = new AuthenticationManager();
 	
 	static JSONObject objFather = new JSONObject();
 	static List<JSONObject> objUtenti = new ArrayList<JSONObject>();
 	static JSONObject objUtente;
-
 	
-	public static void main(String[] args) throws IOException, TwitterException, JSONException {
+	public static void main(String[] args) throws IOException, TwitterException, JSONException, ParseException {
 
 
 		//recupero gli amici a partire da un account specifico 180 amici alla volta
@@ -66,21 +67,17 @@ public class FriendShipGraph {
 		  
 	     
 	    getGlobalFriendship(authenticationManager.twitter); //verificare se serve ancora passare l'argomento
-
+	    //createGraphFromFriendShip();
 	
 		//Creo grafo e cerco la componente connessa piu grande
 	    //ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraph();
 	    //dato un grafo cerco la componente connessa piu grande
 	    //FriendShipGraph.searchConnectedComponents(myGraph);
-	    
-	    
-		//createGraph();
-		//writeUsersOnFile();
+	   
 	}
 	
 	
 	public static void getGlobalFriendship(Twitter twitter) throws TwitterException, FileNotFoundException, IOException, JSONException{
-		
 		
 	     try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_UTENTI_ID))) {
 			    String line;
@@ -88,41 +85,46 @@ public class FriendShipGraph {
 			    while ((line = br.readLine()) != null  ) {
 			    	//definiamo l'id utente, split[0] è il nome utente
 			    	
-			    	 String userName;
-			    	 long idUser; 
-			    	 idUser= Long.parseLong((line.split(";")[1]));
-					 IDs ids = authenticationManager.twitter.getFriendsIDs(idUser, -1);  //calcola il numero totale degli amici relativi a idUser 
-			    	 userName=line.split(";")[0];
-			    	 isPrivateFriends=false;
-			    	 int numberOfFriends= ids.getIDs().length;
-			    	//creo l'oggetto per lutente corrente con i campi nome e id, 
-			    	 //verra accodato un jsonarray per ogni utente contenente tutti gli amici
-			    	 objUtente = new JSONObject();
-			    	 objUtente.put(userName, idUser);
-			    	 
-			         System.out.println("Utente " +userName+" ha "+numberOfFriends+ " amici.");
-		             //scrivo su file il nome dell'utente che stiamo analizzando
-			         writeUsersOnFile(userName+":");
-				     getFriendShipRecursive(authenticationManager.twitter,userName,idUser, -1,numberOfFriends);
+			    	try{
+				    	 String userName;
+				    	 long idUser; 
+				    	 idUser= Long.parseLong((line.split(";")[1]));
+						 IDs ids = authenticationManager.twitter.getFriendsIDs(idUser, -1);  //calcola il numero totale degli amici relativi a idUser 
+				    	 userName=line.split(";")[0];
+				    	 isPrivateFriends=false;
+				    	 int numberOfFriends= ids.getIDs().length;
+				    	//creo l'oggetto per lutente corrente con i campi nome e id, 
+				    	 //verra accodato un jsonarray per ogni utente contenente tutti gli amici
+				    	 objUtente = new JSONObject();
+				    	 objUtente.put("userName", userName);
+				    	 objUtente.put("idUser", idUser);
 				     
-				     writeJsonUserOnFile(objUtente);
+				         System.out.println("Utente " +userName+" ha "+numberOfFriends+ " amici.");
+			             //scrivo su file il nome dell'utente che stiamo analizzando
+				         writeUsersOnFile(userName+"===>");
+					     getFriendShipRecursive(authenticationManager.twitter,userName,idUser, -1,numberOfFriends);
+					     
+					     writeJsonUserOnFile(objUtente);
+					     
+			    	}catch(TwitterException e){
+				    	 if(e.getStatusCode() == 401){
+				    		 System.out.println("user no longer on Twitter");
+				    	 }
+				     }
 			    }
 			    System.out.println("FINE ANALISI FILE UTENTI");
+	     }catch(Exception e){
+	    	 e.printStackTrace();
 	     }
-		
 	}
 	
-	
-	
 	public static void getFriendShipRecursive(Twitter twitter, String userName, long idUser, long cursor,int numberOfFriends) throws TwitterException, IOException, JSONException{
-		
-	     
+	
 	      String listFriends = "";
 	      String content;
 	      System.out.println("Analizzo amici...");
 		  JSONArray jsonArrayFriends = new JSONArray();
 
-	
 		  int prevIndex = authenticationManager.getAccountIndex(); 
 			    	  try {
 			    		  if(isPrivateFriends)
@@ -130,13 +132,12 @@ public class FriendShipGraph {
 			    		   
 			    		  PagableResponseList<User> pagableFollowings;
 				            do {
-				            	
 				            	listFriends="";
 				                pagableFollowings =authenticationManager.twitter.getFriendsList(idUser, cursor);
 				                
 				                for (User user : pagableFollowings) {
 				                	listFriends = listFriends + user.getName() +";";
-				                	jsonArrayFriends.put(user.getName()+";"+user.getId()+";");
+				                	jsonArrayFriends.put(user.getName() + ";"+user.getId()+";");
 				                	//System.out.println(listFriends);
 				                	numberOfFriends--;
 				                }
@@ -157,7 +158,7 @@ public class FriendShipGraph {
 							isPrivateFriends=true;
 							writeUsersOnFile("PRIVATE_FRIENDS;");
 							//scorre al prossimo idUser e azzera currentCursor (-1)
-			            }
+						}
 						
 						//System.out.println(e.getMessage() + "Status code: " + e.getStatusCode() + "\n");
 		                
@@ -183,13 +184,21 @@ public class FriendShipGraph {
 						}
 						e.printStackTrace();
 					}
-			    	
-			    
-			
-	      
-	    
-	      
 	    //crea il grafo leggendo tale file
+	}
+	
+	public static void createGraphFromFriendShip() throws TwitterException, FileNotFoundException, IOException, JSONException, ParseException{
+		
+		//read from friendship file with this format --> //nomeUtente1:amico1;amico2;amico3
+		
+		JSONParser parser = new JSONParser();
+		Object obj = parser.parse(new FileReader(PATH_FILE_FRIENDSHIP));
+		JSONObject jsonObjectUser = (JSONObject) obj;
+		JSONArray listUsers = (JSONArray) jsonObjectUser.get("ListUsers");
+		for(int i = 0; i < listUsers.length(); i++){
+			JSONObject currentObj = listUsers.getJSONObject(i);
+			currentObj.get("");
+		}
 	}
 	
 	
@@ -239,7 +248,6 @@ public class FriendShipGraph {
 //		
 //
 //	}
-	
 	
 	public static Hashtable<String, String> getUserFromFileAndSplit(Integer maxNumUser,String  PATH_FILE_UTENTI_ID, int cursor) throws FileNotFoundException, IOException{
 		
@@ -320,11 +328,12 @@ public class FriendShipGraph {
 	
 
 	public static void writeJsonUserOnFile(JSONObject jsonUser) throws IOException{
+				
+		//inserire [] inizio e fine cosí da avere un json completo
 		
-		FileWriter file = new FileWriter(PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON"));
-		file.write(jsonUser.toString());
-		file.flush();
-		file.close();
+		PrintWriter writer = new PrintWriter(new FileOutputStream(new File(PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON")),true));
+		writer.println(jsonUser.toString() + ",");
+		writer.close();
 	}
 	
 	public static void writeCandidatesOnFile(){

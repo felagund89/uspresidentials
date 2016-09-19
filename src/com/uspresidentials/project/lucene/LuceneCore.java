@@ -64,7 +64,6 @@ public class LuceneCore {
         add("John Kasich");
     }};
 	
-
 	public static void createIndex(String pathDataset, String pathIndexer) throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException {
 			
 			Directory indexDir = FSDirectory.open(new File(pathIndexer));
