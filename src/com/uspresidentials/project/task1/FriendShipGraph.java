@@ -21,6 +21,8 @@ import org.jgrapht.ListenableGraph;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -28,9 +30,7 @@ import com.uspresidentials.project.utils.AuthenticationManager;
 import com.uspresidentials.project.utils.PropertiesManager;
 
 import twitter4j.IDs;
-import twitter4j.JSONArray;
 import twitter4j.JSONException;
-import twitter4j.JSONObject;
 import twitter4j.PagableResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -50,6 +50,8 @@ public class FriendShipGraph {
 	final long MAX_USERS = 500;
 	final static String PATH_FILE_UTENTI_ID = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID");
 	final static String PATH_FILE_FRIENDSHIP = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP");
+	final static String PATH_FILE_FRIENDSHIP_JSON = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON");
+
 	static int NUMERO_UTENTI;
 	static Boolean isPrivateFriends=false;
 
@@ -66,8 +68,8 @@ public class FriendShipGraph {
 		//per trovare e salvare tutti gli amici su file
 		  
 	     
-	    getGlobalFriendship(authenticationManager.twitter); //verificare se serve ancora passare l'argomento
-	    //createGraphFromFriendShip();
+	    //getGlobalFriendship(authenticationManager.twitter); //verificare se serve ancora passare l'argomento
+	    createGraphFromFriendShip();
 	
 		//Creo grafo e cerco la componente connessa piu grande
 	    //ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraph();
@@ -137,7 +139,7 @@ public class FriendShipGraph {
 				                
 				                for (User user : pagableFollowings) {
 				                	listFriends = listFriends + user.getName() +";";
-				                	jsonArrayFriends.put(user.getName() + ";"+user.getId()+";");
+				                	jsonArrayFriends.add(user.getName() + ";"+user.getId()+";");
 				                	//System.out.println(listFriends);
 				                	numberOfFriends--;
 				                }
@@ -187,20 +189,18 @@ public class FriendShipGraph {
 	    //crea il grafo leggendo tale file
 	}
 	
-	public static void createGraphFromFriendShip() throws TwitterException, FileNotFoundException, IOException, JSONException, ParseException{
+	public static void createGraphFromFriendShip() throws TwitterException, FileNotFoundException, IOException, ParseException{
 		
 		//read from friendship file with this format --> //nomeUtente1:amico1;amico2;amico3
-		
 		JSONParser parser = new JSONParser();
-		Object obj = parser.parse(new FileReader(PATH_FILE_FRIENDSHIP));
+		JSONObject obj = (JSONObject) parser.parse(new FileReader(PATH_FILE_FRIENDSHIP_JSON));
 		JSONObject jsonObjectUser = (JSONObject) obj;
 		JSONArray listUsers = (JSONArray) jsonObjectUser.get("ListUsers");
-		for(int i = 0; i < listUsers.length(); i++){
-			JSONObject currentObj = listUsers.getJSONObject(i);
-			currentObj.get("");
+		for(int i = 0; i < listUsers.size(); i++){
+			com.uspresidentials.project.entity.User currentObj =  (com.uspresidentials.project.entity.User) listUsers.get(i);
+			System.out.println(currentObj.getUserName());
 		}
 	}
-	
 	
 //	private static Twitter getFastCredentialsForQuery(Twitter twitter) throws TwitterException{
 //		//cambia le credenziali di attesa e setta le credenziali col tempo di attesa minore
