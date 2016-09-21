@@ -195,6 +195,7 @@ public class FriendShipGraph {
 		JSONParser parser = new JSONParser();
 		JSONObject obj = (JSONObject) parser.parse(new FileReader(PATH_FILE_FRIENDSHIP_JSON));
 		JSONObject jsonObjectUser = (JSONObject) obj;
+		
 		JSONArray listUsers = (JSONArray) jsonObjectUser.get("ListUsers");
 		for(int i = 0; i < listUsers.size(); i++){
 			com.uspresidentials.project.entity.User currentObj =  (com.uspresidentials.project.entity.User) listUsers.get(i);
