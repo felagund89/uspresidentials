@@ -100,7 +100,7 @@ public class FilterUsers {
 			      language = userAnalize.getLang(); 
 			      location = userAnalize.getTimeZone().toLowerCase(); 
 			      System.out.println("lingua: "+language + "  location: "+ location); 
-			      if(language.equalsIgnoreCase("en") && location.contains("us") && location.contains("america")){ 
+			      if(language.equalsIgnoreCase("en") && (location.contains("us") || location.contains("america"))){ 
 			        writeUsersFilteredOnFile(userAnalize.getName() + ";"+idUser +";");    
 			      } 
 		      }	           
