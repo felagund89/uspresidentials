@@ -37,57 +37,80 @@ public class FilterUsers {
 		 
 		   
 		  public static void main(String[] args) throws FileNotFoundException, TwitterException, IOException, JSONException{ 
-		    getUsersAfterFilter(authenticationManager.twitter);     
+		    try {
+				getUsersAfterFilter(authenticationManager.twitter);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}     
 		  } 
 		   
 		   
 		   
 		   
-		  public static void getUsersAfterFilter(Twitter twitter) throws TwitterException, FileNotFoundException, IOException, JSONException { 
+		  public static void getUsersAfterFilter(Twitter twitter) throws TwitterException, FileNotFoundException, IOException, JSONException, InterruptedException { 
 		 
-		   
+		    String line; 
+	        String userName = null; 
+	        long idUser = 0; 
 		    try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_UTENTI_ID))) { 
 		       
-		      String line; 
-		 
+		      
+		      
 		      while ((line = br.readLine()) != null) { 
 		        // definiamo l'id utente, split[0] è il nome utente 
 		 
-		        String userName; 
-		        long idUser; 
+		        
 		        idUser = Long.parseLong((line.split(";")[1])); 
 		        userName = line.split(";")[0]; 
 		         
 		 
 		        // scrivo su file il nome dell'utente che stiamo analizzando 
 		        if(userName != null){		        	      	
-		        	int min = authenticationManager.twitter.getRateLimitStatus().get("/users/search").getSecondsUntilReset();
-		        	int time=0;
-		        	for (int i = 0; i < authenticationManager.ACCOUNTS_NUMBER; i++) {
-		        		time = authenticationManager.twitter.getRateLimitStatus().get("/users/search").getSecondsUntilReset();
-		        		if (time < min){
-		        			min = time;
-		        			authenticationManager.setAuthentication(i); 
-		        		}        		
-					}
-		        	if(min > 0 ){        		
-		        		 System.out.println("Sleeping for " + min + " seconds."); 
-		        		 Thread.sleep(min * 1000);
-		        	}
+//		        	int min = authenticationManager.twitter.getRateLimitStatus().get("/users/search").getSecondsUntilReset();
+//		        	int time=0;
+//		        	for (int i = 0; i < authenticationManager.ACCOUNTS_NUMBER; i++) {
+//		        		time = authenticationManager.twitter.getRateLimitStatus().get("/users/search").getSecondsUntilReset();
+//		        		if (time < min){
+//		        			min = time;
+//		        			authenticationManager.setAuthentication(i); 
+//		        		}        		
+//					}
+//		        	if(min > 0 ){        		
+//		        		 System.out.println("Sleeping for " + min + " seconds."); 
+//		        		 Thread.sleep(min * 1000);
+//		        	}
 		        	getUsersFiltered(authenticationManager.twitter,userName, idUser); 
 		        }
 		      } 
 		      System.out.println("FINE ANALISI FILE UTENTI"); 
-		    } catch (InterruptedException e) {
-				e.printStackTrace();
-			} 
-		 
+		    } catch (TwitterException e) { 
+				 
+			      if (e.getStatusCode() != 429) { 
+			        System.out.println("Chiamata non riuscita"); 
+			      }	
+			      System.out.println(">>>>>>>>>>>>>>>>passo al prossimo account per l'analisi ");
+			      authenticationManager.setAuthentication(authenticationManager.getAccountIndex()+1);
+			      if(authenticationManager.getAccountIndex() == authenticationManager.ACCOUNTS_NUMBER-1){ 
+		              
+				    	//
+						int toSleep = authenticationManager.twitter.getRateLimitStatus().get("/users/search").getSecondsUntilReset() + 1;
+						System.out.println("Sleeping for " + toSleep + " seconds.");
+						Thread.sleep(toSleep * 1000);
+					    System.out.println(">>>>>>>>>>>>>>>>l'attesa è finita ");
+
+			        	getUsersFiltered(authenticationManager.twitter,userName, idUser); 
+						
+			      }      
+			}catch (NumberFormatException e){
+		        System.out.println("Nome utente non conforme"); 
+			}  
 		  } 
 		 
 		  public static void getUsersFiltered(Twitter twitter,String userName, long idUser) throws TwitterException, IOException, JSONException { 
 		 
 		   
-		    System.out.println("Analizzo utenti..."); 
+		    System.out.println("Analizzo utente "+ userName); 
 		    String location; 
 		    String language; 
 		     
@@ -96,23 +119,28 @@ public class FilterUsers {
 		      User userAnalize;      
 		      userAnalize = authenticationManager.twitter.showUser(idUser); 
 		      
-		      if(userAnalize != null) { 
-			      language = userAnalize.getLang(); 
-			      location = userAnalize.getTimeZone().toLowerCase(); 
-			      System.out.println("lingua: "+language + "  location: "+ location); 
-			      if(language.equalsIgnoreCase("en") && (location.contains("us") || location.contains("america"))){ 
-			        writeUsersFilteredOnFile(userAnalize.getName() + ";"+idUser +";");    
-			      } 
+		      if(userAnalize != null){ 
+		    	  if(userAnalize.getLang() != null){
+				      language = userAnalize.getLang(); 
+//				      location = userAnalize.getTimeZone().toLowerCase(); 
+				      System.out.println("lingua: "+language); 
+				      if(language.equalsIgnoreCase("en")){ 
+				        writeUsersFilteredOnFile(userAnalize.getName() + ";"+idUser +";");    
+				      } 
+		    	  }
 		      }	           
 		    } catch (TwitterException e) { 
 		 
 		      if (e.getStatusCode() != 429) { 
 		        System.out.println("Chiamata non riuscita"); 
 		      }	   
-		    } 
+		    }catch (NumberFormatException e){
+		        System.out.println("Valore non conforme"); 
+			}   
 		  } 
 		 
-		
+		   
+		   
 		  public static void writeUsersFilteredOnFile(String content) throws FileNotFoundException{ 
 		     
 		    PrintWriter writer = new PrintWriter(new FileOutputStream(new File(PropertiesManager.getPropertiesFromFile("PATH_FILE_FILTER_USERS")),true)); 
