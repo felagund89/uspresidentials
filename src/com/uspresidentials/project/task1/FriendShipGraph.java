@@ -68,8 +68,8 @@ public class FriendShipGraph {
 		//per trovare e salvare tutti gli amici su file
 		  
 	     
-	    getGlobalFriendship(authenticationManager.twitter); //verificare se serve ancora passare l'argomento
-	    //createGraphFromFriendShip();
+	    //getGlobalFriendship(authenticationManager.twitter); //verificare se serve ancora passare l'argomento
+	    createGraphFromFriendShip();
 	
 		//Creo grafo e cerco la componente connessa piu grande
 	    //ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraph();
@@ -197,10 +197,21 @@ public class FriendShipGraph {
 		JSONObject jsonObjectUser = (JSONObject) obj;
 		
 		JSONArray listUsers = (JSONArray) jsonObjectUser.get("ListUsers");
-		for(int i = 0; i < listUsers.size(); i++){
-			com.uspresidentials.project.entity.User currentObj =  (com.uspresidentials.project.entity.User) listUsers.get(i);
+		
+		Iterator<JSONObject> iterator = listUsers.iterator();
+		// iterate through json array
+		 while (iterator.hasNext()) {
+		   // do something. Fetch fields in services array.
+			 System.out.println(iterator.next().get("userName"));
+			 
+			 
+			 
+		 }
+		
+		/*for(int i = 0; i < listUsers.size(); i++){
+			listUsers.jso
 			System.out.println(currentObj.getUserName());
-		}
+		} */
 	}
 	
 //	private static Twitter getFastCredentialsForQuery(Twitter twitter) throws TwitterException{
