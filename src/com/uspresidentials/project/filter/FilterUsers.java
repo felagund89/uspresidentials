@@ -62,6 +62,7 @@ public class FilterUsers {
 		        if(userName != null){
 		        	try{
 		        		getUsersFiltered(authenticationManager.twitter,userName, idUser); 
+		        		
 		        	}catch(TwitterException ex){
 		        		   if (ex.getStatusCode() == 403) { 
 		   			        System.out.println("User has been suspended., code=63,!"); 
@@ -86,7 +87,7 @@ public class FilterUsers {
 		     
 		    try { 
 		 
-		      User userAnalize; 
+		      User userAnalize;      
 		      userAnalize = authenticationManager.twitter.showUser(idUser); 
 		      
 		      if(userAnalize != null){ 
