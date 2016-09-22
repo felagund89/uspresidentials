@@ -39,10 +39,7 @@ public class FilterUsers {
 		  public static void main(String[] args) throws FileNotFoundException, TwitterException, IOException, JSONException{ 
 		    getUsersAfterFilter(authenticationManager.twitter);     
 		  } 
-		   
-		   
-		   
-		   
+		   		   
 		  public static void getUsersAfterFilter(Twitter twitter) throws TwitterException, FileNotFoundException, IOException, JSONException { 
 		 
 		   
@@ -62,7 +59,17 @@ public class FilterUsers {
 		        objUtente.put(userName, idUser); 
 		 
 		        // scrivo su file il nome dell'utente che stiamo analizzando 
-		        getUsersFiltered(authenticationManager.twitter,userName, idUser); 
+		        if(userName != null){
+		        	try{
+		        		getUsersFiltered(authenticationManager.twitter,userName, idUser); 
+		        	}catch(TwitterException ex){
+		        		   if (ex.getStatusCode() == 403) { 
+		   			        System.out.println("User has been suspended., code=63,!"); 
+		   				    authenticationManager.setAuthentication(authenticationManager.getAccountIndex() + 1); 
+		   				    //return;
+		   			  } 
+		        	}
+		        }
 		 
 		      } 
 		      System.out.println("FINE ANALISI FILE UTENTI"); 
@@ -81,12 +88,15 @@ public class FilterUsers {
 		 
 		      User userAnalize; 
 		      userAnalize = authenticationManager.twitter.showUser(idUser); 
-		      language = userAnalize.getLang(); 
-		      location = userAnalize.getTimeZone().toLowerCase(); 
-		      System.out.println("lingua: "+language + "  location: "+location); 
-		      if(language.equalsIgnoreCase("en") && location.contains("us")){ 
-		        writeUsersFilteredOnFile(userAnalize.getName() + ";"+idUser +";");    
-		      } 
+		      
+		      if(userAnalize != null){
+			      language = userAnalize.getLang(); 
+			      location = userAnalize.getTimeZone().toLowerCase(); 
+			      System.out.println("lingua: "+language + "  location: "+ location); 
+			      if(location != null && language != null && language.equalsIgnoreCase("en") && location.contains("us")){ 
+			        writeUsersFilteredOnFile(userAnalize.getName() + ";"+idUser +";");    
+			      } 
+		      }
 		           
 		    } catch (TwitterException e) { 
 		 
@@ -97,7 +107,7 @@ public class FilterUsers {
 			        System.out.println("User has been suspended., code=63,!"); 
 				    authenticationManager.setAuthentication(authenticationManager.getAccountIndex() + 1); 
 				    return;
-			      } 
+			  } 
 		      
 		      authenticationManager.setAuthentication(authenticationManager.getAccountIndex() + 1); 
 		   
@@ -105,9 +115,10 @@ public class FilterUsers {
 		        if (authenticationManager.getAccountIndex() == authenticationManager.ACCOUNTS_NUMBER - 1) { 
 		 
 		          // 
-		          int toSleep = authenticationManager.twitter.getRateLimitStatus().get("/users/search").getSecondsUntilReset() + 1; 
+		          int toSleep = authenticationManager.twitter.getRateLimitStatus().get("/users/show").getSecondsUntilReset() + 1; 
 		          System.out.println("Sleeping for " + toSleep + " seconds."); 
-		          Thread.sleep(toSleep * 1000); 
+		          Thread.sleep(54 * 1000); //toSleep
+		          
 		        } 
 		         
 		      } catch (InterruptedException e1) { 

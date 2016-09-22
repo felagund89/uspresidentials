@@ -68,8 +68,8 @@ public class FriendShipGraph {
 		//per trovare e salvare tutti gli amici su file
 		  
 	     
-	    //getGlobalFriendship(authenticationManager.twitter); //verificare se serve ancora passare l'argomento
-	    createGraphFromFriendShip();
+	    getGlobalFriendship(authenticationManager.twitter); //verificare se serve ancora passare l'argomento
+	    //createGraphFromFriendShip();
 	
 		//Creo grafo e cerco la componente connessa piu grande
 	    //ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraph();

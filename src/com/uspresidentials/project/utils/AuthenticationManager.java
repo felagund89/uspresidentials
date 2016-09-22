@@ -15,7 +15,7 @@ import twitter4j.conf.ConfigurationBuilder;
 
 public final class AuthenticationManager {
 
-	public static int ACCOUNTS_NUMBER;
+	public int ACCOUNTS_NUMBER;
 	public Twitter twitter;
 
 	private int accountIndex;
