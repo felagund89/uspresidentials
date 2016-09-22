@@ -89,7 +89,7 @@ public class FilterUsers {
 		      User userAnalize; 
 		      userAnalize = authenticationManager.twitter.showUser(idUser); 
 		      
-		      if(userAnalize != null){
+		      if(userAnalize != null){ 
 			      language = userAnalize.getLang(); 
 			      location = userAnalize.getTimeZone().toLowerCase(); 
 			      System.out.println("lingua: "+language + "  location: "+ location); 
