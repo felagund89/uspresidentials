@@ -93,7 +93,12 @@ public class FilterUsers {
 		      if (e.getStatusCode() != 429) { 
 		        System.out.println("Users Extraction denied!"); 
 		      } 
-		 
+		      if (e.getStatusCode() == 403) { 
+			        System.out.println("User has been suspended., code=63,!"); 
+				    authenticationManager.setAuthentication(authenticationManager.getAccountIndex() + 1); 
+				    return;
+			      } 
+		      
 		      authenticationManager.setAuthentication(authenticationManager.getAccountIndex() + 1); 
 		   
 		      try { 
@@ -115,7 +120,7 @@ public class FilterUsers {
 		 
 		   
 		   
-		  public static void writeUsersFilteredOnFile(String content) throws FileNotFoundException, UnsupportedEncodingException{ 
+		  public static void writeUsersFilteredOnFile(String content) throws FileNotFoundException{ 
 		     
 		    PrintWriter writer = new PrintWriter(new FileOutputStream(new File(PropertiesManager.getPropertiesFromFile("PATH_FILE_FILTER_USERS")),true)); 
 		    writer.println(content); 
