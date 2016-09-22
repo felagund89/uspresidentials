@@ -96,7 +96,7 @@ public class FilterUsers {
 		      User userAnalize;      
 		      userAnalize = authenticationManager.twitter.showUser(idUser); 
 		      
-		      if(userAnalize != null){ 
+		      if(userAnalize != null) { 
 			      language = userAnalize.getLang(); 
 			      location = userAnalize.getTimeZone().toLowerCase(); 
 			      System.out.println("lingua: "+language + "  location: "+ location); 
@@ -112,8 +112,7 @@ public class FilterUsers {
 		    } 
 		  } 
 		 
-		   
-		   
+		
 		  public static void writeUsersFilteredOnFile(String content) throws FileNotFoundException{ 
 		     
 		    PrintWriter writer = new PrintWriter(new FileOutputStream(new File(PropertiesManager.getPropertiesFromFile("PATH_FILE_FILTER_USERS")),true)); 

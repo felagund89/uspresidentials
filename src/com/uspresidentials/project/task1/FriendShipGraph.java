@@ -69,8 +69,9 @@ public class FriendShipGraph {
 		  
 	     
 	    //getGlobalFriendship(authenticationManager.twitter); //verificare se serve ancora passare l'argomento
-	    createGraphFromFriendShip();
-	
+		ListenableGraph<String, DefaultEdge> graphFriendShip = createGraphFromFriendShip();
+		System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip);
+		
 		//Creo grafo e cerco la componente connessa piu grande
 	    //ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraph();
 	    //dato un grafo cerco la componente connessa piu grande
@@ -140,7 +141,6 @@ public class FriendShipGraph {
 				                for (User user : pagableFollowings) {
 				                	listFriends = listFriends + user.getName() +";";
 				                	jsonArrayFriends.add(user.getName() + ";"+user.getId()+";");
-				                	//System.out.println(listFriends);
 				                	numberOfFriends--;
 				                }
 				                content =  listFriends;
@@ -189,7 +189,7 @@ public class FriendShipGraph {
 	    //crea il grafo leggendo tale file
 	}
 	
-	public static void createGraphFromFriendShip() throws TwitterException, FileNotFoundException, IOException, ParseException{
+	public static ListenableGraph<String, DefaultEdge> createGraphFromFriendShip() throws TwitterException, FileNotFoundException, IOException, ParseException{
 		
 		//read from friendship file with this format --> //nomeUtente1:amico1;amico2;amico3
 		JSONParser parser = new JSONParser();
@@ -197,21 +197,33 @@ public class FriendShipGraph {
 		JSONObject jsonObjectUser = (JSONObject) obj;
 		
 		JSONArray listUsers = (JSONArray) jsonObjectUser.get("ListUsers");
+		ListenableGraph<String, DefaultEdge>  myGraph = new ListenableDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
 		
 		Iterator<JSONObject> iterator = listUsers.iterator();
-		// iterate through json array
-		 while (iterator.hasNext()) {
-		   // do something. Fetch fields in services array.
-			 System.out.println(iterator.next().get("userName"));
-			 
-			 
-			 
-		 }
 		
-		/*for(int i = 0; i < listUsers.size(); i++){
-			listUsers.jso
-			System.out.println(currentObj.getUserName());
-		} */
+		 while (iterator.hasNext()) {
+			 JSONObject currentUs = iterator.next();
+			 String currentUser = currentUs.get("userName").toString();
+			 
+			 if(!myGraph.containsVertex(currentUser))
+				 myGraph.addVertex(currentUser);
+			 
+			 System.out.println("*****" + currentUser);
+			 JSONArray listFriends = (JSONArray)currentUs.get("friends");
+			 
+			 for(int i=0;i<listFriends.size();i++){
+				 System.out.println("             - friend: " + listFriends.get(i));
+				 
+				 String currentFriend = listFriends.get(i).toString();
+				 
+				 if(!myGraph.containsVertex(currentFriend))  //se non contiene giá quel nodo
+					 myGraph.addVertex(currentFriend);
+				 
+				 if(!myGraph.containsEdge(currentUser, currentFriend)) //se non contiene giá quell'arco
+					 myGraph.addEdge(currentUser, currentFriend);
+			 }
+		 }
+		 return myGraph;
 	}
 	
 //	private static Twitter getFastCredentialsForQuery(Twitter twitter) throws TwitterException{
