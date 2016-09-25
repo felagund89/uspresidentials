@@ -42,7 +42,7 @@ public class PropertiesManager {
 
 			// prende la property ricercata
 			propValue = propFile.getProperty(propName);
-			System.out.println("Valore della properties: " + propValue);
+			//System.out.println("Valore della properties: " + propValue);
 
 		} catch (IOException ex) {
 			ex.printStackTrace();
