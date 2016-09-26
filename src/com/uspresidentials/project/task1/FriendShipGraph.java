@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -69,8 +67,11 @@ public class FriendShipGraph {
 		  
 	     
 	    //getGlobalFriendship(authenticationManager.twitter); //verificare se serve ancora passare l'argomento
-		ListenableGraph<String, DefaultEdge> graphFriendShip = createGraphFromFriendShip();
+		ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = createGraphFromFriendShip();
 		System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip);
+		searchConnectedComponents(graphFriendShip);
+		//edu.uci.ics.jung.algorithms.scoring.PageRank
+		
 		
 		//Creo grafo e cerco la componente connessa piu grande
 	    //ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraph();
@@ -189,7 +190,7 @@ public class FriendShipGraph {
 	    //crea il grafo leggendo tale file
 	}
 	
-	public static ListenableGraph<String, DefaultEdge> createGraphFromFriendShip() throws TwitterException, FileNotFoundException, IOException, ParseException{
+	public static ListenableDirectedGraph<String, DefaultEdge> createGraphFromFriendShip() throws TwitterException, FileNotFoundException, IOException, ParseException{
 		
 		//read from friendship file with this format --> //nomeUtente1:amico1;amico2;amico3
 		JSONParser parser = new JSONParser();
@@ -197,7 +198,7 @@ public class FriendShipGraph {
 		JSONObject jsonObjectUser = (JSONObject) obj;
 		
 		JSONArray listUsers = (JSONArray) jsonObjectUser.get("ListUsers");
-		ListenableGraph<String, DefaultEdge>  myGraph = new ListenableDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+		ListenableDirectedGraph<String, DefaultEdge>  myGraph = new ListenableDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
 		
 		Iterator<JSONObject> iterator = listUsers.iterator();
 		
@@ -225,54 +226,7 @@ public class FriendShipGraph {
 		 }
 		 return myGraph;
 	}
-	
-//	private static Twitter getFastCredentialsForQuery(Twitter twitter) throws TwitterException{
-//		//cambia le credenziali di attesa e setta le credenziali col tempo di attesa minore
-//		
-//		//verifico tra i vari account il tempo minore e ritorno l'oggetto twitter settato correttamente
-//		twitter = TwitterFactory.getSingleton();
-//		//account antonio
-//		twitter.setOAuthConsumer(outhConsumerKeyAntonio, outhConsumerSecretAntonio);
-//	    AccessToken accessToken = new AccessToken(accesTOkenAntonioString, accestokenSecretAntonioString);
-//	    twitter.setOAuthAccessToken(accessToken);
-//		int toSleep = twitter.getRateLimitStatus().get("/friends/list").getSecondsUntilReset() + 1;
-//
-//		//account claudio
-//		twitter.setOAuthConsumer(outhConsumerKeyClaudio, outhConsumerSecretClaudio);
-//	    accessToken = new AccessToken(accesTOkenClaudioString, accestokenSecretCLaudioString);
-//	    twitter.setOAuthAccessToken(accessToken);
-//		int toSleep2 = twitter.getRateLimitStatus().get("/friends/list").getSecondsUntilReset() + 1;
-//		
-//		//account alessia
-//		twitter.setOAuthConsumer(outhConsumerKeyAlessia, outhConsumerSecretAlessia);
-//	    accessToken = new AccessToken(accesTOkenAlessiaString, accestokenSecretAlessiaString);
-//	    twitter.setOAuthAccessToken(accessToken);
-//		int toSleep3 = twitter.getRateLimitStatus().get("/friends/list").getSecondsUntilReset() + 1;
-//		
-//		if(toSleep2 < toSleep){
-//			
-//			if(toSleep2 > toSleep3){
-//				return twitter;
-//			}else {
-//				twitter.setOAuthConsumer(outhConsumerKeyClaudio, outhConsumerSecretClaudio);
-//			    accessToken = new AccessToken(accesTOkenClaudioString, accestokenSecretCLaudioString);
-//			    twitter.setOAuthAccessToken(accessToken);
-//			    return twitter;
-//			}
-//		}else if(toSleep < toSleep3) {
-//			twitter.setOAuthConsumer(outhConsumerKeyAntonio, outhConsumerSecretAntonio);
-//		    accessToken = new AccessToken(accesTOkenAntonioString, accestokenSecretAntonioString);
-//		    twitter.setOAuthAccessToken(accessToken);
-//			return twitter;
-//		}else{	
-//			return twitter;
-//		}
-//		
-//		
-//		
-//
-//	}
-	
+		
 	public static Hashtable<String, String> getUserFromFileAndSplit(Integer maxNumUser,String  PATH_FILE_UTENTI_ID, int cursor) throws FileNotFoundException, IOException{
 		
 		Hashtable<String, String> hashUsers = new Hashtable<String,String>();
