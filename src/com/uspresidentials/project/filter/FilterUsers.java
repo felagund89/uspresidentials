@@ -25,8 +25,7 @@ public class FilterUsers {
 	
 	
 	
-	final static String PATH_FILE_UTENTI_ID = PropertiesManager 
-		      .getPropertiesFromFile("PATH_FILE_UTENTI_ID"); 
+	final static String PATH_FILE_FILTER_USERS_BY_LANGUAGE = PropertiesManager .getPropertiesFromFile("PATH_FILE_FILTER_USERS_BY_LANGUAGE"); 
 		  static int NUMERO_UTENTI; 
 		 
 		  static AuthenticationManager authenticationManager = new AuthenticationManager(); 
@@ -53,80 +52,66 @@ public class FilterUsers {
 		String line;
 		String userName = null;
 		long idUser = 0;
-		try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_UTENTI_ID))) {
+		try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_FILTER_USERS_BY_LANGUAGE))) {
 
 			while ((line = br.readLine()) != null) {
 				
 				try {
-					
-				
-				
 				// definiamo l'id utente, split[0] è il nome utente
 				idUser = Long.parseLong((line.split(";")[1]));
 				userName = line.split(";")[0];
 
 				// scrivo su file il nome dell'utente che stiamo analizzando
-				if (userName != null) {
-
-					String location;
-					String language;
-
-					User userAnalize;
-					userAnalize = authenticationManager.twitter.showUser(idUser);
-
-					if (userAnalize != null) {
-						System.out.println("Analizzo utente "+ userAnalize.getName()+ " rate limit attuale = "+ userAnalize.getRateLimitStatus());
-						if (userAnalize.getLang() != null) {
-							language = userAnalize.getLang();
-							// location =
-							// userAnalize.getTimeZone().toLowerCase();
-							System.out.println("lingua: " + language);
-							if (language.equalsIgnoreCase("en")) {
-								writeUsersFilteredOnFile(userAnalize.getName()+ ";" + idUser + ";");
+					if (userName != null) {
+	
+						String location;
+						String language;
+	
+						User userAnalize;
+						userAnalize = authenticationManager.twitter.showUser(idUser);
+	
+						if (userAnalize != null) {
+							//System.out.println("Analizzo utente "+ userAnalize.getName()+ " rate limit attuale = "+ userAnalize.getRateLimitStatus());
+							if (userAnalize.getLang() != null && userAnalize.getTimeZone()!=null) {
+								language = userAnalize.getLang();
+								location = userAnalize.getTimeZone().toLowerCase();
+								System.out.println("user: " + userAnalize.getName() + "lingua: " + language + "localita: " + location);
+								if (language.equalsIgnoreCase("en") && ( location.contains("us") || location.contains("america"))) {
+									writeUsersFilteredOnFile(userName+ ";" + idUser + ";");
+								}
 							}
 						}
 					}
-//					getUsersFiltered(authenticationManager.twitter, userName,idUser);
+					} catch (TwitterException e) {
+	
+						if (e.getStatusCode() == 429) {
+							System.out.println(">>>>>>>>>>>>>>>>passo al prossimo account per l'analisi ");
+							authenticationManager.setAuthentication(authenticationManager.getAccountIndex() + 1);
+	
+							try {
+								if (authenticationManager.getAccountIndex() == authenticationManager.ACCOUNTS_NUMBER - 1) 
+								{
+	
+									//
+									int toSleep = authenticationManager.twitter.getRateLimitStatus().get("/users/search").getSecondsUntilReset();
+									System.out.println("Sleeping for " + toSleep + " seconds.");
+									Thread.sleep(toSleep * 1000);
+									System.out.println(">>>>>>>>>>>>>>>>l'attesa è finita ");
+								}
+									
+	
+							} catch (InterruptedException e1) {
+								e1.printStackTrace();
+							}
+						
+						
+						}else{
+							System.out.println("Chiamata non riuscita");
+	
+						}			
+				} catch (NumberFormatException e) {
+					System.out.println("Nome utente non conforme");
 				}
-				} catch (TwitterException e) {
-
-					if (e.getStatusCode() == 429) {
-						System.out.println(">>>>>>>>>>>>>>>>passo al prossimo account per l'analisi ");
-						authenticationManager.setAuthentication(authenticationManager.getAccountIndex() + 1);
-
-						try {
-							if (authenticationManager.getAccountIndex() == authenticationManager.ACCOUNTS_NUMBER - 1) 
-							{
-
-								//
-								int toSleep = authenticationManager.twitter.getRateLimitStatus().get("/users/search").getSecondsUntilReset() + 1;
-								System.out.println("Sleeping for " + toSleep + " seconds.");
-								Thread.sleep(toSleep * 1000);
-								System.out.println(">>>>>>>>>>>>>>>>l'attesa è finita ");
-							}
-//								getUsersFiltered(authenticationManager.twitter, userName,idUser);
-
-//							} else
-//								getUsersFiltered(authenticationManager.twitter, userName,idUser);
-
-						} catch (InterruptedException e1) {
-							e1.printStackTrace();
-						}
-					
-					
-					}else{
-						System.out.println("Chiamata non riuscita");
-
-					}
-					
-					
-					
-			
-			
-			
-			} catch (NumberFormatException e) {
-				System.out.println("Nome utente non conforme");
-			}
 			
 			}	
 			System.out.println("FINE ANALISI FILE UTENTI");
@@ -137,65 +122,11 @@ public class FilterUsers {
 		
 	}
 		 
-		  public static void getUsersFiltered(Twitter twitter,String userName, long idUser) throws TwitterException, IOException, JSONException,NumberFormatException, InterruptedException { 
-		 
 		   
-		    
-		    String location; 
-		    String language; 
-		     
-		    try { 
-		 
-		      User userAnalize;      
-		      userAnalize = authenticationManager.twitter.showUser(idUser); 
-		      
-		      if(userAnalize != null){
-		    	  System.out.println("Analizzo utente "+ userAnalize.getName() + " rate limit attuale = "+userAnalize.getRateLimitStatus()); 
-		    	  if(userAnalize.getLang() != null){
-				      language = userAnalize.getLang(); 
-//				      location = userAnalize.getTimeZone().toLowerCase(); 
-				      System.out.println("lingua: "+language); 
-				      if(language.equalsIgnoreCase("en")){ 
-				        writeUsersFilteredOnFile(userAnalize.getName() + ";"+idUser +";");    
-				      } 
-		    	  }
-		      }	           
-		    } catch (TwitterException e) { 
-		  if (e.getStatusCode() != 429) { 
-		        System.out.println("Chiamata non riuscita"); 
-		      }	
-		  
-//		      System.out.println(">>>>>>>>>>>>>>>>passo al prossimo account per l'analisi ");
-//		      authenticationManager.setAuthentication(authenticationManager.getAccountIndex()+1);
-		      
-//		     try{
-//		      if(authenticationManager.getAccountIndex() == authenticationManager.ACCOUNTS_NUMBER-1){ 
-	              
-			    	//
-					int toSleep = authenticationManager.twitter.getRateLimitStatus().get("/users/search").getSecondsUntilReset() + 1;
-					System.out.println("Sleeping for " + toSleep + " seconds.");
-					Thread.sleep(toSleep * 1000);
-				    System.out.println(">>>>>>>>>>>>>>>>l'attesa è finita ");
-
-		        	getUsersFiltered(authenticationManager.twitter,userName, idUser); 
-					
-//		      }else
-//		        	getUsersFiltered(authenticationManager.twitter,userName, idUser); 
-		      
-//		     }catch (InterruptedException e1) {
-//					e1.printStackTrace();    	 
-//		     }
-		    }catch (NumberFormatException e){
-		        System.out.println("Valore non conforme"); 
-			}   
-		  } 
-		 
-		   
-		   
-		  public static void writeUsersFilteredOnFile(String content) throws FileNotFoundException{ 
-		     
-		    PrintWriter writer = new PrintWriter(new FileOutputStream(new File(PropertiesManager.getPropertiesFromFile("PATH_FILE_FILTER_USERS")),true)); 
-		    writer.println(content); 
-		    writer.close(); 
-		  } 
+	  public static void writeUsersFilteredOnFile(String content) throws FileNotFoundException{ 
+	     
+	    PrintWriter writer = new PrintWriter(new FileOutputStream(new File(PropertiesManager.getPropertiesFromFile("PATH_FILE_FILTER_USERS")),true)); 
+	    writer.println(content); 
+	    writer.close(); 
+	  } 
 }
