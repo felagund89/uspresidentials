@@ -36,6 +36,9 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
 
+import edu.uci.ics.jung.algorithms.scoring.*;
+import edu.uci.ics.jung.graph.Hypergraph;
+
 /*
  * Costruire grafo delle amicizie e cercare la componente connessa piu grande, 
  * per il momento non disegnamo il grafo delle amicizie.
@@ -70,7 +73,10 @@ public class FriendShipGraph {
 		ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = createGraphFromFriendShip();
 		System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip);
 		searchConnectedComponents(graphFriendShip);
-		//edu.uci.ics.jung.algorithms.scoring.PageRank
+		
+		/*Hypergraph<String, DefaultEdge> hyperGraph = new Hypergraph<String, DefaultEdge>(graphFriendShip);
+		PageRank<String, DefaultEdge> pageRank = new PageRank<String, DefaultEdge>(graphFriendShip, 0.1);
+		pageRank.initialize(); */
 		
 		
 		//Creo grafo e cerco la componente connessa piu grande

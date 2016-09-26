@@ -43,6 +43,12 @@
 	    <artifactId>jung-graph-impl</artifactId>
 	    <version>2.1</version>
 		</dependency>
+	<!-- https://mvnrepository.com/artifact/net.sf.jung/jung-algorithms -->
+	<dependency>
+	    <groupId>net.sf.jung</groupId>
+	    <artifactId>jung-algorithms</artifactId>
+	    <version>2.1</version>
+	</dependency>
 	<!-- http://mvnrepository.com/artifact/org.twitter4j/twitter4j-core -->
 	<dependency>
 	    <groupId>org.twitter4j</groupId>
