@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Appender;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.jgrapht.ListenableGraph;
 import org.jgrapht.alg.ConnectivityInspector;
@@ -53,7 +55,8 @@ public class FriendShipGraph {
 	final static String PATH_FILE_UTENTI_ID = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID");
 	final static String PATH_FILE_FRIENDSHIP = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP");
 	final static String PATH_FILE_FRIENDSHIP_JSON = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON");
-
+	final static String PATH_FILE_LOG4J_CONNECTED_COMPONENTS = PropertiesManager.getPropertiesFromFile("PATH_FILE_LOG4J_CONNECTED_COMPONENTS");
+	
 	static int NUMERO_UTENTI;
 	static Boolean isPrivateFriends=false;
 
@@ -66,8 +69,7 @@ public class FriendShipGraph {
 	final static Logger logger = Logger.getLogger(FriendShipGraph.class);
 	
 	public static void main(String[] args) throws IOException, TwitterException, JSONException, ParseException {
-
-
+		
 		//recupero gli amici a partire da un account specifico 180 amici alla volta
 		//per trovare e salvare tutti gli amici su file
 		  
