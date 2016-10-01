@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.jgrapht.ListenableGraph;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
@@ -62,28 +63,29 @@ public class FriendShipGraph {
 	static List<JSONObject> objUtenti = new ArrayList<JSONObject>();
 	static JSONObject objUtente;
 	
+	final static Logger logger = Logger.getLogger(FriendShipGraph.class);
+	
 	public static void main(String[] args) throws IOException, TwitterException, JSONException, ParseException {
 
 
 		//recupero gli amici a partire da un account specifico 180 amici alla volta
 		//per trovare e salvare tutti gli amici su file
 		  
-	     
-	    //getGlobalFriendship(authenticationManager.twitter); //verificare se serve ancora passare l'argomento
-		ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = createGraphFromFriendShip();
+		//******** CREATE FILE WITH FRIEND FOR EACH USER 
+		  //getGlobalFriendship(authenticationManager.twitter); //verificare se serve ancora passare l'argomento
+		
+		//******** FRIENDSHIP
+		ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = createGraphFromFriendShip();  //read from Json File
 		System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip);
+		
+		//********COMPONENTE CONNESSE
 		searchConnectedComponents(graphFriendShip);
 		
+		//********PAGE RANK
 		/*Hypergraph<String, DefaultEdge> hyperGraph = new Hypergraph<String, DefaultEdge>(graphFriendShip);
 		PageRank<String, DefaultEdge> pageRank = new PageRank<String, DefaultEdge>(graphFriendShip, 0.1);
 		pageRank.initialize(); */
-		
-		
-		//Creo grafo e cerco la componente connessa piu grande
-	    //ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraph();
-	    //dato un grafo cerco la componente connessa piu grande
-	    //FriendShipGraph.searchConnectedComponents(myGraph);
-	   
+	
 	}
 	
 	
@@ -285,10 +287,8 @@ public class FriendShipGraph {
 		 g.addEdge(v2, v6);
 		 g.addEdge(v2, v7);
 		 g.addEdge(v2, v8);
-		 g.addEdge(v2, v9);
 
 		 
-		
 		 System.out.println("created graph: " + g.toString());
 		 
 		 return g;
@@ -296,9 +296,27 @@ public class FriendShipGraph {
 	
 	public static void searchConnectedComponents(ListenableDirectedGraph<String, DefaultEdge> g)
 	{
-		ConnectivityInspector conn = new ConnectivityInspector(g);
-		Set<String> listVertexConnected = conn.connectedSetOf(g.vertexSet().iterator().next());
-		System.out.println("list connected vertex: " + listVertexConnected.toString());
+		Set<String> listVertex = g.vertexSet();
+		ConnectivityInspector<String, DefaultEdge> conn = new ConnectivityInspector<String, DefaultEdge>(g);
+		ArrayList<String> listGlobalConnected = new ArrayList<String>();
+		String majorComponents="";
+		long countMajorComponents = 0;
+		
+		for(String currentVertex : listVertex){
+			Set<String> listVertexConnected = conn.connectedSetOf(currentVertex);  //g.vertexSet().iterator().next()
+			listGlobalConnected.addAll(listVertexConnected);
+			
+			if(listVertexConnected.size() > countMajorComponents){
+				countMajorComponents = listVertexConnected.size();
+				majorComponents = "*****MAJOR_COMPONENTS - count: "+ countMajorComponents + "\nStart Vertex:" + currentVertex.toString() + "\nconnected components: " + listVertexConnected.toString() + "\n\n\n***********";
+			}
+			
+			logger.info("****Start Vertex:" + currentVertex.toString() + "\nconnected components: " + listVertexConnected.toString() + "\n\n\n*********************************");
+		}
+		
+		System.out.println("Search Connected Components COMPLETED!");
+		
+		logger.info(majorComponents);
 	}
 	
 	public static void writeUsersOnFile(String content) throws FileNotFoundException, UnsupportedEncodingException{
