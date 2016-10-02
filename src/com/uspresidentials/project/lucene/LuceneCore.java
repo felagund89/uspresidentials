@@ -52,7 +52,9 @@ public class LuceneCore {
     private static IndexSearcher searcher = null;
     private static QueryParser parser = null;
     
-	final static Logger logger = Logger.getLogger(LuceneCore.class);
+	final static Logger loggerUsersAndTweets = Logger.getLogger("usersAndTweets");
+	final static Logger logger = Logger.getLogger("default");
+	
 	Set<User> userList = null;
 
     ArrayList<String> candidateStrings = new ArrayList<String>() {{
@@ -159,12 +161,12 @@ public class LuceneCore {
  	    Query q1 = qp.parse(queryLucene);
  	    TopDocs hits = searcher.search(q1, 10000000);
  	    
-		logger.info("##### "+hits.totalHits + " Docs found for the query \"" + q1.toString() + "\"");
+		loggerUsersAndTweets.info("##### "+hits.totalHits + " Docs found for the query \"" + q1.toString() + "\"");
 
  	    int num = 0;
  	    for (ScoreDoc sd : hits.scoreDocs) {
  	      Document d = searcher.doc(sd.doc);
- 			logger.info(String.format("#%d: %s (rating=%s) - user: %s - tweet: %s", ++num, d.get("idTweet"), sd.score, d.get("tweetUser"), d.get("tweetText")));
+ 	     loggerUsersAndTweets.info(String.format("#%d: %s (rating=%s) - user: %s - tweet: %s", ++num, d.get("idTweet"), sd.score, d.get("tweetUser"), d.get("tweetText")));
  			
  		
  	    }
@@ -219,7 +221,7 @@ public class LuceneCore {
 		TopDocs hits;
 		PrintWriter writer = new PrintWriter(pathFileUtenti, "UTF-8");
 		   
-	    
+		loggerUsersAndTweets.info("UTENTI E RELATIVI TWEETS");
 		        	
 //		           
 		HashMap<String, ArrayList<String>> hashMapUser = new HashMap<String, ArrayList<String>>();
@@ -239,12 +241,12 @@ public class LuceneCore {
 				tempArrayTweets.add(currentTweet);
 				hashMapUser.put(currentUserName, tempArrayTweets);
 				
-				logger.info("appena aggiunto user: " + currentUserName);
+				loggerUsersAndTweets.info("appena aggiunto user: " + currentUserName);
 				writer.println((currentUserName+";"));   //salvo anche su file la lista di utenti/idutente
 				
 			}else{
 				hashMapUser.get(currentUserName).add(currentTweet);
-				logger.info("aggiunto tweet for user: " + currentUserName);
+				loggerUsersAndTweets.info("aggiunto tweet for user: " + currentUserName);
 			}
 			
 //			printHashMap(hashMapUser);

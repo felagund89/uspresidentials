@@ -74,7 +74,7 @@ public class IdentifyUsers {
 		    List<TweetsEntity> listaTweetsEntities = new ArrayList<TweetsEntity>();
 //		
 //			Richiamo l'indexer, commentare se già fatto
-			LuceneCore.createIndex(PATH_PRIMARY, PATH_INDEXDIR_PRIMAR);
+			//LuceneCore.createIndex(PATH_PRIMARY, PATH_INDEXDIR_PRIMAR);
 //		    LuceneCore.createIndex(PATH_DEBATES, PATH_INDEXDIR);
 		
 			//1)identify tweets of users that mention one of the U.S. presidential candidates. How many users you get? How many tweets?
@@ -91,7 +91,7 @@ public class IdentifyUsers {
 			//creo la lista contenente utenti-idutente e relativi tweet
 		    HashMap<String, ArrayList<String>> hashMapUsersTweets = LuceneCore.getUserAndRelTweets(new HashSet<String>(), resultDocs, PATH_FILE_UTENTI_ID);  // aggiunto path per scrivere su file
 		    
-		    
+		    System.out.println("fine esecuzione");
 		    
 		    
 		    

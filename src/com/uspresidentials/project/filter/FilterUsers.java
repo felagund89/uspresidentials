@@ -64,6 +64,7 @@ public class FilterUsers {
 		String line;
 		String userName = null;
 		long idUser = 0;
+		int countUserFiltered=0;
 		try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_FILTER_USERS_BY_LANGUAGE))) {
 			
 			loggerFilteredUsers.info("UTENTI FILTRATI PER: \n1-lingua, \n2-localita, \n3-numero totale di tweet, \n4-numero di followers");
@@ -95,10 +96,11 @@ public class FilterUsers {
 								followers = userAnalize.getFollowersCount();
 								numberOfTotalTweets = userAnalize.getStatusesCount();
 								System.out.println("user: " + userAnalize.getName() + " lingua: " + language + " localita: " + location+" numTweet: "+numberOfTotalTweets +" followers: "+followers);
-								loggerFilteredUsers.info("User: " + userAnalize.getName() + " Lingua: " + language + " Localita: " + location+" NumTweet: "+numberOfTotalTweets +" Followers: "+followers);
 								if (language.equalsIgnoreCase("en") && ( location.contains("us") || location.contains("america"))) {
 									if(followers>=1500 && numberOfTotalTweets>=1500){
-									writeUsersFilteredOnFile(userName+ ";" + idUser + ";");
+										countUserFiltered++;
+										loggerFilteredUsers.info(countUserFiltered+")"+" User: " + userAnalize.getName() + " Lingua: " + language + " Localita: " + location+" NumTweet: "+numberOfTotalTweets +" Followers: "+followers);
+										writeUsersFilteredOnFile(userName+ ";" + idUser + ";");
 									}
 								}
 							}
@@ -118,7 +120,7 @@ public class FilterUsers {
 									int toSleep = authenticationManager.twitter.getRateLimitStatus().get("/users/search").getSecondsUntilReset();
 									System.out.println("Sleeping for " + toSleep + " seconds.");
 									Thread.sleep(toSleep * 1000);
-									System.out.println(">>>>>>>>>>>>>>>>l'attesa è finita ");
+									System.out.println(">>>>>>>>>>>>>>>>l'attesa è finita, ricomincio a filtrare ");
 								}
 									
 	
