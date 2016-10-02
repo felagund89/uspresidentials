@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import twitter4j.JSONException;
@@ -21,28 +22,39 @@ import twitter4j.User;
 import com.uspresidentials.project.utils.AuthenticationManager;
 import com.uspresidentials.project.utils.PropertiesManager;
 
+
+
+
+
+
 public class FilterUsers {
 	
 	
 	
-	final static String PATH_FILE_FILTER_USERS_BY_LANGUAGE = PropertiesManager .getPropertiesFromFile("PATH_FILE_FILTER_USERS_BY_LANGUAGE"); 
-		  static int NUMERO_UTENTI; 
-		 
-		  static AuthenticationManager authenticationManager = new AuthenticationManager(); 
-		 
-		  static JSONObject objFather = new JSONObject(); 
-		  static List<JSONObject> objUtenti = new ArrayList<JSONObject>(); 
-		  static JSONObject objUtente; 
-		 
-		   
-		  public static void main(String[] args) throws FileNotFoundException, TwitterException, IOException, JSONException{ 
-		    try {
-				getUsersAfterFilter(authenticationManager.twitter);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}     
-		  } 
+	final static String PATH_FILE_FILTER_USERS_BY_LANGUAGE = PropertiesManager
+			.getPropertiesFromFile("PATH_FILE_FILTER_USERS_BY_LANGUAGE");
+	static int NUMERO_UTENTI;
+	final static Logger loggerFilteredUsers = Logger.getLogger("filteredUsers");
+
+	static AuthenticationManager authenticationManager = new AuthenticationManager();
+
+	static JSONObject objFather = new JSONObject();
+	static List<JSONObject> objUtenti = new ArrayList<JSONObject>();
+	static JSONObject objUtente;
+
+	
+	
+	
+	public static void main(String[] args) throws FileNotFoundException,TwitterException, IOException, JSONException {
+		try {
+			
+			getUsersAfterFilter(authenticationManager.twitter);
+		
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 		   
 		   
 		   
@@ -53,7 +65,10 @@ public class FilterUsers {
 		String userName = null;
 		long idUser = 0;
 		try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_FILTER_USERS_BY_LANGUAGE))) {
-
+			
+			loggerFilteredUsers.info("UTENTI FILTRATI PER: \n1-lingua, \n2-localita, \n3-numero totale di tweet, \n4-numero di followers");
+			
+			
 			while ((line = br.readLine()) != null) {
 				
 				try {
@@ -80,8 +95,11 @@ public class FilterUsers {
 								followers = userAnalize.getFollowersCount();
 								numberOfTotalTweets = userAnalize.getStatusesCount();
 								System.out.println("user: " + userAnalize.getName() + " lingua: " + language + " localita: " + location+" numTweet: "+numberOfTotalTweets +" followers: "+followers);
+								loggerFilteredUsers.info("User: " + userAnalize.getName() + " Lingua: " + language + " Localita: " + location+" NumTweet: "+numberOfTotalTweets +" Followers: "+followers);
 								if (language.equalsIgnoreCase("en") && ( location.contains("us") || location.contains("america"))) {
+									if(followers>=1500 && numberOfTotalTweets>=1500){
 									writeUsersFilteredOnFile(userName+ ";" + idUser + ";");
+									}
 								}
 							}
 						}

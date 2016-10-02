@@ -87,7 +87,7 @@ public class FriendShipGraph {
 		//System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip);
 
 		// ********COMPONENTE CONNESSE - write in folder 'log4j_logs'
-		// searchConnectedComponents(graphFriendShip);
+		searchConnectedComponents(graphFriendShip);
 
 		// ********PAGE RANK
 
