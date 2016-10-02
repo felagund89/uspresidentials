@@ -6,6 +6,8 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -21,6 +23,9 @@ import org.jgraph.graph.GraphConstants;
 import org.jgrapht.ext.JGraphModelAdapter;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
+import org.json.simple.parser.ParseException;
+
+import twitter4j.TwitterException;
 
 
 public class SwingContainerDemo extends JApplet {
@@ -38,7 +43,7 @@ public class SwingContainerDemo extends JApplet {
 		      prepareGUI();   
 	   }
 	   
-	public static void main(String[] args){
+	public static void main(String[] args) throws FileNotFoundException, TwitterException, IOException, ParseException{
 	      SwingContainerDemo  swingContainerDemo = new SwingContainerDemo();  
 		  swingContainerDemo.showJFrameDemo();
 	}   
@@ -52,8 +57,9 @@ public class SwingContainerDemo extends JApplet {
 	            System.exit(0);
 	         }        
 	      });    
+	      
 	      headerLabel = new JLabel("", JLabel.CENTER);        
-	      statusLabel = new JLabel("",JLabel.CENTER);    
+	      this.statusLabel = new JLabel("",JLabel.CENTER);    
 
 	      msglabel = new JLabel("Welcome to TutorialsPoint SWING Tutorial.", JLabel.CENTER);
 
@@ -66,7 +72,7 @@ public class SwingContainerDemo extends JApplet {
 	     // mainFrame.setVisible(true);  
 	   }
 
-	   private void showJFrameDemo(){
+	   private void showJFrameDemo() throws FileNotFoundException, TwitterException, IOException, ParseException{
 	      headerLabel.setText("Container in action: JFrame");   
 
 	      final JFrame frame = new JFrame();
@@ -83,7 +89,7 @@ public class SwingContainerDemo extends JApplet {
 	      
 	     int distx = 0;
 	     int disty = 0;
-	      ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraph();
+	      ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraphFromFriendShip();
 	      FriendShipGraph.searchConnectedComponents(myGraph);
 	      
 	      m_jgAdapter = new JGraphModelAdapter<String, DefaultEdge>(myGraph);

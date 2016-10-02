@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.xml.transform.Transformer;
+
 import com.uspresidentials.project.entity.UserCustom;
 
 import org.apache.log4j.FileAppender;
@@ -33,6 +35,7 @@ import com.uspresidentials.project.utils.ComparatorRank;
 import com.uspresidentials.project.utils.PropertiesManager;
 
 import edu.uci.ics.jung.algorithms.scoring.PageRank;
+import edu.uci.ics.jung.algorithms.scoring.ClosenessCentrality;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import twitter4j.IDs;
@@ -68,6 +71,7 @@ public class FriendShipGraph {
 
 	final static Logger loggerComponents = Logger.getLogger("loggerComponents");
 	final static Logger loggerPageRank = Logger.getLogger("loggerPageRank");
+	final static Logger loggerCentrality = Logger.getLogger("loggerCentrality");
 
 	public static void main(String[] args) throws IOException, TwitterException, JSONException, ParseException {
 
@@ -93,6 +97,10 @@ public class FriendShipGraph {
 
 		SparseMultigraph<String, DefaultEdge> graphSparse = convertListenableGraph(graphFriendShip);
 		calculatePageRank(graphSparse);
+		
+		// ********CENTRALITY OF M' USERS (who mentioned a candidate)
+		//calculateCentrality(graphSparse);
+		
 	}
 
 	public static void getGlobalFriendship(Twitter twitter)
@@ -411,6 +419,17 @@ public class FriendShipGraph {
 			loggerPageRank.info("Vertext: " + u.getUserName() + " score: " + u.getPageRank());
 		}
 	}
+	
+	
+	public static void calculateCentrality(SparseMultigraph<String, DefaultEdge> graph) {
+				
+	      ClosenessCentrality<String,DefaultEdge> centralityUser = new ClosenessCentrality<String, DefaultEdge>(graph);
+	      for (String v : graph.getVertices()){
+	    	  double userCenScore = centralityUser.getVertexScore(v);
+	    	  loggerCentrality.info("Vertext: " + v + " centrality-score: " + userCenScore);
+	      }
+	}
+	
 
 	public static void writeUsersOnFile(String content) throws FileNotFoundException, UnsupportedEncodingException {
 		// nomeUtente1:amico1;amico2;amico3
