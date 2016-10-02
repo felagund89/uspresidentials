@@ -14,8 +14,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
 import com.uspresidentials.project.entity.UserCustom;
 
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.jgrapht.ListenableGraph;
 import org.jgrapht.alg.ConnectivityInspector;
@@ -51,12 +53,11 @@ public class FriendShipGraph {
 	final long MAX_USERS = 500;
 	final static String PATH_FILE_UTENTI_ID = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID");
 	final static String PATH_FILE_FRIENDSHIP = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP");
-	final static String PATH_FILE_FRIENDSHIP_JSON = PropertiesManager
-			.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON");
-	final static String PATH_FILE_LOG4J_CONNECTED_COMPONENTS = PropertiesManager
-			.getPropertiesFromFile("PATH_FILE_LOG4J_CONNECTED_COMPONENTS");
+	final static String PATH_FILE_FRIENDSHIP_JSON = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON");
+	final static String PATH_FILE_LOG4J_CONNECTED_COMPONENTS = PropertiesManager.getPropertiesFromFile("PATH_FILE_LOG4J_CONNECTED_COMPONENTS");
+	final static String PATH_FILE_LOG4J_PAGERANK = PropertiesManager.getPropertiesFromFile("PATH_FILE_LOG4J_PAGERANK");
 
-	static int NUMERO_UTENTI;
+	static int NUMERO_UTENTI; 
 	static Boolean isPrivateFriends = false;
 
 	static AuthenticationManager authenticationManager = new AuthenticationManager();
@@ -65,7 +66,8 @@ public class FriendShipGraph {
 	static List<JSONObject> objUtenti = new ArrayList<JSONObject>();
 	static JSONObject objUtente;
 
-	final static Logger logger = Logger.getLogger(FriendShipGraph.class);
+	final static Logger loggerComponents = Logger.getLogger("loggerComponents");
+	final static Logger loggerPageRank = Logger.getLogger("loggerPageRank");
 
 	public static void main(String[] args) throws IOException, TwitterException, JSONException, ParseException {
 
@@ -319,6 +321,8 @@ public class FriendShipGraph {
 	}
 
 	public static void searchConnectedComponents(ListenableDirectedGraph<String, DefaultEdge> g) {
+		
+		
 		Set<String> listVertex = g.vertexSet();
 		ConnectivityInspector<String, DefaultEdge> conn = new ConnectivityInspector<String, DefaultEdge>(g);
 		ArrayList<String> listGlobalConnected = new ArrayList<String>();
@@ -337,12 +341,12 @@ public class FriendShipGraph {
 						+ "\n\n\n***********";
 			}
 
-			logger.info("****Start Vertex:" + currentVertex.toString() + "\nconnected components: "
+			loggerComponents.info("****Start Vertex:" + currentVertex.toString() + "\nconnected components: "
 					+ listVertexConnected.toString() + "\n\n\n*********************************");
 		}
 
 		System.out.println("Search Connected Components COMPLETED!");
-		logger.info(majorComponents);
+		loggerComponents.info(majorComponents);
 	}
 
 	public static SparseMultigraph<String, DefaultEdge> convertListenableGraph(
@@ -390,6 +394,7 @@ public class FriendShipGraph {
 
 	public static void calculatePageRank(SparseMultigraph<String, DefaultEdge> graph) {
 
+		
 		PageRank<String, DefaultEdge> rankerManager = new PageRank<String, DefaultEdge>(graph, 0.15);
 		rankerManager.evaluate();
 
@@ -402,7 +407,8 @@ public class FriendShipGraph {
 		}
 		
 		for(UserCustom u : orderedPageRankUser){
-			logger.info("Vertext: " + u.getUserName() + " score: " + u.getPageRank());
+			
+			loggerPageRank.info("Vertext: " + u.getUserName() + " score: " + u.getPageRank());
 		}
 	}
 

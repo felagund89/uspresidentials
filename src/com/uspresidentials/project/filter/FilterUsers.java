@@ -66,6 +66,8 @@ public class FilterUsers {
 	
 						String location;
 						String language;
+						int followers;
+						int numberOfTotalTweets;
 	
 						User userAnalize;
 						userAnalize = authenticationManager.twitter.showUser(idUser);
@@ -75,7 +77,9 @@ public class FilterUsers {
 							if (userAnalize.getLang() != null && userAnalize.getTimeZone()!=null) {
 								language = userAnalize.getLang();
 								location = userAnalize.getTimeZone().toLowerCase();
-								System.out.println("user: " + userAnalize.getName() + "lingua: " + language + "localita: " + location);
+								followers = userAnalize.getFollowersCount();
+								numberOfTotalTweets = userAnalize.getStatusesCount();
+								System.out.println("user: " + userAnalize.getName() + " lingua: " + language + " localita: " + location+" numTweet: "+numberOfTotalTweets +" followers: "+followers);
 								if (language.equalsIgnoreCase("en") && ( location.contains("us") || location.contains("america"))) {
 									writeUsersFilteredOnFile(userName+ ";" + idUser + ";");
 								}
@@ -122,6 +126,10 @@ public class FilterUsers {
 		
 	}
 		 
+	
+	
+	
+	
 		   
 	  public static void writeUsersFilteredOnFile(String content) throws FileNotFoundException{ 
 	     
