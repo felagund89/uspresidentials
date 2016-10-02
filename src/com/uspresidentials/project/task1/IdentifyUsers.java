@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -90,6 +91,8 @@ public class IdentifyUsers {
 			
 			//creo la lista contenente utenti-idutente e relativi tweet
 		    HashMap<String, ArrayList<String>> hashMapUsersTweets = LuceneCore.getUserAndRelTweets(new HashSet<String>(), resultDocs, PATH_FILE_UTENTI_ID);  // aggiunto path per scrivere su file
+		    
+		   
 		    
 		    System.out.println("fine esecuzione");
 		    

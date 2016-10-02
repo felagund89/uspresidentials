@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -166,7 +167,7 @@ public class LuceneCore {
  	    int num = 0;
  	    for (ScoreDoc sd : hits.scoreDocs) {
  	      Document d = searcher.doc(sd.doc);
- 	     loggerUsersAndTweets.info(String.format("#%d: %s (rating=%s) - user: %s - tweet: %s", ++num, d.get("idTweet"), sd.score, d.get("tweetUser"), d.get("tweetText")));
+ 	     //loggerUsersAndTweets.info(String.format("#%d: %s (rating=%s) - user: %s - tweet: %s", ++num, d.get("idTweet"), sd.score, d.get("tweetUser"), d.get("tweetText")));
  			
  		
  	    }
@@ -241,12 +242,12 @@ public class LuceneCore {
 				tempArrayTweets.add(currentTweet);
 				hashMapUser.put(currentUserName, tempArrayTweets);
 				
-				loggerUsersAndTweets.info("appena aggiunto user: " + currentUserName);
+				//loggerUsersAndTweets.info("appena aggiunto user: " + currentUserName);
 				writer.println((currentUserName+";"));   //salvo anche su file la lista di utenti/idutente
 				
 			}else{
 				hashMapUser.get(currentUserName).add(currentTweet);
-				loggerUsersAndTweets.info("aggiunto tweet for user: " + currentUserName);
+				//loggerUsersAndTweets.info("aggiunto tweet for user: " + currentUserName);
 			}
 			
 //			printHashMap(hashMapUser);
@@ -255,6 +256,20 @@ public class LuceneCore {
 		}
 	    writer.close();
 
+	    Iterator iterator = hashMapUser.keySet().iterator();
+
+	    while (iterator.hasNext()) {
+	       String key = iterator.next().toString();
+	       loggerUsersAndTweets.info(key + ": ");
+
+	       ArrayList<String> value = hashMapUser.get(key);
+	       for (String string : value) {
+	    	   loggerUsersAndTweets.info("- "+string);
+	       }
+	    }
+	    
+	    
+	    
 		return hashMapUser;
 		//return userAndTweets;
 	}
