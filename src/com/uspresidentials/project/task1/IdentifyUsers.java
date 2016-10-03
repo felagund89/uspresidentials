@@ -78,28 +78,23 @@ public class IdentifyUsers {
 			//LuceneCore.createIndex(PATH_PRIMARY, PATH_INDEXDIR_PRIMAR);
 //		    LuceneCore.createIndex(PATH_DEBATES, PATH_INDEXDIR);
 		
-			//1)identify tweets of users that mention one of the U.S. presidential candidates. How many users you get? How many tweets?
-			//Richiamo il searcher con la query voluta
-			TopDocs resultDocs = LuceneCore.searchEngine(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
-			
-			//calcolo il numero degli utenti twitter 
-//		    Set<String> setUniqUser = LuceneCore.numberOfUser(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
-			
-//		    long numeroUniqUser = setUniqUser.size();
-//		    long numeroTweet = LuceneCore.numberOfTweets(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
+		    getHashMapUser_Tweets();
+	}
+	
+	public static HashMap<String, ArrayList<String>> getHashMapUser_Tweets() throws IOException, ParseException {
+		//1)identify tweets of users that mention one of the U.S. presidential candidates. How many users you get? How many tweets?
+		//Richiamo il searcher con la query voluta
+		TopDocs resultDocs = LuceneCore.searchEngine(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
 		
-			
-			//creo la lista contenente utenti-idutente e relativi tweet
-		    HashMap<String, ArrayList<String>> hashMapUsersTweets = LuceneCore.getUserAndRelTweets(new HashSet<String>(), resultDocs, PATH_FILE_UTENTI_ID);  // aggiunto path per scrivere su file
-		    
-		   
-		    
-		    System.out.println("fine esecuzione");
-		    
-		    
-		    
-		    
-		    
-		    
+		//calcolo il numero degli utenti twitter 
+//	    Set<String> setUniqUser = LuceneCore.numberOfUser(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
+		
+//	    long numeroUniqUser = setUniqUser.size();
+//	    long numeroTweet = LuceneCore.numberOfTweets(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
+	
+		//creo la lista contenente utenti-idutente e relativi tweet
+	    HashMap<String, ArrayList<String>> hashMapUsersTweets = LuceneCore.getUserAndRelTweets(new HashSet<String>(), resultDocs, PATH_FILE_UTENTI_ID);  // aggiunto path per scrivere su file		    
+	    System.out.println("fine esecuzione");
+	    return hashMapUsersTweets;
 	}
 }

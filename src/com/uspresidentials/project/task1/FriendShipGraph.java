@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -18,9 +20,11 @@ import java.util.TreeSet;
 import javax.xml.transform.Transformer;
 
 import com.uspresidentials.project.entity.UserCustom;
+import com.uspresidentials.project.lucene.LuceneCore;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
+import org.apache.lucene.search.TopDocs;
 import org.jgrapht.ListenableGraph;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
@@ -55,11 +59,13 @@ public class FriendShipGraph {
 
 	final long MAX_USERS = 500;
 	final static String PATH_FILE_UTENTI_ID = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID");
+	final static String PATH_FILE_UTENTI_ID_TEST = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID_TEST");
+	
 	final static String PATH_FILE_FRIENDSHIP = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP");
 	final static String PATH_FILE_FRIENDSHIP_JSON = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON");
 	final static String PATH_FILE_LOG4J_CONNECTED_COMPONENTS = PropertiesManager.getPropertiesFromFile("PATH_FILE_LOG4J_CONNECTED_COMPONENTS");
 	final static String PATH_FILE_LOG4J_PAGERANK = PropertiesManager.getPropertiesFromFile("PATH_FILE_LOG4J_PAGERANK");
-
+	
 	static int NUMERO_UTENTI; 
 	static Boolean isPrivateFriends = false;
 
@@ -73,21 +79,24 @@ public class FriendShipGraph {
 	final static Logger loggerPageRank = Logger.getLogger("loggerPageRank");
 	final static Logger loggerCentrality = Logger.getLogger("loggerCentrality");
 
-	public static void main(String[] args) throws IOException, TwitterException, JSONException, ParseException {
+	static Hashtable<String, String> hashMap_Id_Username;
+	static HashMap<String, ArrayList<String>> hashMapUsersTweets; 
+	
+	public static void main(String[] args) throws IOException, TwitterException, JSONException, ParseException, org.apache.lucene.queryparser.classic.ParseException {
 
 		// recupero gli amici a partire da un account specifico 180 amici alla
 		// volta
 		// per trovare e salvare tutti gli amici su file
 
+		hashMap_Id_Username = getUserFromFileAndSplit(500, PATH_FILE_UTENTI_ID_TEST,-1);
+		hashMapUsersTweets = IdentifyUsers.getHashMapUser_Tweets();
+		
 		// ******** CREATE FILE WITH FRIEND FOR EACH USER
-		// getGlobalFriendship(authenticationManager.twitter); //verificare se
+		getGlobalFriendship(authenticationManager.twitter); //verificare se
 		// serve ancora passare l'argomento
-
-		// ******** FRIENDSHIP
-		ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = createGraphFromFriendShip(); // read
-																									// from
-																									// JSON
-																									// File
+				
+		// ******** FRIENDSHIP  // read from JSON File
+		//ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = createGraphFromFriendShip(); 																							
 		//System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip);
 
 		// ********COMPONENTE CONNESSE - write in folder 'log4j_logs'
@@ -95,12 +104,11 @@ public class FriendShipGraph {
 
 		// ********PAGE RANK
 
-		SparseMultigraph<String, DefaultEdge> graphSparse = convertListenableGraph(graphFriendShip);
+		//SparseMultigraph<String, DefaultEdge> graphSparse = convertListenableGraph(graphFriendShip);
 		//calculatePageRank(graphSparse);
 		
 		// ********CENTRALITY OF M' USERS (who mentioned a candidate)
-		calculateCentrality(graphSparse);
-		
+		//calculateCentrality(graphSparse);
 	}
 
 	public static void getGlobalFriendship(Twitter twitter)
@@ -135,11 +143,21 @@ public class FriendShipGraph {
 					objUtente = new JSONObject();
 					objUtente.put("userName", userName);
 					objUtente.put("idUser", idUser);
-
+					
+					JSONArray jsonArrayTweets = new JSONArray();
+					ArrayList<String> currentTeewts = hashMapUsersTweets.get(userName);
+					if (currentTeewts != null) {
+						for (String t : currentTeewts) {
+							jsonArrayTweets.add(t);
+						}
+					}
+					objUtente.put("tweets", jsonArrayTweets);
+					
 					System.out.println("Utente " + userName + " ha " + numberOfFriends + " amici.");
 					// scrivo su file il nome dell'utente che stiamo analizzando
 					writeUsersOnFile(userName + "===>");
-					getFriendShipRecursive(authenticationManager.twitter, userName, idUser, -1, numberOfFriends);
+					//getFriendShipRecursive(authenticationManager.twitter, userName, idUser, -1, numberOfFriends);
+					getFriendShipONLYDatasetRecursive(authenticationManager.twitter, userName, idUser, -1, numberOfFriends);
 
 					writeJsonUserOnFile(objUtente);
 
@@ -226,6 +244,90 @@ public class FriendShipGraph {
 		}
 		// crea il grafo leggendo tale file
 	}
+	
+	
+	public static void getFriendShipONLYDatasetRecursive(Twitter twitter, String userName, long idUser, long cursor,
+			int numberOfFriends) throws TwitterException, IOException, JSONException {
+
+		String listFriends = "";
+		String content;
+		System.out.println("Analizzo amici...");
+		JSONArray jsonArrayFriends = new JSONArray();
+
+		int prevIndex = authenticationManager.getAccountIndex();
+		try {
+			if (isPrivateFriends)
+				return;
+
+			PagableResponseList<User> pagableFollowings;
+			do {
+				listFriends = "";
+				pagableFollowings = authenticationManager.twitter.getFriendsList(idUser, cursor);
+				
+				
+				for (User user : pagableFollowings) {
+					listFriends = listFriends + user.getName() + ";";
+					
+					System.out.println("idUser Hashmap: " + hashMap_Id_Username.keys().toString());
+					System.out.println("user.getId(): " + String.valueOf(user.getId()));
+					
+					if(hashMap_Id_Username.containsKey(String.valueOf(user.getId())))
+						jsonArrayFriends.add(user.getName() + ";" + user.getId() + ";");
+					numberOfFriends--;
+				}
+				content = listFriends;
+				System.out.println("numero di amici restanti da aggiungere: " + numberOfFriends);
+				writeUsersOnFile(content); // scrive su file tutte le
+											// relationship dei vari utenti
+				// numberOfFriends = numberOfFriends - pagableFollowings.size();
+				
+				if (numberOfFriends <= 0) {
+					objUtente.put("friends", jsonArrayFriends);
+					break;
+				}
+				
+			} while ((cursor = pagableFollowings.getNextCursor()) != 0);
+		} catch (TwitterException e) {
+
+			if (e.getStatusCode() != 429) {
+				System.out.println("Users " + userName + " has a private list. Extraction denied!");
+				isPrivateFriends = true;
+				writeUsersOnFile("PRIVATE_FRIENDS;");
+				// scorre al prossimo idUser e azzera currentCursor (-1)
+			}
+
+			// System.out.println(e.getMessage() + "Status code: " +
+			// e.getStatusCode() + "\n");
+
+			// System.out.println("Richieste esaurite per l'account: " +
+			// twitter.getScreenName() + ".");
+			authenticationManager.setAuthentication(authenticationManager.getAccountIndex() + 1);
+
+			// vecchio modo
+			// twitter = getFastCredentialsForQuery(twitter);
+			try {
+				if (authenticationManager.getAccountIndex() == authenticationManager.ACCOUNTS_NUMBER - 1) {
+
+					//
+					int toSleep = authenticationManager.twitter.getRateLimitStatus().get("/friends/list")
+							.getSecondsUntilReset() + 1;
+					System.out.println("Sleeping for " + toSleep + " seconds.");
+					Thread.sleep(toSleep * 1000);
+					getFriendShipONLYDatasetRecursive(authenticationManager.twitter, userName, idUser, cursor, numberOfFriends);
+
+				} else {
+					getFriendShipONLYDatasetRecursive(authenticationManager.twitter, userName, idUser, cursor, numberOfFriends);
+				}
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+		// crea il grafo leggendo tale file
+	}
+	
+	
+	
 
 	public static ListenableDirectedGraph<String, DefaultEdge> createGraphFromFriendShip()
 			throws TwitterException, FileNotFoundException, IOException, ParseException {
@@ -261,10 +363,8 @@ public class FriendShipGraph {
 															// giá quel nodo
 					myGraph.addVertex(currentFriend);
 
-				if (!myGraph.containsEdge(currentUser, currentFriend)) // se non
-																		// contiene
-																		// giá
-																		// quell'arco
+				// se non contiene giá quell'arco
+				if (!myGraph.containsEdge(currentUser, currentFriend))  
 					myGraph.addEdge(currentUser, currentFriend);
 			}
 		}
