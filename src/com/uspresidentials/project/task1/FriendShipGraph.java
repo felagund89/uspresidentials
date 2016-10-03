@@ -149,9 +149,7 @@ public class FriendShipGraph {
 					if (currentTeewts != null) {
 						System.out.println("Tweet for User: " + userName);
 						for (String t : currentTeewts) {
-							
 							System.out.println("currentTweets: " + t);
-							
 							jsonArrayTweets.add(t);
 						}
 					}

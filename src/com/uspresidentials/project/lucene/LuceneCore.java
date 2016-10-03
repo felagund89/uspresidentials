@@ -216,7 +216,7 @@ public class LuceneCore {
 		 return numOfTweet;			
 	}
 	 
-	public static HashMap<String, ArrayList<String>> getUserAndRelTweets(Set<String> usersName, TopDocs resultDocs, String pathFileUtenti) throws IOException, ParseException{
+	public static HashMap<String, ArrayList<String>> getUserAndRelTweets(Set<String> usersName, TopDocs resultDocs, String pathFileUtenti, boolean isWriteOnFile) throws IOException, ParseException{
 		
 		TweetInfoEntity userAndTweets = new TweetInfoEntity();
 		TopDocs hits;
@@ -243,7 +243,8 @@ public class LuceneCore {
 				hashMapUser.put(currentUserName, tempArrayTweets);
 				
 				//loggerUsersAndTweets.info("appena aggiunto user: " + currentUserName);
-				writer.println((currentUserName+";"));   //salvo anche su file la lista di utenti/idutente
+				if(isWriteOnFile)
+					writer.println((currentUserName+";"));   //salvo anche su file la lista di utenti/idutente
 				
 			}else{
 				hashMapUser.get(currentUserName).add(currentTweet);

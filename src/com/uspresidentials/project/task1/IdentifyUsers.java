@@ -51,6 +51,7 @@ public class IdentifyUsers {
 
 	final static String PATH_INDEXDIR_PRIMAR = PropertiesManager.getPropertiesFromFile("PATH_INDEXDIR_PRIMAR");
 	final static String PATH_FILE_UTENTI_ID = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID");
+	final static String PATH_FILE_UTENTI_ID_TEST = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID_TEST");
 	
 	/**
 	 * QUERY
@@ -93,7 +94,7 @@ public class IdentifyUsers {
 //	    long numeroTweet = LuceneCore.numberOfTweets(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
 	
 		//creo la lista contenente utenti-idutente e relativi tweet
-	    HashMap<String, ArrayList<String>> hashMapUsersTweets = LuceneCore.getUserAndRelTweets(new HashSet<String>(), resultDocs, PATH_FILE_UTENTI_ID);  // aggiunto path per scrivere su file		    
+	    HashMap<String, ArrayList<String>> hashMapUsersTweets = LuceneCore.getUserAndRelTweets(new HashSet<String>(), resultDocs, PATH_FILE_UTENTI_ID_TEST, false);  // aggiunto path per scrivere su file		    
 	    System.out.println("fine esecuzione");
 	    return hashMapUsersTweets;
 	}
