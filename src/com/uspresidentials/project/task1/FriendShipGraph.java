@@ -91,15 +91,15 @@ public class FriendShipGraph {
 		//System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip);
 
 		// ********COMPONENTE CONNESSE - write in folder 'log4j_logs'
-		searchConnectedComponents(graphFriendShip);
+		//searchConnectedComponents(graphFriendShip);
 
 		// ********PAGE RANK
 
 		SparseMultigraph<String, DefaultEdge> graphSparse = convertListenableGraph(graphFriendShip);
-		calculatePageRank(graphSparse);
+		//calculatePageRank(graphSparse);
 		
 		// ********CENTRALITY OF M' USERS (who mentioned a candidate)
-		//calculateCentrality(graphSparse);
+		calculateCentrality(graphSparse);
 		
 	}
 
