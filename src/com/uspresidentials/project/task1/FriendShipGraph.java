@@ -88,7 +88,7 @@ public class FriendShipGraph {
 		// volta
 		// per trovare e salvare tutti gli amici su file
 
-		hashMap_Id_Username = getUserFromFileAndSplit(500, PATH_FILE_UTENTI_ID_TEST,-1);
+		hashMap_Id_Username = getUserFromFileAndSplit(3, PATH_FILE_UTENTI_ID_TEST,-1);
 		hashMapUsersTweets = IdentifyUsers.getHashMapUser_Tweets();
 		
 		// ******** CREATE FILE WITH FRIEND FOR EACH USER
@@ -114,7 +114,7 @@ public class FriendShipGraph {
 	public static void getGlobalFriendship(Twitter twitter)
 			throws TwitterException, FileNotFoundException, IOException, JSONException {
 
-		try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_UTENTI_ID))) {
+		try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_UTENTI_ID_TEST))) {
 			String line;
 
 			while ((line = br.readLine()) != null) {
@@ -145,9 +145,13 @@ public class FriendShipGraph {
 					objUtente.put("idUser", idUser);
 					
 					JSONArray jsonArrayTweets = new JSONArray();
-					ArrayList<String> currentTeewts = hashMapUsersTweets.get(userName);
+					ArrayList<String> currentTeewts = hashMapUsersTweets.get(userName+";"+idUser);
 					if (currentTeewts != null) {
+						System.out.println("Tweet for User: " + userName);
 						for (String t : currentTeewts) {
+							
+							System.out.println("currentTweets: " + t);
+							
 							jsonArrayTweets.add(t);
 						}
 					}
