@@ -95,7 +95,7 @@ public class IdentifyUsers {
 	
 		//creo la lista contenente utenti-idutente e relativi tweet
 	    HashMap<String, ArrayList<String>> hashMapUsersTweets = LuceneCore.getUserAndRelTweets(new HashSet<String>(), resultDocs, PATH_FILE_UTENTI_ID_TEST, false);  // aggiunto path per scrivere su file		    
-	    System.out.println("fine esecuzione");
+	    System.out.println("fine esecuzione getHashMapUser_Tweets");
 	    return hashMapUsersTweets;
 	}
 }

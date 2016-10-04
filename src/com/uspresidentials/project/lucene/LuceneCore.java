@@ -220,11 +220,13 @@ public class LuceneCore {
 		
 		TweetInfoEntity userAndTweets = new TweetInfoEntity();
 		TopDocs hits;
-		PrintWriter writer = new PrintWriter(pathFileUtenti, "UTF-8");
+		PrintWriter writer=null;
+		
+		if(isWriteOnFile)
+			writer = new PrintWriter(pathFileUtenti, "UTF-8");
 		   
 		loggerUsersAndTweets.info("UTENTI E RELATIVI TWEETS");
 		        	
-//		           
 		HashMap<String, ArrayList<String>> hashMapUser = new HashMap<String, ArrayList<String>>();
 		String currentUserName = null;
 		String currentTweet = null;
@@ -255,7 +257,9 @@ public class LuceneCore {
 			
 //			logger.info("L'utente: "+)
 		}
-	    writer.close();
+		
+		if(isWriteOnFile)
+			writer.close();
 
 	    Iterator iterator = hashMapUser.keySet().iterator();
 
