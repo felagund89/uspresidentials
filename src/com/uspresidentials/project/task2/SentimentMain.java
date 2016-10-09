@@ -21,7 +21,7 @@ import com.uspresidentials.project.utils.PropertiesManager;
 
 public class SentimentMain {
 
-	private static final String PATHS_ENTIMENT_WORDNET_FILE = PropertiesManager.getPropertiesFromFile("PATHS_ENTIMENT_WORDNET_FILE");
+	private static final String PATH_SENTIMENT_CANDIDATE_FILE = PropertiesManager.getPropertiesFromFile("PATH_SENTIMENT_CANDIDATE_FILE");
 	
 	
 	public static void main(String[] args) throws IOException {
@@ -30,12 +30,18 @@ public class SentimentMain {
 //			return;
 //		}
 
-		SentimentsChecker sentiwordnet = new SentimentsChecker(PATHS_ENTIMENT_WORDNET_FILE);
+		SentimentsChecker sentiwordnet = new SentimentsChecker(PATH_SENTIMENT_CANDIDATE_FILE);
 
 		System.out.println("good#a " + sentiwordnet.extract("good", "a"));
-		System.out.println("bad#a " + sentiwordnet.extract("bad", "a"));
-		System.out.println("blue#a " + sentiwordnet.extract("blue", "a"));
-		System.out.println("blue#n " + sentiwordnet.extract("blue", "n"));
+//		System.out.println("bad#a " + sentiwordnet.extract("bad", "a"));
+		System.out.println("suck#a " + sentiwordnet.extract("suck", "a"));
+//		System.out.println("best#a " + sentiwordnet.extract("best", "a"));
+//		System.out.println("better#a " + sentiwordnet.extract("better", "a"));
+
+		System.out.println("good#n " + sentiwordnet.extract("good", "n"));
+//		System.out.println("best#n " + sentiwordnet.extract("best", "n"));
+		System.out.println("suck#n " + sentiwordnet.extract("suck", "n"));
+
 	}
 
 }

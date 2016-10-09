@@ -31,8 +31,8 @@ public class FilterUsers {
 	
 	
 	
-	final static String PATH_FILE_FILTER_USERS_BY_LANGUAGE = PropertiesManager
-			.getPropertiesFromFile("PATH_FILE_FILTER_USERS_BY_LANGUAGE");
+	final static String PATH_FILE_FILTER_U_BY_LAN_AND_LOC = PropertiesManager
+			.getPropertiesFromFile("PATH_FILE_FILTER_U_BY_LAN_AND_LOC");
 	static int NUMERO_UTENTI;
 	final static Logger loggerFilteredUsers = Logger.getLogger("filteredUsers");
 
@@ -65,8 +65,9 @@ public class FilterUsers {
 		String userName = null;
 		long idUser = 0;
 		int countUserFiltered=0;
-		try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_FILTER_USERS_BY_LANGUAGE))) {
+		try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_FILTER_U_BY_LAN_AND_LOC))) {
 			
+			//filtrando con questi parametri abbiamo 7096 user.
 			loggerFilteredUsers.info("UTENTI FILTRATI PER: \n1-lingua, \n2-localita, \n3-numero totale di tweet, \n4-numero di followers");
 			
 			

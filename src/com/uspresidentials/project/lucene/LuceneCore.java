@@ -87,7 +87,6 @@ public class LuceneCore {
 			String currentContent;
 			
 			//Creazione documenti per LUCENE
-			//LA RICERCA PER ORA AVVIENE SEMPRE SULLO STESSO FILE, IL 3 NEL MIO CASO
 			for(int j=0;j<files.length;j++){    //ciclo su ogni File del dataset
 			
 				currentFile = files[j];
@@ -160,7 +159,7 @@ public class LuceneCore {
  	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
  	    
  	    Query q1 = qp.parse(queryLucene);
- 	    TopDocs hits = searcher.search(q1, 10000000);
+ 	    TopDocs hits = searcher.search(q1, 100000);
  	    
 		loggerUsersAndTweets.info("##### "+hits.totalHits + " Docs found for the query \"" + q1.toString() + "\"");
 
