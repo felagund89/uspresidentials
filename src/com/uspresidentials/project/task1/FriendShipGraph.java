@@ -60,6 +60,7 @@ public class FriendShipGraph {
 	final long MAX_USERS = 500;
 	final static String PATH_FILE_UTENTI_ID = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID");
 	final static String PATH_FILE_UTENTI_ID_TEST = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID_TEST");
+	final static String PATH_FILE_FILTER_USERS = PropertiesManager.getPropertiesFromFile("PATH_FILE_FILTER_USERS");
 	
 	final static String PATH_FILE_FRIENDSHIP = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP");
 	final static String PATH_FILE_FRIENDSHIP_JSON = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON");
@@ -80,7 +81,7 @@ public class FriendShipGraph {
 	final static Logger loggerCentrality = Logger.getLogger("loggerCentrality");
 
 	static Hashtable<String, String> hashMap_Id_Username;
-	static HashMap<String, ArrayList<String>> hashMapUsersTweets; 
+	static HashMap<String, ArrayList<String>> hashMapUsersTweets = new HashMap<>(); 
 	
 	public static void main(String[] args) throws IOException, TwitterException, JSONException, ParseException, org.apache.lucene.queryparser.classic.ParseException {
 
@@ -88,9 +89,9 @@ public class FriendShipGraph {
 		// volta
 		// per trovare e salvare tutti gli amici su file
 
-		hashMap_Id_Username = getUserFromFileAndSplit(3, PATH_FILE_UTENTI_ID_TEST,-1);
+		hashMap_Id_Username = getUserFromFileAndSplit(2000, PATH_FILE_FILTER_USERS,-1);
 		hashMapUsersTweets = IdentifyUsers.getHashMapUser_Tweets();
-		
+		System.out.println("fine");
 		// ******** CREATE FILE WITH FRIEND FOR EACH USER
 		getGlobalFriendship(authenticationManager.twitter); //verificare se
 		// serve ancora passare l'argomento
@@ -133,7 +134,7 @@ public class FriendShipGraph {
 																						// relativi
 																						// a
 																						// idUser
-					userName = line.split(";")[0];
+					userName = line.split(";")[0];	
 					isPrivateFriends = false;
 					int numberOfFriends = ids.getIDs().length;
 					// creo l'oggetto per lutente corrente con i campi nome e
@@ -145,7 +146,7 @@ public class FriendShipGraph {
 					objUtente.put("idUser", idUser);
 					
 					JSONArray jsonArrayTweets = new JSONArray();
-					ArrayList<String> currentTeewts = hashMapUsersTweets.get(userName+";"+idUser);
+					ArrayList<String> currentTeewts = hashMapUsersTweets.get(userName.toLowerCase()+";"+idUser);
 					if (currentTeewts != null) {
 						System.out.println("Tweet for User: " + userName);
 						for (String t : currentTeewts) {
@@ -379,7 +380,7 @@ public class FriendShipGraph {
 		Hashtable<String, String> hashUsers = new Hashtable<String, String>();
 
 		int countUsers = 0;
-		try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_UTENTI_ID))) {
+		try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_FILTER_USERS))) {
 			String line;
 
 			while ((line = br.readLine()) != null && countUsers < maxNumUser) {

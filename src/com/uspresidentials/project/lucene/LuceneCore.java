@@ -159,15 +159,15 @@ public class LuceneCore {
  	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
  	    
  	    Query q1 = qp.parse(queryLucene);
- 	    TopDocs hits = searcher.search(q1, 100000);
+ 	    TopDocs hits = searcher.search(q1, 10000000);
  	    
 		loggerUsersAndTweets.info("##### "+hits.totalHits + " Docs found for the query \"" + q1.toString() + "\"");
 
  	    int num = 0;
  	    for (ScoreDoc sd : hits.scoreDocs) {
  	      Document d = searcher.doc(sd.doc);
- 	     //loggerUsersAndTweets.info(String.format("#%d: %s (rating=%s) - user: %s - tweet: %s", ++num, d.get("idTweet"), sd.score, d.get("tweetUser"), d.get("tweetText")));
- 			
+ 	     loggerUsersAndTweets.info(String.format("#%d: %s (rating=%s) - user: %s - tweet: %s", ++num, d.get("idTweet"), sd.score, d.get("tweetUser"), d.get("tweetText")));
+ 	     loggerUsersAndTweets.info("==================================================================================================================");
  		
  	    }
  	    
@@ -272,7 +272,7 @@ public class LuceneCore {
 	       }
 	    }
 	    
-	    
+	    System.out.println(hashMapUser.size());
 	    
 		return hashMapUser;
 		//return userAndTweets;
