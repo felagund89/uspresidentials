@@ -161,7 +161,7 @@ public class FriendShipGraph {
 					// scrivo su file il nome dell'utente che stiamo analizzando
 					writeUsersOnFile(userName + "===>");
 					//getFriendShipRecursive(authenticationManager.twitter, userName, idUser, -1, numberOfFriends);
-					getFriendShipONLYDatasetRecursive(authenticationManager.twitter, userName, idUser, -1, numberOfFriends);
+					getFriendShipONLYDatasetRecursive(authenticationManager.twitter, userName, idUser, -1, numberOfFriends, null);
 
 					writeJsonUserOnFile(objUtente);
 
@@ -251,13 +251,18 @@ public class FriendShipGraph {
 	
 	
 	public static void getFriendShipONLYDatasetRecursive(Twitter twitter, String userName, long idUser, long cursor,
-			int numberOfFriends) throws TwitterException, IOException, JSONException {
+			int numberOfFriends, JSONArray arrayFriends) throws TwitterException, IOException, JSONException {
 
 		String listFriends = "";
 		String content;
 		System.out.println("Analizzo amici...");
 		IDs friendsIds;
-		JSONArray jsonArrayFriends = new JSONArray();
+		JSONArray jsonArrayFriends = null;
+		
+		if(arrayFriends == null)
+			jsonArrayFriends = new JSONArray();
+		else
+			jsonArrayFriends = arrayFriends;
 
 		int prevIndex = authenticationManager.getAccountIndex();
 		try {
@@ -284,12 +289,12 @@ public class FriendShipGraph {
 											// relationship dei vari utenti
 				// numberOfFriends = numberOfFriends - pagableFollowings.size();
 				
-				if (numberOfFriends <= 0) {
+				/*if (numberOfFriends <= 0) {
 					objUtente.put("friends", jsonArrayFriends);
 					break;
 				} 
 				
-				/*for (User user : pagableFollowings) {
+				for (User user : pagableFollowings) {
 					listFriends = listFriends + user.getName() + ";";
 					
 					System.out.println("idUser Hashmap: " + hashMap_Id_Username.keys().toString());
@@ -311,6 +316,10 @@ public class FriendShipGraph {
 				} */
 				
 			} while ((cursor = friendsIds.getNextCursor()) != 0); //cursor = pagableFollowings.getNextCursor()) != 0
+
+			objUtente.put("friends", jsonArrayFriends);
+			jsonArrayFriends.clear();
+			
 		} catch (TwitterException e) {
 
 			if (e.getStatusCode() != 429) {
@@ -337,9 +346,9 @@ public class FriendShipGraph {
 							.getSecondsUntilReset() + 1;
 					System.out.println("Sleeping for " + toSleep + " seconds.");
 					Thread.sleep(toSleep * 1000);
-					getFriendShipONLYDatasetRecursive(authenticationManager.twitter, userName, idUser, cursor, numberOfFriends);
+					getFriendShipONLYDatasetRecursive(authenticationManager.twitter, userName, idUser, cursor, numberOfFriends, jsonArrayFriends);
 				} else {
-					getFriendShipONLYDatasetRecursive(authenticationManager.twitter, userName, idUser, cursor, numberOfFriends);
+					getFriendShipONLYDatasetRecursive(authenticationManager.twitter, userName, idUser, cursor, numberOfFriends, jsonArrayFriends);
 				}
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
