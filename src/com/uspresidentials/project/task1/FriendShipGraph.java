@@ -48,6 +48,7 @@ import twitter4j.PagableResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.User;
+import twitter4j.StreamController.FriendsIDs;
 
 /*
  * Costruire grafo delle amicizie e cercare la componente connessa piu grande, 
@@ -255,6 +256,7 @@ public class FriendShipGraph {
 		String listFriends = "";
 		String content;
 		System.out.println("Analizzo amici...");
+		IDs friendsIds;
 		JSONArray jsonArrayFriends = new JSONArray();
 
 		int prevIndex = authenticationManager.getAccountIndex();
@@ -265,10 +267,29 @@ public class FriendShipGraph {
 			PagableResponseList<User> pagableFollowings;
 			do {
 				listFriends = "";
-				pagableFollowings = authenticationManager.twitter.getFriendsList(idUser, cursor);
+				//pagableFollowings = authenticationManager.twitter.getFriendsList(idUser, cursor);
+				friendsIds = authenticationManager.twitter.getFriendsIDs(idUser, cursor);
 				
+				for(long currentId : friendsIds.getIDs()){
+					
+					listFriends = listFriends + hashMap_Id_Username.get(String.valueOf(currentId)) + ";";
+					
+					if(hashMap_Id_Username.containsKey(String.valueOf(currentId)))
+						jsonArrayFriends.add(hashMap_Id_Username.get(String.valueOf(currentId)) + ";" + currentId + ";");
+					numberOfFriends--;
+				}
+				content = listFriends;
+				System.out.println("numero di amici restanti da aggiungere: " + numberOfFriends);
+				writeUsersOnFile(content); // scrive su file tutte le
+											// relationship dei vari utenti
+				// numberOfFriends = numberOfFriends - pagableFollowings.size();
 				
-				for (User user : pagableFollowings) {
+				if (numberOfFriends <= 0) {
+					objUtente.put("friends", jsonArrayFriends);
+					break;
+				} 
+				
+				/*for (User user : pagableFollowings) {
 					listFriends = listFriends + user.getName() + ";";
 					
 					System.out.println("idUser Hashmap: " + hashMap_Id_Username.keys().toString());
@@ -287,9 +308,9 @@ public class FriendShipGraph {
 				if (numberOfFriends <= 0) {
 					objUtente.put("friends", jsonArrayFriends);
 					break;
-				}
+				} */
 				
-			} while ((cursor = pagableFollowings.getNextCursor()) != 0);
+			} while ((cursor = friendsIds.getNextCursor()) != 0); //cursor = pagableFollowings.getNextCursor()) != 0
 		} catch (TwitterException e) {
 
 			if (e.getStatusCode() != 429) {
@@ -312,12 +333,11 @@ public class FriendShipGraph {
 				if (authenticationManager.getAccountIndex() == authenticationManager.ACCOUNTS_NUMBER - 1) {
 
 					//
-					int toSleep = authenticationManager.twitter.getRateLimitStatus().get("/friends/list")
+					int toSleep = authenticationManager.twitter.getRateLimitStatus().get("/friends/ids") ///friends/list
 							.getSecondsUntilReset() + 1;
 					System.out.println("Sleeping for " + toSleep + " seconds.");
 					Thread.sleep(toSleep * 1000);
 					getFriendShipONLYDatasetRecursive(authenticationManager.twitter, userName, idUser, cursor, numberOfFriends);
-
 				} else {
 					getFriendShipONLYDatasetRecursive(authenticationManager.twitter, userName, idUser, cursor, numberOfFriends);
 				}

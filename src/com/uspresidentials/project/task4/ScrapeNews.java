@@ -14,7 +14,6 @@ public class ScrapeNews {
 	public static void main(String[] args) {
 		
 		scrapeNewsFromGoole(link);
-		
 	}
 	
 	
