@@ -277,15 +277,14 @@ public class FriendShipGraph {
 				
 				for(long currentId : friendsIds.getIDs()){
 					
-					listFriends = listFriends + hashMap_Id_Username.get(String.valueOf(currentId)) + ";";
+					//listFriends = listFriends + hashMap_Id_Username.get(String.valueOf(currentId)) + ";";
 					
 					if(hashMap_Id_Username.containsKey(String.valueOf(currentId)))
 						jsonArrayFriends.add(hashMap_Id_Username.get(String.valueOf(currentId)) + ";" + currentId + ";");
-					numberOfFriends--;
 				}
-				content = listFriends;
+				//content = listFriends;
 				System.out.println("numero di amici restanti da aggiungere: " + numberOfFriends);
-				writeUsersOnFile(content); // scrive su file tutte le
+				//writeUsersOnFile(content); // scrive su file tutte le
 											// relationship dei vari utenti
 				// numberOfFriends = numberOfFriends - pagableFollowings.size();
 				
@@ -318,7 +317,7 @@ public class FriendShipGraph {
 			} while ((cursor = friendsIds.getNextCursor()) != 0); //cursor = pagableFollowings.getNextCursor()) != 0
 
 			objUtente.put("friends", jsonArrayFriends);
-			jsonArrayFriends.clear();
+			//jsonArrayFriends.clear();
 			
 		} catch (TwitterException e) {
 
