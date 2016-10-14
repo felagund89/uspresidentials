@@ -331,8 +331,7 @@ public class FriendShipGraph {
 			// System.out.println(e.getMessage() + "Status code: " +
 			// e.getStatusCode() + "\n");
 
-			// System.out.println("Richieste esaurite per l'account: " +
-			// twitter.getScreenName() + ".");
+			System.out.println("cè stato un piccolo problema : "+ e.getErrorMessage());
 			authenticationManager.setAuthentication(authenticationManager.getAccountIndex() + 1);
 
 			// vecchio modo
