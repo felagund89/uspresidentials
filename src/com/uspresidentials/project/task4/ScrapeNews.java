@@ -13,7 +13,7 @@ import org.jsoup.select.Elements;
 public class ScrapeNews {
 
 	private final static String link ="https://news.google.com/news/story?ncl=dzirMhj5Jge-9iMGB6zrye9MkG-zM&q=hillary+clinton&lr=English&hl=en&sa=X&ved=0ahUKEwjS1ISPjtHPAhWG6xoKHZmgDKkQqgIITTAH";
-	static String number ="0";
+	static String number ="40";
 	private static boolean firstTime=true;
 	private static String LINK_STRING ="https://www.google.com/search?hl=en&gl=us&tbm=nws&authuser=0&q=hillary+clinton&oq=hillary+clinton&gs_l=news-cc.3..43j0l9j43i53.324553.326534.0.328574.15.7.0.8.8.0.130.603.5j2.7.0...0.0...1ac.1.QU4duoZIL4M#q=hillary+clinton&safe=off&hl=en&gl=us&authuser=0&tbm=nws&start=";
 	final static Logger loggerScraping = Logger.getLogger("loggerScraping");
@@ -32,15 +32,16 @@ public class ScrapeNews {
 		
 		for (int i = 0; i <=300 ; i=i+10) {
 			
-			if(!firstTime){
-				int val = Integer.parseInt(number);
-				val+=10;
-				number = String.valueOf(val);
-				//LINK_STRING = LINK_STRING+number;
-						}
+//			if(!firstTime){
+//				int val = Integer.parseInt(number);
+//				val+=10;
+//				number = String.valueOf(val);
+//				//LINK_STRING = LINK_STRING+number;
+//						}
 			try {
-				doc = Jsoup.connect(LINK_STRING+number).userAgent("Mozilla").get();
-				//System.out.println(doc.toString());
+				doc = Jsoup.connect("http://www.google.com/search?hl=en&gl=us&q=hillary+clinton&num=100&authuser=0&biw=1745&bih=850&tbm=nws&ei=jOsDWObLFYv_Ur2BmZAD&start=400&sa=N&dpr=1.1&gws_rd=cr").userAgent("Mozilla").get();
+				
+//				System.out.println(doc.toString());
 				System.out.println("===========================================");
 				loggerScraping.info("===========================================");
 				Elements topics = doc.select("div[id=ires]");
@@ -68,7 +69,7 @@ public class ScrapeNews {
 				e1.printStackTrace();
 			}
 			
-			firstTime=false;
+//			firstTime=false;
 			doc=null;
 		}
 		
