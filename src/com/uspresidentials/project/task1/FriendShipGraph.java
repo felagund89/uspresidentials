@@ -126,7 +126,7 @@ public class FriendShipGraph {
 					String userName;
 					long idUser;
 					idUser = Long.parseLong((line.split(";")[1]));
-					IDs ids = authenticationManager.twitter.getFriendsIDs(idUser, -1); // calcola
+//					IDs ids = authenticationManager.twitter.getFriendsIDs(idUser, -1); // calcola
 																						// il
 																						// numero
 																						// totale
@@ -137,7 +137,7 @@ public class FriendShipGraph {
 																						// idUser
 					userName = line.split(";")[0];	
 					isPrivateFriends = false;
-					int numberOfFriends = ids.getIDs().length;
+//					int numberOfFriends = ids.getIDs().length;
 					// creo l'oggetto per lutente corrente con i campi nome e
 					// id,
 					// verra accodato un jsonarray per ogni utente contenente
@@ -157,11 +157,11 @@ public class FriendShipGraph {
 					}
 					objUtente.put("tweets", jsonArrayTweets);
 					
-					System.out.println("Utente " + userName + " ha " + numberOfFriends + " amici.");
+//					System.out.println("Utente " + userName + " ha " + numberOfFriends + " amici.");
 					// scrivo su file il nome dell'utente che stiamo analizzando
 					writeUsersOnFile(userName + "===>");
 					//getFriendShipRecursive(authenticationManager.twitter, userName, idUser, -1, numberOfFriends);
-					getFriendShipONLYDatasetRecursive(authenticationManager.twitter, userName, idUser, -1, numberOfFriends, null);
+					getFriendShipONLYDatasetRecursive(authenticationManager.twitter, userName, idUser,0, -1, null);
 
 					writeJsonUserOnFile(objUtente);
 
@@ -274,7 +274,7 @@ public class FriendShipGraph {
 				listFriends = "";
 				//pagableFollowings = authenticationManager.twitter.getFriendsList(idUser, cursor);
 				friendsIds = authenticationManager.twitter.getFriendsIDs(idUser, cursor);
-				
+				numberOfFriends=friendsIds.getIDs().length;
 				for(long currentId : friendsIds.getIDs()){
 					
 					//listFriends = listFriends + hashMap_Id_Username.get(String.valueOf(currentId)) + ";";
@@ -313,9 +313,11 @@ public class FriendShipGraph {
 					objUtente.put("friends", jsonArrayFriends);
 					break;
 				} */
-				
+				System.out.println("valore cursore:" +cursor);
 			} while ((cursor = friendsIds.getNextCursor()) != 0); //cursor = pagableFollowings.getNextCursor()) != 0
 
+			
+			
 			objUtente.put("friends", jsonArrayFriends);
 			//jsonArrayFriends.clear();
 			
