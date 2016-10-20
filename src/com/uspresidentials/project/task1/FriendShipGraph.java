@@ -90,27 +90,27 @@ public class FriendShipGraph {
 		// volta
 		// per trovare e salvare tutti gli amici su file
 
-		hashMap_Id_Username = getUserFromFileAndSplit(2000, PATH_FILE_FILTER_USERS,-1);
-		hashMapUsersTweets = IdentifyUsers.getHashMapUser_Tweets();
-		System.out.println("fine");
+		//hashMap_Id_Username = getUserFromFileAndSplit(993, PATH_FILE_FILTER_USERS,-1);
+		//hashMapUsersTweets = IdentifyUsers.getHashMapUser_Tweets();
+		//System.out.println("fine");
 		// ******** CREATE FILE WITH FRIEND FOR EACH USER
-		getGlobalFriendship(authenticationManager.twitter); //verificare se
+		// FATTO getGlobalFriendship(authenticationManager.twitter); //verificare se
 		// serve ancora passare l'argomento
 				
 		// ******** FRIENDSHIP  // read from JSON File
-		//ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = createGraphFromFriendShip(); 																							
-		//System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip);
+		ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = createGraphFromFriendShip(); 																							
+		//System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip.toString());
 
 		// ********COMPONENTE CONNESSE - write in folder 'log4j_logs'
-		//searchConnectedComponents(graphFriendShip);
+		searchConnectedComponents(graphFriendShip);
 
 		// ********PAGE RANK
 
-		//SparseMultigraph<String, DefaultEdge> graphSparse = convertListenableGraph(graphFriendShip);
-		//calculatePageRank(graphSparse);
+		SparseMultigraph<String, DefaultEdge> graphSparse = convertListenableGraph(graphFriendShip);
+		calculatePageRank(graphSparse);
 		
 		// ********CENTRALITY OF M' USERS (who mentioned a candidate)
-		//calculateCentrality(graphSparse);
+		calculateCentrality(graphSparse);
 	}
 
 	public static void getGlobalFriendship(Twitter twitter)
@@ -385,21 +385,25 @@ public class FriendShipGraph {
 
 			//System.out.println("*****" + currentUser);
 			JSONArray listFriends = (JSONArray) currentUs.get("friends");
+			if (listFriends!=null) {
+				for (int i = 0; i < listFriends.size(); i++) {
+					//System.out.println("             - friend: " + listFriends.get(i));
 
-			for (int i = 0; i < listFriends.size(); i++) {
-				//System.out.println("             - friend: " + listFriends.get(i));
+					String currentFriend = listFriends.get(i).toString();
 
-				String currentFriend = listFriends.get(i).toString();
+					if (!myGraph.containsVertex(currentFriend)) // se non contiene
+																// giá quel nodo
+						myGraph.addVertex(currentFriend);
 
-				if (!myGraph.containsVertex(currentFriend)) // se non contiene
-															// giá quel nodo
-					myGraph.addVertex(currentFriend);
-
-				// se non contiene giá quell'arco
-				if (!myGraph.containsEdge(currentUser, currentFriend))  
-					myGraph.addEdge(currentUser, currentFriend);
+					// se non contiene giá quell'arco
+					if (!myGraph.containsEdge(currentUser, currentFriend))  
+						myGraph.addEdge(currentUser, currentFriend);
+				}
 			}
+			
 		}
+		System.out.println("FINE ------ createGraphFromFriendShip");
+
 		return myGraph;
 	}
 
@@ -481,8 +485,8 @@ public class FriendShipGraph {
 						+ "\n\n\n***********";
 			}
 
-			loggerComponents.info("****Start Vertex:" + currentVertex.toString() + "\nconnected components: "
-					+ listVertexConnected.toString() + "\n\n\n*********************************");
+//			loggerComponents.info("****Start Vertex:" + currentVertex.toString() + "\nconnected components: "
+//					+ listVertexConnected.toString() + "\n\n\n*********************************");
 		}
 
 		System.out.println("Search Connected Components COMPLETED!");
@@ -513,18 +517,20 @@ public class FriendShipGraph {
 
 			System.out.println("*****currentUser" + currentUser);
 			JSONArray listFriends = (JSONArray) currentUs.get("friends");
+			if (listFriends!=null) {
+				for (int i = 0; i < listFriends.size(); i++) {
+					//System.out.println("             - friend: " + listFriends.get(i));
 
-			for (int i = 0; i < listFriends.size(); i++) {
-				//System.out.println("             - friend: " + listFriends.get(i));
+					String currentFriend = listFriends.get(i).toString();
 
-				String currentFriend = listFriends.get(i).toString();
+					if (!myGraph.containsVertex(currentFriend))
+						myGraph.addVertex(currentFriend);
 
-				if (!myGraph.containsVertex(currentFriend))
-					myGraph.addVertex(currentFriend);
-
-				DefaultEdge currentEdge = new DefaultEdge();
-				myGraph.addEdge(currentEdge, currentUser, currentFriend, EdgeType.DIRECTED);
+					DefaultEdge currentEdge = new DefaultEdge();
+					myGraph.addEdge(currentEdge, currentUser, currentFriend, EdgeType.DIRECTED);
+				}
 			}
+			
 		}
 
 		//logger.info("SparseMultigraph GENERATED: \n\n" + myGraph.getVertices().toString());
