@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.queries.function.valuesource.DivFloatFunction;
@@ -20,12 +22,19 @@ import com.uspresidentials.project.utils.PropertiesManager;
 public class ScrapeNews {
 
 	private final static String link ="https://news.google.com/news/story?ncl=dzirMhj5Jge-9iMGB6zrye9MkG-zM&q=hillary+clinton&lr=English&hl=en&sa=X&ved=0ahUKEwjS1ISPjtHPAhWG6xoKHZmgDKkQqgIITTAH";
-	static String number ="40";
-	private static boolean firstTime=true;
-	private static String LINK_STRING ="https://www.google.com/search?hl=en&gl=us&tbm=nws&authuser=0&q=hillary+clinton&oq=hillary+clinton&gs_l=news-cc.3..43j0l9j43i53.324553.326534.0.328574.15.7.0.8.8.0.130.603.5j2.7.0...0.0...1ac.1.QU4duoZIL4M#q=hillary+clinton&safe=off&hl=en&gl=us&authuser=0&tbm=nws&start=";
 	final static Logger loggerScraping = Logger.getLogger("loggerScraping");
+	static List<String> listaLink= new ArrayList<>();
 
-	public static void main(String[] args) {
+	
+	
+	public static void main(String[] args) throws IOException {
+	   
+		
+		for (int i = 0; i <= 30; i=i+10) {
+		    String linkModString = "http://www.google.com/search?hl=en&gl=us&q=hillary+clinton&num=100&authuser=0&biw=1745&bih=850&tbm=nws&ei=jOsDWObLFYv_Ur2BmZAD&start="+i+"&sa=N&dpr=1.1&gws_rd=cr";
+			listaLink.add(linkModString);
+			System.out.println(i+"   "+linkModString);
+		}
 		
 		scrapeNewsFromGoole(link);
 	}
@@ -33,52 +42,31 @@ public class ScrapeNews {
 	
 	
 	
-	public static void scrapeNewsFromGoole(String linkString){
-		//loggerScraping.info("Scraping news for candidate: HILLARY CLINTON");
+	public static void scrapeNewsFromGoole(String linkString) throws IOException{
+		System.out.println("Scraping news for candidate: HILLARY CLINTON");
 		Document doc = null;
-		
-		for (int i = 0; i <=300 ; i=i+10) {
-			
-//			if(!firstTime){
-//				int val = Integer.parseInt(number);
-//				val+=10;
-//				number = String.valueOf(val);
-//				//LINK_STRING = LINK_STRING+number;
-//						}
-			try {
-				doc = Jsoup.connect("http://www.google.com/search?hl=en&gl=us&q=hillary+clinton&num=100&authuser=0&biw=1745&bih=850&tbm=nws&ei=jOsDWObLFYv_Ur2BmZAD&start=400&sa=N&dpr=1.1&gws_rd=cr").userAgent("Mozilla").get();
-				
-//				System.out.println(doc.toString());
-				//System.out.println("===========================================");
-				//loggerScraping.info("===========================================");
-				Elements topics = doc.select("div[id=ires]");
-				
-				
-				Elements stories = topics.select("div[class=g]");
-				//loggerScraping.info("TITOLI pag "+i/10);
-				JSONArray jsonArrayNews = new JSONArray();
-		        for (Element story : stories) {
-		            
-//		            String sto = story.text();
-		            Elements titles = story.select("h3[class=r]");
-		            
-	//	            Elements bodies = topic.select("span[class=titleText]");
-	//	            String body = bodies.text();
-		            
-		            //prendere il body del messaggio che sta nel Div con class st
-		        	//Elements body = story.select("div[class=st]");
+		JSONArray jsonArrayNews = new JSONArray();
+        JSONObject objNews = new JSONObject();
 
-		            //loggerScraping.info(titles.text());
+		for (String string : listaLink) {
+
+			try {
+				doc = Jsoup.connect(string).userAgent("Mozilla").get();
+				Elements topics = doc.select("div[id=ires]");
+				Elements stories = topics.select("div[class=g]");
+		        for (Element story : stories) {	            
+		            Elements titles = story.select("h3[class=r]");
+		            //prendere il body del messaggio che sta nel Div con class st
+		        	Elements body = story.select("div[class=st]");
+
 		            System.out.println("Title: "+titles.text());
-		            //System.out.println("Body: "+body+"\n");
-		            
-		            JSONObject objNews = new JSONObject();
+		            System.out.println("Body: "+body.text()+"\n");
+		            objNews = new JSONObject();
 		            objNews.put("title", titles.text());
-		            objNews.put("body", "");
+		            objNews.put("body", body.text());
 		            jsonArrayNews.add(objNews);
 		        }
 
-		        writeJsonNewsOnFile(jsonArrayNews);
 		        
 			} catch (IOException e1) {
 				e1.printStackTrace();
@@ -87,7 +75,11 @@ public class ScrapeNews {
 //			firstTime=false;
 			doc=null;
 		}
-		loggerScraping.info("STOP SCRAPING NEWS");
+        
+
+        writeJsonNewsOnFile(jsonArrayNews);
+
+		System.out.println("STOP SCRAPING NEWS");
 	}
 	
 	
