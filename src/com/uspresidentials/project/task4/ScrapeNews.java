@@ -1,14 +1,21 @@
 package com.uspresidentials.project.task4;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.queries.function.valuesource.DivFloatFunction;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.uspresidentials.project.utils.PropertiesManager;
 
 public class ScrapeNews {
 
@@ -27,7 +34,7 @@ public class ScrapeNews {
 	
 	
 	public static void scrapeNewsFromGoole(String linkString){
-		loggerScraping.info("Scraping news for candidate: HILLARY CLINTON");
+		//loggerScraping.info("Scraping news for candidate: HILLARY CLINTON");
 		Document doc = null;
 		
 		for (int i = 0; i <=300 ; i=i+10) {
@@ -42,13 +49,14 @@ public class ScrapeNews {
 				doc = Jsoup.connect("http://www.google.com/search?hl=en&gl=us&q=hillary+clinton&num=100&authuser=0&biw=1745&bih=850&tbm=nws&ei=jOsDWObLFYv_Ur2BmZAD&start=400&sa=N&dpr=1.1&gws_rd=cr").userAgent("Mozilla").get();
 				
 //				System.out.println(doc.toString());
-				System.out.println("===========================================");
-				loggerScraping.info("===========================================");
+				//System.out.println("===========================================");
+				//loggerScraping.info("===========================================");
 				Elements topics = doc.select("div[id=ires]");
 				
 				
 				Elements stories = topics.select("div[class=g]");
-				loggerScraping.info("TITOLI pag "+i/10);
+				//loggerScraping.info("TITOLI pag "+i/10);
+				JSONArray jsonArrayNews = new JSONArray();
 		        for (Element story : stories) {
 		            
 //		            String sto = story.text();
@@ -58,13 +66,20 @@ public class ScrapeNews {
 	//	            String body = bodies.text();
 		            
 		            //prendere il body del messaggio che sta nel Div con class st
-//		        	Element body = story.select("div[class=st]");
+		        	//Elements body = story.select("div[class=st]");
 
-		            loggerScraping.info(titles.text());
+		            //loggerScraping.info(titles.text());
 		            System.out.println("Title: "+titles.text());
-	//	            System.out.println("Body: "+body+"\n");
+		            //System.out.println("Body: "+body+"\n");
+		            
+		            JSONObject objNews = new JSONObject();
+		            objNews.put("title", titles.text());
+		            objNews.put("body", "");
+		            jsonArrayNews.add(objNews);
 		        }
-			
+
+		        writeJsonNewsOnFile(jsonArrayNews);
+		        
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -72,11 +87,15 @@ public class ScrapeNews {
 //			firstTime=false;
 			doc=null;
 		}
-		
-		
 		loggerScraping.info("STOP SCRAPING NEWS");
-		
 	}
 	
+	
+	
+	public static void writeJsonNewsOnFile(JSONArray jsonArrNews) throws IOException {
+
+		// inserire [] inizio e fine cosí da avere un json completo
+		loggerScraping.info(jsonArrNews.toString());
+	}
 	
 }

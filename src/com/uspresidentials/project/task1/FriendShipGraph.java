@@ -106,11 +106,11 @@ public class FriendShipGraph {
 
 		// ********PAGE RANK
 
-		SparseMultigraph<String, DefaultEdge> graphSparse = convertListenableGraph(graphFriendShip);
-		calculatePageRank(graphSparse);
+		//SparseMultigraph<String, DefaultEdge> graphSparse = convertListenableGraph(graphFriendShip);
+		//calculatePageRank(graphSparse);
 		
 		// ********CENTRALITY OF M' USERS (who mentioned a candidate)
-		calculateCentrality(graphSparse);
+		//calculateCentrality(graphSparse);
 	}
 
 	public static void getGlobalFriendship(Twitter twitter)
@@ -379,9 +379,12 @@ public class FriendShipGraph {
 		while (iterator.hasNext()) {
 			JSONObject currentUs = iterator.next();
 			String currentUser = currentUs.get("userName").toString();
-
-			if (!myGraph.containsVertex(currentUser))
-				myGraph.addVertex(currentUser);
+			String currentId = currentUs.get("idUser").toString();
+			String userToScan = currentUser+";" + currentId + ";";
+			
+			//if (!myGraph.containsVertex(currentUser))
+			if (!myGraph.containsVertex(userToScan))
+				myGraph.addVertex(userToScan);
 
 			//System.out.println("*****" + currentUser);
 			JSONArray listFriends = (JSONArray) currentUs.get("friends");
@@ -396,8 +399,8 @@ public class FriendShipGraph {
 						myGraph.addVertex(currentFriend);
 
 					// se non contiene giá quell'arco
-					if (!myGraph.containsEdge(currentUser, currentFriend))  
-						myGraph.addEdge(currentUser, currentFriend);
+					if (!myGraph.containsEdge(userToScan, currentFriend))   //currentUser
+						myGraph.addEdge(userToScan, currentFriend);			//currentUser
 				}
 			}
 			
