@@ -30,7 +30,7 @@ public class ScrapeNews {
 	public static void main(String[] args) throws IOException {
 	   
 		
-		for (int i = 0; i <= 30; i=i+10) {
+		for (int i = 0; i <= 300; i=i+10) {
 		    String linkModString = "http://www.google.com/search?hl=en&gl=us&q=hillary+clinton&num=100&authuser=0&biw=1745&bih=850&tbm=nws&ei=jOsDWObLFYv_Ur2BmZAD&start="+i+"&sa=N&dpr=1.1&gws_rd=cr";
 			listaLink.add(linkModString);
 			System.out.println(i+"   "+linkModString);
