@@ -63,8 +63,12 @@ public class Util {
 	            	for (int j = 0; j < arrayFriendsObject.length; j++) {     
 	            		String[] utenteSplittatoString = arrayFriendsObject[j].toString().split(";");
 	                	if(! idUserTotalList.contains(utenteSplittatoString[1])){                		
-	                		idUserDaEliminareList.add(utenteSplittatoString[1]);              		
-	                	}           	
+	                		idUserDaEliminareList.add(utenteSplittatoString[1]);          
+	                		
+	                		//aggiungere l'update dell'array di friends
+	                		arrayFriends.toString().replace(","+arrayFriendsObject[j], "");
+	                		//bisogna ricreare la struttura json e salvarla.
+	                	}          
 	            	}        
             	}
 			}
@@ -79,8 +83,5 @@ public class Util {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-		
-		
-
+    }	
 }
