@@ -90,27 +90,27 @@ public class FriendShipGraph {
 		// volta
 		// per trovare e salvare tutti gli amici su file
 
-		//hashMap_Id_Username = getUserFromFileAndSplit(993, PATH_FILE_FILTER_USERS,-1);
+		//hashMap_Id_Username = getUserFromFileAndSplit(2000, PATH_FILE_FILTER_USERS,-1);
 		//hashMapUsersTweets = IdentifyUsers.getHashMapUser_Tweets();
 		//System.out.println("fine");
 		// ******** CREATE FILE WITH FRIEND FOR EACH USER
-		// FATTO getGlobalFriendship(authenticationManager.twitter); //verificare se
+		//getGlobalFriendship(authenticationManager.twitter); //verificare se
 		// serve ancora passare l'argomento
 				
 		// ******** FRIENDSHIP  // read from JSON File
 		ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = createGraphFromFriendShip(); 																							
-		//System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip.toString());
+//		System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip.toString());
 
 		// ********COMPONENTE CONNESSE - write in folder 'log4j_logs'
 		searchConnectedComponents(graphFriendShip);
 
 		// ********PAGE RANK
 
-		//SparseMultigraph<String, DefaultEdge> graphSparse = convertListenableGraph(graphFriendShip);
-		//calculatePageRank(graphSparse);
+		SparseMultigraph<String, DefaultEdge> graphSparse = convertListenableGraph(graphFriendShip);
+		calculatePageRank(graphSparse);
 		
 		// ********CENTRALITY OF M' USERS (who mentioned a candidate)
-		//calculateCentrality(graphSparse);
+		calculateCentrality(graphSparse);
 	}
 
 	public static void getGlobalFriendship(Twitter twitter)

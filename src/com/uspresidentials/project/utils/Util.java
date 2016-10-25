@@ -1,6 +1,11 @@
 package com.uspresidentials.project.utils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -9,9 +14,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import twitter4j.TwitterException;
+
 public class Util {
 
 	final static String PATH_FILE_FRIENDSHIP_JSON = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON");
+	final static String PATH_FILE_FRIENDSHIP_JSON_UPDATED = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON_UPDATED");
 
 	
 	
@@ -20,7 +28,7 @@ public class Util {
 		
 		
 		
-		cleanFileUserFriendsTweets(PATH_FILE_FRIENDSHIP_JSON);
+		cleanFileUserFriendsTweets();
 			
 		
 		
@@ -29,20 +37,18 @@ public class Util {
 
 	
 	
-	private static void cleanFileUserFriendsTweets(String filePath){
+	private static void cleanFileUserFriendsTweets(){
 		
 		
 		JSONParser parser = new JSONParser();
 		List<String> idUserDaEliminareList = new ArrayList<String>();
         try {
  
-            Object obj = parser.parse(new FileReader(filePath));
+            Object obj = parser.parse(new FileReader(PATH_FILE_FRIENDSHIP_JSON));
  
             JSONObject jsonObject = (JSONObject) obj;
  
-//            String listUsers = (String) jsonObject.get("ListUsers");
             JSONArray listUsers = (JSONArray) jsonObject.get("ListUsers");
-//            System.out.println("listUsers: " + listUsers);
             List<String> idUserTotalList = new ArrayList<String>();
            
             //prendo tutti gli id degli user
@@ -60,28 +66,79 @@ public class Util {
             	
             	if(arrayFriends!=null){
 	            	Object[] arrayFriendsObject =  arrayFriends.toArray();
-	            	for (int j = 0; j < arrayFriendsObject.length; j++) {     
+	            	for(int j = 0; j < arrayFriendsObject.length; j++) {     
 	            		String[] utenteSplittatoString = arrayFriendsObject[j].toString().split(";");
 	                	if(! idUserTotalList.contains(utenteSplittatoString[1])){                		
-	                		idUserDaEliminareList.add(utenteSplittatoString[1]);          
-	                		
-	                		//aggiungere l'update dell'array di friends
-	                		arrayFriends.toString().replace(","+arrayFriendsObject[j], "");
-	                		//bisogna ricreare la struttura json e salvarla.
+	                		idUserDaEliminareList.add(arrayFriendsObject[j].toString());          
 	                	}          
 	            	}        
             	}
 			}
             
-           
+            
+            
+            System.out.println("persone da togliere");
             //stampo la lista degli id degli utenti che vanno tolti dalle liste di friends dei vari utenti del file
             for (String string : idUserDaEliminareList) {
 				System.out.println(string);
 			}
-          
+            
+            
+            //aggiorno il file  json 
+
+            replace(idUserDaEliminareList);
+            System.out.println("Fine replace");
   
         } catch (Exception e) {
             e.printStackTrace();
         }
     }	
+	
+	
+	
+	 private static void replace(List<String> idUserDaEliminareList) {
+	     
+
+	      BufferedReader br = null;
+	      BufferedWriter bw = null;
+	      try {
+	         br = new BufferedReader(new FileReader(PATH_FILE_FRIENDSHIP_JSON));
+	         bw = new BufferedWriter(new FileWriter(PATH_FILE_FRIENDSHIP_JSON_UPDATED));
+	         String line;
+	         while ((line = br.readLine()) != null) {
+	        	 
+	        	 for (String string : idUserDaEliminareList) {
+	        		 if (line.contains("\""+string+"\""))
+	  	               line = line.replace("\""+string+"\"", " ");
+				}
+	        	 
+	  	        bw.write(line+"\n");
+
+	         }
+	      } catch (Exception e) {
+	         return;
+	      } finally {
+	         try {
+	            if(br != null)
+	               br.close();
+	         } catch (IOException e) {
+	            //
+	         }
+	         try {
+	            if(bw != null)
+	               bw.close();
+	         } catch (IOException e) {
+	            //
+	         }
+	      }
+	      File oldFile = new File(PATH_FILE_FRIENDSHIP_JSON);
+	      oldFile.delete();
+
+	      File newFile = new File(PATH_FILE_FRIENDSHIP_JSON_UPDATED);
+	      newFile.renameTo(oldFile);
+
+	   }
+	
+	
+	
 }
