@@ -140,5 +140,61 @@ public class Util {
 	   }
 	
 	
-	
+	private void updateInfoFileJson(){
+		//prendo il file json
+		JSONParser parser = new JSONParser();
+		List<String> tweets = new ArrayList<String>();
+        try {
+ 
+            Object obj = parser.parse(new FileReader(PATH_FILE_FRIENDSHIP_JSON));
+ 
+            JSONObject jsonObject = (JSONObject) obj;
+ 
+            JSONArray listUsers = (JSONArray) jsonObject.get("ListUsers");
+            List<String> idUserTotalList = new ArrayList<String>();
+           
+            //prendo tutti gli i tweet degli user
+            for (int i = 0; i < listUsers.size(); i++) {
+            	JSONObject userJsonObject = (JSONObject) listUsers.get(i);
+            	tweets.add((String) userJsonObject.get("tweets").toString());
+            	
+			}
+            
+            //scorro i vari array degli amici , e controllo se ogni amico esiste come 
+            //id dentro il json, se non esiste lo devo togliere dalla lista di amici.
+            for (int i = 0; i < listUsers.size(); i++) {
+            	JSONObject userJsonObject = (JSONObject) listUsers.get(i);
+            	
+            	JSONArray arrayFriends = (JSONArray) userJsonObject.get("friends"); 
+            	
+            	if(arrayFriends!=null){
+	            	Object[] arrayFriendsObject =  arrayFriends.toArray();
+	            	for(int j = 0; j < arrayFriendsObject.length; j++) {     
+	            		String[] utenteSplittatoString = arrayFriendsObject[j].toString().split(";");
+	                	if(! idUserTotalList.contains(utenteSplittatoString[1])){                		
+	                		idUserDaEliminareList.add(arrayFriendsObject[j].toString());          
+	                	}          
+	            	}        
+            	}
+			}
+            
+            
+            
+           
+            
+            
+            //aggiorno il file  json 
+
+            System.out.println("Fine update file json");
+		
+		
+		
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
+	 
+	 
+	 
+	 
 }

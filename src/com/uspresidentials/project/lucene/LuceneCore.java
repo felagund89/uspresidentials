@@ -1,5 +1,6 @@
 package com.uspresidentials.project.lucene;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -278,6 +279,76 @@ public class LuceneCore {
 		//return userAndTweets;
 	}
 	 
+	
+	public static void occurrenceCandidates(TopDocs resultDocs, String pathFileUtentiFiltrati, String pathFileOccurrenceCandidates, String pathIndexer) throws IOException{
+		
+		TopDocs hits;
+		PrintWriter writer=null;
+		int occHillary=0;
+		int occTrump=0;
+		int occRubio=0;
+		int occSanders=0;
+		writer = new PrintWriter(pathFileOccurrenceCandidates, "UTF-8");
+		   
+		loggerUsersAndTweets.info("OCCORRENZE DEI VARI CANDIDATI PER OGNI UTENTE");
+		        	
+		String currentUserName = null;
+		String currentTweet = null;
+		ArrayList<String> tempArrayTweets = null;
+		
+		QueryParser qp = new QueryParser("tweetUser", new StandardAnalyzer());
+		for (ScoreDoc sd : resultDocs.scoreDocs) {
+			
+			Document d = searcher.doc(sd.doc);
+			currentUserName =  d.getField("tweetUser").stringValue()+";"+d.getField("tweetUserId").stringValue(); //aggiunto l'id
+			currentTweet = d.getField("tweetText").stringValue();
+			
+			//apro il file con gli utenti e verifico se presente in lista
+			try (BufferedReader br = new BufferedReader(new FileReader(pathFileUtentiFiltrati))) {
+				String line;
+
+				while ((line = br.readLine()) != null) {
+					if((currentUserName+";").equalsIgnoreCase(line)){
+						String occurrenceTotalString = findOccurrence(d,currentUserName,pathIndexer);
+//						System.out.println(occurrenceTotalString);
+						writer.println(occurrenceTotalString);
+					}
+					
+				
+				}
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			
+		}
+		
+		writer.close();
+
+	   
+	}
+	
+	
+	public static String findOccurrence(Document document,String currentUser, String pathIndexer) throws ParseException, IOException{
+		
+		searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
+
+		QueryParser qp = new QueryParser(document.getField("tweetText").stringValue().toLowerCase(), new StandardAnalyzer());
+	 	    
+ 	    Query qTrump = qp.parse("trump* OR donald* OR donaldtrump* OR trumpdonald*");
+ 	    Query qClinton = qp.parse("clinton* hillary* OR hillaryclinton* OR clintonhillary*");
+ 	    Query qRubio = qp.parse("rubio* OR marco* OR marcorubio* OR rubiomarco*");
+ 	    Query qSanders = qp.parse("sanders* OR bernie* OR sandersbernie* OR berniesanders*");
+
+ 	    TopDocs hitsTrump = searcher.search(qTrump, 100);
+ 	    TopDocs hitsClinton = searcher.search(qClinton, 100);
+ 	    TopDocs hitsRubio = searcher.search(qRubio, 100);
+ 	    TopDocs hitsSanders = searcher.search(qSanders, 100);
+
+ 	   
+		return currentUser+"; mentionsCandidates:"+"[ Trump:"+hitsTrump.totalHits+" Clinton:"+hitsClinton.totalHits+" Rubio:"+hitsRubio.totalHits+" Sanders:"+hitsSanders.totalHits+"]";
+		
+	}
 	
 	
 	private static void printHashMap(HashMap<String, ArrayList<String>> hashMapUser){

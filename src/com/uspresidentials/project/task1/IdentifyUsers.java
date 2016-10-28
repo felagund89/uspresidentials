@@ -53,6 +53,8 @@ public class IdentifyUsers {
 	final static String PATH_FILE_UTENTI_ID = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID");
 	final static String PATH_FILE_UTENTI_ID_TEST = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID_TEST");
 	
+	final static String PATH_FILE_USER_OCCURRENCE = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_OCCURRENCE");
+
 	/**
 	 * QUERY
 	 */
@@ -93,6 +95,10 @@ public class IdentifyUsers {
 //	    long numeroUniqUser = setUniqUser.size();
 //	    long numeroTweet = LuceneCore.numberOfTweets(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
 	
+		
+		LuceneCore.occurrenceCandidates(resultDocs, PATH_FILE_UTENTI_ID_TEST, PATH_FILE_USER_OCCURRENCE, PATH_INDEXDIR_PRIMAR);
+		
+		
 		//creo la lista contenente utenti-idutente e relativi tweet
 	    HashMap<String, ArrayList<String>> hashMapUsersTweets = LuceneCore.getUserAndRelTweets(new HashSet<String>(), resultDocs, PATH_FILE_UTENTI_ID_TEST, false);  // aggiunto path per scrivere su file		    
 	    System.out.println("fine esecuzione getHashMapUser_Tweets");
