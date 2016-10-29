@@ -96,7 +96,7 @@ public class IdentifyUsers {
 //	    long numeroTweet = LuceneCore.numberOfTweets(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
 	
 		
-		LuceneCore.occurrenceCandidates(resultDocs, PATH_FILE_UTENTI_ID_TEST, PATH_FILE_USER_OCCURRENCE, PATH_INDEXDIR_PRIMAR);
+		LuceneCore.occurrenceCandidates(PATH_FILE_UTENTI_ID_TEST, PATH_FILE_USER_OCCURRENCE, PATH_INDEXDIR_PRIMAR);
 		
 		
 		//creo la lista contenente utenti-idutente e relativi tweet

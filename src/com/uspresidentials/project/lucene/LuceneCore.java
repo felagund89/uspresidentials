@@ -55,6 +55,8 @@ public class LuceneCore {
     private static QueryParser parser = null;
     
 	final static Logger loggerUsersAndTweets = Logger.getLogger("usersAndTweets");
+	final static Logger loggerOccurrenceMentions = Logger.getLogger("loggerOccurrenceMentions");
+
 	final static Logger logger = Logger.getLogger("default");
 	
 	Set<User> userList = null;
@@ -280,74 +282,95 @@ public class LuceneCore {
 	}
 	 
 	
-	public static void occurrenceCandidates(TopDocs resultDocs, String pathFileUtentiFiltrati, String pathFileOccurrenceCandidates, String pathIndexer) throws IOException{
+	public static void occurrenceCandidates(String pathFileUtentiFiltrati, String pathFileOccurrenceCandidates, String pathIndexer) throws  ParseException, IOException{
 		
-		TopDocs hits;
-		PrintWriter writer=null;
-		int occHillary=0;
-		int occTrump=0;
-		int occRubio=0;
-		int occSanders=0;
-		writer = new PrintWriter(pathFileOccurrenceCandidates, "UTF-8");
+//		PrintWriter writer=null;
+		
+//		writer = new PrintWriter(pathFileOccurrenceCandidates, "UTF-8");
 		   
-		loggerUsersAndTweets.info("OCCORRENZE DEI VARI CANDIDATI PER OGNI UTENTE");
 		        	
-		String currentUserName = null;
-		String currentTweet = null;
-		ArrayList<String> tempArrayTweets = null;
-		
-		QueryParser qp = new QueryParser("tweetUser", new StandardAnalyzer());
-		for (ScoreDoc sd : resultDocs.scoreDocs) {
-			
-			Document d = searcher.doc(sd.doc);
-			currentUserName =  d.getField("tweetUser").stringValue()+";"+d.getField("tweetUserId").stringValue(); //aggiunto l'id
-			currentTweet = d.getField("tweetText").stringValue();
-			
-			//apro il file con gli utenti e verifico se presente in lista
-			try (BufferedReader br = new BufferedReader(new FileReader(pathFileUtentiFiltrati))) {
-				String line;
-
-				while ((line = br.readLine()) != null) {
-					if((currentUserName+";").equalsIgnoreCase(line)){
-						String occurrenceTotalString = findOccurrence(d,currentUserName,pathIndexer);
-//						System.out.println(occurrenceTotalString);
-						writer.println(occurrenceTotalString);
-					}
-					
-				
-				}
-			}catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			
-		}
-		
-		writer.close();
-
-	   
-	}
-	
-	
-	public static String findOccurrence(Document document,String currentUser, String pathIndexer) throws ParseException, IOException{
 		
 		searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
 
-		QueryParser qp = new QueryParser(document.getField("tweetText").stringValue().toLowerCase(), new StandardAnalyzer());
-	 	    
+		QueryParser qp = new QueryParser("tweetText", new StandardAnalyzer());
+	 	
  	    Query qTrump = qp.parse("trump* OR donald* OR donaldtrump* OR trumpdonald*");
  	    Query qClinton = qp.parse("clinton* hillary* OR hillaryclinton* OR clintonhillary*");
  	    Query qRubio = qp.parse("rubio* OR marco* OR marcorubio* OR rubiomarco*");
  	    Query qSanders = qp.parse("sanders* OR bernie* OR sandersbernie* OR berniesanders*");
 
- 	    TopDocs hitsTrump = searcher.search(qTrump, 100);
- 	    TopDocs hitsClinton = searcher.search(qClinton, 100);
- 	    TopDocs hitsRubio = searcher.search(qRubio, 100);
- 	    TopDocs hitsSanders = searcher.search(qSanders, 100);
-
- 	   
-		return currentUser+"; mentionsCandidates:"+"[ Trump:"+hitsTrump.totalHits+" Clinton:"+hitsClinton.totalHits+" Rubio:"+hitsRubio.totalHits+" Sanders:"+hitsSanders.totalHits+"]";
+ 	    TopDocs hitsTrump = searcher.search(qTrump, 50000);
+ 	    TopDocs hitsClinton = searcher.search(qClinton, 50000);
+ 	    TopDocs hitsRubio = searcher.search(qRubio, 50000);
+ 	    TopDocs hitsSanders = searcher.search(qSanders, 50000);
 		
+
+			//apro il file con gli utenti e verifico se presente in lista
+		try (BufferedReader br = new BufferedReader(new FileReader(pathFileUtentiFiltrati))) {
+				String line;
+
+				while ((line = br.readLine()) != null) {
+						String occurrenceTotalString = findOccurrence(hitsTrump, hitsClinton, hitsRubio, hitsSanders,line);
+						System.out.println(occurrenceTotalString);
+//						writer.println(occurrenceTotalString);
+						loggerOccurrenceMentions.info(occurrenceTotalString);
+					
+				
+				}
+			
+			
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+//		writer.close();
+
+	   
+	}
+	
+	
+	public static String findOccurrence(TopDocs scoreDocTrump,TopDocs scoreDocClinton, TopDocs scoreDocRubio,TopDocs scoreDocSanders, String currentUser) throws ParseException,IOException {
+		
+		int occHillary = 0;
+		int occTrump = 0;
+		int occRubio = 0;
+		int occSanders = 0;
+		
+
+		for (ScoreDoc sd : scoreDocTrump.scoreDocs) {
+			Document d = searcher.doc(sd.doc);
+			String usernameOfDocString = d.getField("tweetUser").stringValue()+ ";" + d.getField("tweetUserId").stringValue()+";";
+			if (usernameOfDocString.equalsIgnoreCase(currentUser)) {
+				occTrump++;
+			}
+		}
+
+		for (ScoreDoc sd : scoreDocClinton.scoreDocs) {
+			Document d = searcher.doc(sd.doc);
+			String usernameOfDocString = d.getField("tweetUser").stringValue()+ ";" + d.getField("tweetUserId").stringValue()+";";
+			if (usernameOfDocString.equalsIgnoreCase(currentUser)) {
+				occHillary++;
+			}
+		}
+		for (ScoreDoc sd : scoreDocRubio.scoreDocs) {
+			Document d = searcher.doc(sd.doc);
+			String usernameOfDocString = d.getField("tweetUser").stringValue()+ ";" + d.getField("tweetUserId").stringValue()+";";
+			if (usernameOfDocString.equalsIgnoreCase(currentUser)) {
+				occRubio++;
+			}
+		}
+		for (ScoreDoc sd : scoreDocSanders.scoreDocs) {
+			Document d = searcher.doc(sd.doc);
+			String usernameOfDocString = d.getField("tweetUser").stringValue()+ ";" + d.getField("tweetUserId").stringValue()+";";
+			if (usernameOfDocString.equalsIgnoreCase(currentUser)) {
+				occSanders++;
+			}
+		}
+
+		return currentUser + "; mentionsCandidates:" + "[ Trump:" + occTrump+ " Clinton:" + occHillary + " Rubio:" + occRubio + " Sanders:"+ occSanders + "]";
+
 	}
 	
 	

@@ -488,8 +488,8 @@ public class FriendShipGraph {
 						+ "\n\n\n***********";
 			}
 
-//			loggerComponents.info("****Start Vertex:" + currentVertex.toString() + "\nconnected components: "
-//					+ listVertexConnected.toString() + "\n\n\n*********************************");
+			loggerComponents.info("****Start Vertex:" + currentVertex.toString() + "\nconnected components: "
+					+ listVertexConnected.toString() + "\n\n\n*********************************");
 		}
 
 		System.out.println("Search Connected Components COMPLETED!");
