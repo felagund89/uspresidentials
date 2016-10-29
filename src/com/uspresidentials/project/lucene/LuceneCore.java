@@ -311,7 +311,7 @@ public class LuceneCore {
 
 				while ((line = br.readLine()) != null) {
 						String occurrenceTotalString = findOccurrence(hitsTrump, hitsClinton, hitsRubio, hitsSanders,line);
-						System.out.println(occurrenceTotalString);
+//						System.out.println(occurrenceTotalString);
 //						writer.println(occurrenceTotalString);
 						loggerOccurrenceMentions.info(occurrenceTotalString);
 					
@@ -341,30 +341,30 @@ public class LuceneCore {
 
 		for (ScoreDoc sd : scoreDocTrump.scoreDocs) {
 			Document d = searcher.doc(sd.doc);
-			String usernameOfDocString = d.getField("tweetUser").stringValue()+ ";" + d.getField("tweetUserId").stringValue()+";";
-			if (usernameOfDocString.equalsIgnoreCase(currentUser)) {
+			String usernameOfDocString =d.getField("tweetUserId").stringValue();
+			if (currentUser.contains(usernameOfDocString)){
 				occTrump++;
 			}
 		}
 
 		for (ScoreDoc sd : scoreDocClinton.scoreDocs) {
 			Document d = searcher.doc(sd.doc);
-			String usernameOfDocString = d.getField("tweetUser").stringValue()+ ";" + d.getField("tweetUserId").stringValue()+";";
-			if (usernameOfDocString.equalsIgnoreCase(currentUser)) {
+			String usernameOfDocString =d.getField("tweetUserId").stringValue();
+			if (currentUser.contains(usernameOfDocString)){
 				occHillary++;
 			}
 		}
 		for (ScoreDoc sd : scoreDocRubio.scoreDocs) {
 			Document d = searcher.doc(sd.doc);
-			String usernameOfDocString = d.getField("tweetUser").stringValue()+ ";" + d.getField("tweetUserId").stringValue()+";";
-			if (usernameOfDocString.equalsIgnoreCase(currentUser)) {
+			String usernameOfDocString =d.getField("tweetUserId").stringValue();
+			if (currentUser.contains(usernameOfDocString)){
 				occRubio++;
 			}
 		}
 		for (ScoreDoc sd : scoreDocSanders.scoreDocs) {
 			Document d = searcher.doc(sd.doc);
-			String usernameOfDocString = d.getField("tweetUser").stringValue()+ ";" + d.getField("tweetUserId").stringValue()+";";
-			if (usernameOfDocString.equalsIgnoreCase(currentUser)) {
+			String usernameOfDocString =d.getField("tweetUserId").stringValue();
+			if (currentUser.contains(usernameOfDocString)){
 				occSanders++;
 			}
 		}
