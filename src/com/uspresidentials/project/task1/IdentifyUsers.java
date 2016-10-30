@@ -1,25 +1,19 @@
 package com.uspresidentials.project.task1;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.LockObtainFailedException;
 
 import twitter4j.TwitterException;
 
-import com.uspresidentials.project.entity.TweetsEntity;
 import com.uspresidentials.project.lucene.LuceneCore;
 import com.uspresidentials.project.utils.PropertiesManager;
 /**
@@ -71,9 +65,13 @@ public class IdentifyUsers {
 			//verifico il numero degli utenti e dei tweets realativi al dataset creato
 			//getTotNumbersUsersAndTweets();
 			
-		
 			//costruisco un hashmap contenent gli utenti e i loro tweet
-		    getHashMapUser_Tweets();
+		    //getHashMapUser_Tweets();
+		    
+			//cerco le occorrenze dei vari candidati nei tweets degli utenti
+			occurrenceCandidatesInTweets();
+		    
+		    
 	}
 	
 	
@@ -131,15 +129,10 @@ public class IdentifyUsers {
 	}
 	
 	
-	
-	
-	
+
 	public static HashMap<String, ArrayList<String>> getHashMapUser_Tweets() throws IOException, ParseException {
 		//Richiamo il searcher con la query voluta
 		TopDocs resultDocs = LuceneCore.searchEngine(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
-		
-	
-		LuceneCore.occurrenceCandidates(PATH_FILE_UTENTI_ID_TEST, PATH_FILE_USER_OCCURRENCE, PATH_INDEXDIR_PRIMAR);
 		
 		
 		//creo la lista contenente utenti-idutente e relativi tweet
@@ -147,4 +140,39 @@ public class IdentifyUsers {
 	    System.out.println("fine esecuzione getHashMapUser_Tweets");
 	    return hashMapUsersTweets;
 	}
+	
+	
+	
+	public static void occurrenceCandidatesInTweets(){
+		
+		
+		try {
+		//Richiamo il searcher con la query voluta
+		TopDocs resultDocs = LuceneCore.searchEngine(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
+		
+
+		LuceneCore.occurrenceCandidates(PATH_FILE_UTENTI_ID_TEST, PATH_FILE_USER_OCCURRENCE, PATH_INDEXDIR_PRIMAR);
+		
+		} catch (ParseException | IOException e) {
+			e.printStackTrace();
+		}
+			
+		
+	}
+	
+	
+	
+	public static void partitionUsers(){
+		
+		
+		
+		
+		
+		
+	}
+	
+	
+	
+	
+	
 }
