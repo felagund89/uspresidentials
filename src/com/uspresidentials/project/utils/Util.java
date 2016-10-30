@@ -3,9 +3,11 @@ package com.uspresidentials.project.utils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,12 +16,16 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.google.common.base.Strings;
+
 import twitter4j.TwitterException;
 
 public class Util {
 
 	final static String PATH_FILE_FRIENDSHIP_JSON = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON");
 	final static String PATH_FILE_FRIENDSHIP_JSON_UPDATED = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON_UPDATED");
+	final static String PATH_FILE_USER_OCCURRENCE_TEST = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_OCCURRENCE_TEST");
+	
 
 	
 	
@@ -28,9 +34,9 @@ public class Util {
 		
 		
 		
-		cleanFileUserFriendsTweets();
+		//cleanFileUserFriendsTweets();
 			
-		
+		updateInfoFileJson();
 		
 		
 	}
@@ -140,61 +146,87 @@ public class Util {
 	   }
 	
 	
-	private void updateInfoFileJson(){
+	private static void updateInfoFileJson(){
 		//prendo il file json
 		JSONParser parser = new JSONParser();
 		List<String> tweets = new ArrayList<String>();
         try {
  
-            Object obj = parser.parse(new FileReader(PATH_FILE_FRIENDSHIP_JSON));
+            Object obj = parser.parse(new FileReader(PATH_FILE_FRIENDSHIP_JSON_UPDATED));
  
             JSONObject jsonObject = (JSONObject) obj;
  
             JSONArray listUsers = (JSONArray) jsonObject.get("ListUsers");
-            List<String> idUserTotalList = new ArrayList<String>();
-           
+            System.out.println("Listusers old size"+ listUsers.size());
+            JSONObject newJsonObject = new JSONObject();
+            JSONArray listUsersNew = new JSONArray();
             //prendo tutti gli i tweet degli user
-            for (int i = 0; i < listUsers.size(); i++) {
-            	JSONObject userJsonObject = (JSONObject) listUsers.get(i);
-            	tweets.add((String) userJsonObject.get("tweets").toString());
+            
+            
+            
+            //ciclo sul file contenenente le menzioni dei candidati per ogni utente
+            try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_USER_OCCURRENCE_TEST))) {
             	
-			}
-            
-            //scorro i vari array degli amici , e controllo se ogni amico esiste come 
-            //id dentro il json, se non esiste lo devo togliere dalla lista di amici.
-            for (int i = 0; i < listUsers.size(); i++) {
-            	JSONObject userJsonObject = (JSONObject) listUsers.get(i);
-            	
-            	JSONArray arrayFriends = (JSONArray) userJsonObject.get("friends"); 
-            	
-            	if(arrayFriends!=null){
-	            	Object[] arrayFriendsObject =  arrayFriends.toArray();
-	            	for(int j = 0; j < arrayFriendsObject.length; j++) {     
-	            		String[] utenteSplittatoString = arrayFriendsObject[j].toString().split(";");
-	                	if(! idUserTotalList.contains(utenteSplittatoString[1])){                		
-	                		idUserDaEliminareList.add(arrayFriendsObject[j].toString());          
-	                	}          
-	            	}        
-            	}
-			}
-            
-            
-            
-           
-            
-            
-            //aggiorno il file  json 
+				String line;
+				while ((line = br.readLine()) != null) {
+					//splitto i dati per renderli utilizzabili
+	            	String[] splittedLineStrings = line.split(";");
+	            	String userFile = splittedLineStrings[1];
+	            	String[] occurrenceStrings = splittedLineStrings[2].split(" ");
+	            	
+	            	//creo il jsonarray che andra a contenere le nuove informazioni
+	            	JSONArray  jsonArrMentions = new JSONArray();
+	            	jsonArrMentions.add(occurrenceStrings[0]);
+	            	jsonArrMentions.add(occurrenceStrings[1]);
+	            	jsonArrMentions.add(occurrenceStrings[2]);
+	            	jsonArrMentions.add(occurrenceStrings[3]);
 
-            System.out.println("Fine update file json");
+	            	// ciclo il gli utenti del json originale
+	            	for (int i = 0; i < listUsers.size(); i++) {
+	                	JSONObject userJsonObject = (JSONObject) listUsers.get(i);
+	                	String idUserJson = Long.toString((long) userJsonObject.get("idUser"));
+	                	
+	                	//appena trovo la corrispondenza tramite idUser procedo ad aggiungere il json array all'object dell'utente già esistente
+	                	if(userFile.trim().equalsIgnoreCase(idUserJson.trim())){
+	                		userJsonObject.put("mentionsCandidates", jsonArrMentions);
+	                		//System.out.println(userJsonObject.toString());
+	                		listUsersNew.add(userJsonObject);
+	                	}
+	                	
+	    			}				
+				}
+				
+				newJsonObject.put("ListUsers", listUsersNew);
+				
+	            System.out.println("Prima di aggiornare il json, size newJsonObject :"+newJsonObject.size());
+	            //aggiorno il file  json con i dati relativi alle menzioni dei candidati
+	            writeJsonUserOnFile(newJsonObject);
+	            System.out.println("Fine update file json");
+				
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+           
 		
-		
-		
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 	}
 	 
-	 
+	
+	
+	
+	public static void writeJsonUserOnFile(JSONObject jsonUser) throws IOException {
+
+		// inserire [] inizio e fine cosí da avere un json completo
+
+		PrintWriter writer = new PrintWriter(new FileOutputStream(new File(PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON_COMPLETE")), true));
+		writer.println(jsonUser.toString() + ",");
+		writer.close();
+	}
 	 
 	 
 }
