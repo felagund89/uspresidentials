@@ -65,37 +65,80 @@ public class IdentifyUsers {
 
 	public static void main(String[] args) throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException, ParseException {
 		
+			//creazione del dataset attraverso lucene
+			//createDataset();
 		
-		 ArrayList<String> candidateStrings = new ArrayList<String>() {{
-		        add("Donald J. Trump");
-		        add("Hillary Clinton");
-		        add("Bernie Sanders");
-		        add("Marco Rubio");
-		        add("Ted Cruz");
-		        add("John Kasich");
-		    }};
-	
-		    List<TweetsEntity> listaTweetsEntities = new ArrayList<TweetsEntity>();
-//		
-//			Richiamo l'indexer, commentare se già fatto
-			//LuceneCore.createIndex(PATH_PRIMARY, PATH_INDEXDIR_PRIMAR);
-//		    LuceneCore.createIndex(PATH_DEBATES, PATH_INDEXDIR);
+			//verifico il numero degli utenti e dei tweets realativi al dataset creato
+			//getTotNumbersUsersAndTweets();
+			
 		
+			//costruisco un hashmap contenent gli utenti e i loro tweet
 		    getHashMapUser_Tweets();
 	}
 	
+	
+	
+	
+	public static TopDocs createDataset() {
+		
+		TopDocs resultDocs = null;
+		
+		try {
+		
+		//Richiamo l'indexer, commentare se già fatto
+		LuceneCore.createIndex(PATH_PRIMARY, PATH_INDEXDIR_PRIMAR);
+	    LuceneCore.createIndex(PATH_DEBATES, PATH_INDEXDIR_PRIMAR);
+		//1)identify tweets of users that mention one of the U.S. presidential candidates.
+		
+	    //Richiamo il searcher con la query per i candidati menzionati
+	    resultDocs = LuceneCore.searchEngine(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
+	    
+	    
+		} catch (IOException | ParseException e) {
+			e.printStackTrace();
+		} catch (TwitterException e) {
+			e.printStackTrace();
+		}
+
+		return resultDocs;
+	}
+	
+	
+	//1)How many users you get? How many tweets?
+	public static void  getTotNumbersUsersAndTweets(){
+		
+		TopDocs resultDocs;
+		try {
+			//Richiamo il searcher con la query voluta
+
+			resultDocs = LuceneCore.searchEngine(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
+		
+			//calcolo il numero degli utenti twitter 
+		    Set<String> setUniqUser = LuceneCore.numberOfUser(LuceneCore.getIndexSearcher(PATH_INDEXDIR_PRIMAR), resultDocs);
+			
+		    long numeroUniqUser = setUniqUser.size();
+		    
+		    //calcolo il numero totale dei tweets contenenti menzioni ai candidati
+		    long numeroTweet = LuceneCore.numberOfTweets(LuceneCore.getIndexSearcher(PATH_INDEXDIR_PRIMAR), resultDocs);
+			
+			System.out.println("NUMERO UTENTI = "+numeroUniqUser+ " NUMERO TOTALE TWEETS PER I CANDIDATI = "+numeroTweet);
+		    
+		    
+		} catch (IOException | ParseException e) {
+			e.printStackTrace();
+		}
+				
+	}
+	
+	
+	
+	
+	
 	public static HashMap<String, ArrayList<String>> getHashMapUser_Tweets() throws IOException, ParseException {
-		//1)identify tweets of users that mention one of the U.S. presidential candidates. How many users you get? How many tweets?
 		//Richiamo il searcher con la query voluta
 		TopDocs resultDocs = LuceneCore.searchEngine(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
 		
-		//calcolo il numero degli utenti twitter 
-//	    Set<String> setUniqUser = LuceneCore.numberOfUser(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
-		
-//	    long numeroUniqUser = setUniqUser.size();
-//	    long numeroTweet = LuceneCore.numberOfTweets(LuceneCore.getIndexSearcher(PATH_INDEXDIR), resultDocs);
 	
-		
 		LuceneCore.occurrenceCandidates(PATH_FILE_UTENTI_ID_TEST, PATH_FILE_USER_OCCURRENCE, PATH_INDEXDIR_PRIMAR);
 		
 		
