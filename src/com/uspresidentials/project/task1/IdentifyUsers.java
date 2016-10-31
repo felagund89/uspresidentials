@@ -2,9 +2,18 @@ package com.uspresidentials.project.task1;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -12,12 +21,20 @@ import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.ListenableDirectedGraph;
 
 import twitter4j.TwitterException;
 
+import com.uspresidentials.project.entity.UserCustom;
 import com.uspresidentials.project.lucene.LuceneCore;
+import com.uspresidentials.project.utils.ComparatorRank;
 import com.uspresidentials.project.utils.PropertiesManager;
 import com.uspresidentials.project.utils.Util;
+
+import edu.uci.ics.jung.algorithms.scoring.ClosenessCentrality;
+import edu.uci.ics.jung.algorithms.scoring.PageRank;
+import edu.uci.ics.jung.graph.SparseMultigraph;
 /**
  * 
  * @author felagund89
@@ -60,9 +77,11 @@ public class IdentifyUsers {
 	final static String QUERY_STRING_CANDIDATES_NAME_STRING ="donald* OR hillary* OR rubio* OR trump* OR clinton* OR Sanders*";
 
 	final static Logger logger = Logger.getLogger(IdentifyUsers.class);
+	final static Logger loggerComponents = Logger.getLogger("loggerComponents");
+	final static Logger loggerPageRank = Logger.getLogger("loggerPageRank");
+	final static Logger loggerCentrality = Logger.getLogger("loggerCentrality");
 
-
-	public static void main(String[] args) throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException, ParseException {
+	public static void main(String[] args) throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException, ParseException, org.json.simple.parser.ParseException {
 		
 			//creazione del dataset attraverso lucene
 			//createDataset();
@@ -76,9 +95,25 @@ public class IdentifyUsers {
 			//cerco le occorrenze dei vari candidati nei tweets degli utenti
 			//occurrenceCandidatesInTweets();
 		    
+		
+			//ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = FriendShipGraph.createGraphFromFriendShip(); 																							
+			//System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip.toString());
+	
+			// ********COMPONENTE CONNESSE - write in folder 'log4j_logs'
+			//FriendShipGraph.searchConnectedComponents(graphFriendShip);
+	
+			// ********PAGE RANK
+	
+			//SparseMultigraph<String, DefaultEdge> graphSparse = FriendShipGraph.convertListenableGraph(graphFriendShip);
+			//calculatePageRank(graphSparse);
+			
+			//Partion user in M
 			partitionUsers();
 		
-		    
+			// ********CENTRALITY OF M' USERS (who mentioned a candidate)
+			//calculateCentrality(graphSparse);
+			
+			
 	}
 	
 	
@@ -168,6 +203,43 @@ public class IdentifyUsers {
 	}
 	
 	
+	
+	public static void calculatePageRank(SparseMultigraph<String, DefaultEdge> graph) {
+
+		
+		PageRank<String, DefaultEdge> rankerManager = new PageRank<String, DefaultEdge>(graph, 0.15);
+		rankerManager.evaluate();
+
+		TreeSet<UserCustom> orderedPageRankUser = new TreeSet<UserCustom>(new ComparatorRank());
+
+		for (String v : graph.getVertices()) {
+			double pageRankScore = rankerManager.getVertexScore(v);
+			UserCustom user = new UserCustom(v, pageRankScore);
+			orderedPageRankUser.add(user);
+		}
+		
+		for(UserCustom u : orderedPageRankUser){
+			
+			loggerPageRank.info("Vertext: " + u.getUserName() + " score: " + u.getPageRank());
+		}
+	}
+	
+	
+	public static void calculateCentrality(SparseMultigraph<String, DefaultEdge> graph) {
+				
+	      ClosenessCentrality<String,DefaultEdge> centralityUser = new ClosenessCentrality<String, DefaultEdge>(graph);
+	      for (String v : graph.getVertices()){
+	    	  double userCenScore = centralityUser.getVertexScore(v);
+	    	  loggerCentrality.info("Vertext: " + v + " centrality-score: " + userCenScore);
+	      }
+	}
+	
+	
+	
+	
+	//*3.    Partition the users in M according to the candidates they mention (each user can mention more that one candidate more than one time). Identify the users mentioning more frequently each candidate and measure their centrality. 
+	//Find the 10 (for each candidate)  who both mention the candidate frequently and are highly central (define some combined measure to select such candidates). 
+	//	Let M' in M be these users.
 	// prendo in input il file json contenente tutti gli utenti, creo 4 liste contenenti le 10 persone più attive per ogni candidato.
 	public static void partitionUsers(){
 		
@@ -181,6 +253,12 @@ public class IdentifyUsers {
 		hashRubio = Util.getPartitionUsers("Rubio");
 		hashSanders = Util.getPartitionUsers("Sanders");
 
+		
+		hashTrump = (HashMap<String, String>) Util.sortByValue(hashTrump);
+		hashClinton = (HashMap<String, String>) Util.sortByValue(hashClinton);
+		hashRubio = (HashMap<String, String>) Util.sortByValue(hashRubio);
+		hashSanders = (HashMap<String, String>) Util.sortByValue(hashSanders);
+ 
 		
 		Hashtable<String, HashMap<String, String>> tableM = new Hashtable<>();
 		
@@ -198,7 +276,5 @@ public class IdentifyUsers {
 	}
 	
 	
-	
-	
-	
+
 }

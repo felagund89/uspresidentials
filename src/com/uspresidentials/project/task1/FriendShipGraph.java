@@ -98,19 +98,19 @@ public class FriendShipGraph {
 		// serve ancora passare l'argomento
 				
 		// ******** FRIENDSHIP  // read from JSON File
-		ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = createGraphFromFriendShip(); 																							
-//		System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip.toString());
-
-		// ********COMPONENTE CONNESSE - write in folder 'log4j_logs'
-		searchConnectedComponents(graphFriendShip);
-
-		// ********PAGE RANK
-
-		SparseMultigraph<String, DefaultEdge> graphSparse = convertListenableGraph(graphFriendShip);
-		calculatePageRank(graphSparse);
-		
-		// ********CENTRALITY OF M' USERS (who mentioned a candidate)
-		calculateCentrality(graphSparse);
+//		ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = createGraphFromFriendShip(); 																							
+////		System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip.toString());
+//
+//		// ********COMPONENTE CONNESSE - write in folder 'log4j_logs'
+//		searchConnectedComponents(graphFriendShip);
+//
+//		// ********PAGE RANK
+//
+//		SparseMultigraph<String, DefaultEdge> graphSparse = convertListenableGraph(graphFriendShip);
+//		calculatePageRank(graphSparse);
+//		
+//		// ********CENTRALITY OF M' USERS (who mentioned a candidate)
+//		calculateCentrality(graphSparse);
 	}
 
 	public static void getGlobalFriendship(Twitter twitter)
@@ -541,35 +541,35 @@ public class FriendShipGraph {
 		return myGraph;
 	}
 
-	public static void calculatePageRank(SparseMultigraph<String, DefaultEdge> graph) {
-
-		
-		PageRank<String, DefaultEdge> rankerManager = new PageRank<String, DefaultEdge>(graph, 0.15);
-		rankerManager.evaluate();
-
-		TreeSet<UserCustom> orderedPageRankUser = new TreeSet<UserCustom>(new ComparatorRank());
-
-		for (String v : graph.getVertices()) {
-			double pageRankScore = rankerManager.getVertexScore(v);
-			UserCustom user = new UserCustom(v, pageRankScore);
-			orderedPageRankUser.add(user);
-		}
-		
-		for(UserCustom u : orderedPageRankUser){
-			
-			loggerPageRank.info("Vertext: " + u.getUserName() + " score: " + u.getPageRank());
-		}
-	}
-	
-	
-	public static void calculateCentrality(SparseMultigraph<String, DefaultEdge> graph) {
-				
-	      ClosenessCentrality<String,DefaultEdge> centralityUser = new ClosenessCentrality<String, DefaultEdge>(graph);
-	      for (String v : graph.getVertices()){
-	    	  double userCenScore = centralityUser.getVertexScore(v);
-	    	  loggerCentrality.info("Vertext: " + v + " centrality-score: " + userCenScore);
-	      }
-	}
+//	public static void calculatePageRank(SparseMultigraph<String, DefaultEdge> graph) {
+//
+//		
+//		PageRank<String, DefaultEdge> rankerManager = new PageRank<String, DefaultEdge>(graph, 0.15);
+//		rankerManager.evaluate();
+//
+//		TreeSet<UserCustom> orderedPageRankUser = new TreeSet<UserCustom>(new ComparatorRank());
+//
+//		for (String v : graph.getVertices()) {
+//			double pageRankScore = rankerManager.getVertexScore(v);
+//			UserCustom user = new UserCustom(v, pageRankScore);
+//			orderedPageRankUser.add(user);
+//		}
+//		
+//		for(UserCustom u : orderedPageRankUser){
+//			
+//			loggerPageRank.info("Vertext: " + u.getUserName() + " score: " + u.getPageRank());
+//		}
+//	}
+//	
+//	
+//	public static void calculateCentrality(SparseMultigraph<String, DefaultEdge> graph) {
+//				
+//	      ClosenessCentrality<String,DefaultEdge> centralityUser = new ClosenessCentrality<String, DefaultEdge>(graph);
+//	      for (String v : graph.getVertices()){
+//	    	  double userCenScore = centralityUser.getVertexScore(v);
+//	    	  loggerCentrality.info("Vertext: " + v + " centrality-score: " + userCenScore);
+//	      }
+//	}
 	
 
 	public static void writeUsersOnFile(String content) throws FileNotFoundException, UnsupportedEncodingException {
