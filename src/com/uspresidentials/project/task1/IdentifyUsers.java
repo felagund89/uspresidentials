@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -16,6 +17,7 @@ import twitter4j.TwitterException;
 
 import com.uspresidentials.project.lucene.LuceneCore;
 import com.uspresidentials.project.utils.PropertiesManager;
+import com.uspresidentials.project.utils.Util;
 /**
  * 
  * @author felagund89
@@ -72,8 +74,10 @@ public class IdentifyUsers {
 		    //getHashMapUser_Tweets();
 		    
 			//cerco le occorrenze dei vari candidati nei tweets degli utenti
-			occurrenceCandidatesInTweets();
+			//occurrenceCandidatesInTweets();
 		    
+			partitionUsers();
+		
 		    
 	}
 	
@@ -172,6 +176,22 @@ public class IdentifyUsers {
 		HashMap<String, String> hashRubio = new HashMap<>();
 		HashMap<String, String> hashSanders = new HashMap<>();
 
+		hashTrump = Util.getPartitionUsers("Trump");
+		hashClinton = Util.getPartitionUsers("Clinton");
+		hashRubio = Util.getPartitionUsers("Rubio");
+		hashSanders = Util.getPartitionUsers("Sanders");
+
+		
+		Hashtable<String, HashMap<String, String>> tableM = new Hashtable<>();
+		
+		tableM.put("TRUMP", hashTrump);
+		tableM.put("CLINTON", hashClinton);
+		tableM.put("RUBIO", hashRubio);
+		tableM.put("SANDERS", hashSanders);
+		
+		
+		
+		System.out.println("FINE PARTIZIONE UTENTI");
 		
 		
 		

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +28,7 @@ public class Util {
 	final static String PATH_FILE_FRIENDSHIP_JSON = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON");
 	final static String PATH_FILE_FRIENDSHIP_JSON_UPDATED = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON_UPDATED");
 	final static String PATH_FILE_USER_OCCURRENCE_TEST = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_OCCURRENCE_TEST");
-	
+	final static String PATH_FILE_USER_JSON_COMPLETE = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_JSON_COMPLETE");
 
 	
 	
@@ -38,7 +39,7 @@ public class Util {
 		
 		//cleanFileUserFriendsTweets();
 			
-		updateInfoFileJson();
+		//updateInfoFileJson();
 		
 		
 	}
@@ -235,7 +236,62 @@ public class Util {
         
 	}
 	 
-	
+	public static HashMap<String, String> getPartitionUsers(String candidateName){
+		
+		
+		HashMap<String, String> hashMapCandidateHashMap = new HashMap<>();
+		
+		
+		//prendo il file json
+		JSONParser parser = new JSONParser();
+		
+		
+        try {
+ 
+            Object obj = parser.parse(new FileReader(PATH_FILE_USER_JSON_COMPLETE));
+ 
+            JSONObject jsonObject = (JSONObject) obj;
+ 
+            JSONArray listUsers = (JSONArray) jsonObject.get("ListUsers");
+            //prendo tutti gli i tweet degli user
+
+            for (int i = 0; i < listUsers.size(); i++) {
+            	JSONObject userJsonObject = (JSONObject) listUsers.get(i);
+                JSONArray mentionsArray = (JSONArray) userJsonObject.get("mentionsCandidates");
+                Iterator<String> iterator = mentionsArray.iterator();
+                String mentions = mentionsArray.toString();
+
+            	String[] occurrenceStrings = mentions.split(",");
+            	String[] mentionsNum;
+            	String numString = null;
+        		
+                
+                while (iterator.hasNext()) {
+        			String string = iterator.next();
+
+					if(string.contains(candidateName)){
+						mentionsNum = string.split(":");
+						numString = mentionsNum[1];
+						break;
+						
+					}		
+				}
+                
+         	hashMapCandidateHashMap.put(userJsonObject.get("userName")+";"+userJsonObject.get("idUser")+";", numString);      	
+            }
+            
+            
+            
+        }catch(Exception e){
+        	e.printStackTrace();
+        }
+		
+		
+		
+		return hashMapCandidateHashMap;
+		
+		
+	}
 	
 	
 	
