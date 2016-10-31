@@ -48,7 +48,10 @@ public class IdentifyUsers {
 	final static String PATH_FILE_UTENTI_ID_TEST = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID_TEST");
 	
 	final static String PATH_FILE_USER_OCCURRENCE = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_OCCURRENCE");
+	final static String PATH_FILE_IDUSER_IN_FILE_JSON = PropertiesManager.getPropertiesFromFile("PATH_FILE_IDUSER_IN_FILE_JSON");
+	final static String PATH_FILE_FRIENDSHIP_JSON_UPDATED = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON_UPDATED");
 
+	
 	/**
 	 * QUERY
 	 */
@@ -151,7 +154,7 @@ public class IdentifyUsers {
 		TopDocs resultDocs = LuceneCore.searchEngine(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
 		
 
-		LuceneCore.occurrenceCandidates(PATH_FILE_UTENTI_ID_TEST, PATH_FILE_USER_OCCURRENCE, PATH_INDEXDIR_PRIMAR);
+		LuceneCore.occurrenceCandidates(PATH_FILE_IDUSER_IN_FILE_JSON, PATH_FILE_USER_OCCURRENCE, PATH_INDEXDIR_PRIMAR);
 		
 		} catch (ParseException | IOException e) {
 			e.printStackTrace();
@@ -161,11 +164,14 @@ public class IdentifyUsers {
 	}
 	
 	
-	
+	// prendo in input il file json contenente tutti gli utenti, creo 4 liste contenenti le 10 persone più attive per ogni candidato.
 	public static void partitionUsers(){
 		
-		
-		
+		HashMap<String, String> hashTrump = new HashMap<>();
+		HashMap<String, String> hashClinton = new HashMap<>();
+		HashMap<String, String> hashRubio = new HashMap<>();
+		HashMap<String, String> hashSanders = new HashMap<>();
+
 		
 		
 		

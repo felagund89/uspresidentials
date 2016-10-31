@@ -369,7 +369,7 @@ public class LuceneCore {
 			}
 		}
 
-		return currentUser+"Trump:" + occTrump+ " Clinton:" + occHillary + " Rubio:" + occRubio + " Sanders:"+ occSanders;
+		return currentUser+";Trump:" + occTrump+ " Clinton:" + occHillary + " Rubio:" + occRubio + " Sanders:"+ occSanders;
 		//return currentUser + "; mentionsCandidates:" + "[ Trump:" + occTrump+ " Clinton:" + occHillary + " Rubio:" + occRubio + " Sanders:"+ occSanders + "]";
 
 	}

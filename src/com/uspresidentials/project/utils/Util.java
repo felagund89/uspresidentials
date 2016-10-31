@@ -9,6 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -149,7 +151,8 @@ public class Util {
 	private static void updateInfoFileJson(){
 		//prendo il file json
 		JSONParser parser = new JSONParser();
-		List<String> tweets = new ArrayList<String>();
+		
+		
         try {
  
             Object obj = parser.parse(new FileReader(PATH_FILE_FRIENDSHIP_JSON_UPDATED));
@@ -157,23 +160,46 @@ public class Util {
             JSONObject jsonObject = (JSONObject) obj;
  
             JSONArray listUsers = (JSONArray) jsonObject.get("ListUsers");
-            System.out.println("Listusers old size"+ listUsers.size());
+            System.out.println("List users old size"+ listUsers.size());
             JSONObject newJsonObject = new JSONObject();
             JSONArray listUsersNew = new JSONArray();
+            Hashtable<String, String>userMentionsHashMap = new Hashtable();
             //prendo tutti gli i tweet degli user
             
             
-            
-            //ciclo sul file contenenente le menzioni dei candidati per ogni utente
-            try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_USER_OCCURRENCE_TEST))) {
-            	
-				String line;
-				while ((line = br.readLine()) != null) {
-					//splitto i dati per renderli utilizzabili
-	            	String[] splittedLineStrings = line.split(";");
-	            	String userFile = splittedLineStrings[1];
-	            	String[] occurrenceStrings = splittedLineStrings[2].split(" ");
+
+	            //ciclo sul file contenenente le menzioni dei candidati per ogni utente e creo un hashmap
+	            try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_USER_OCCURRENCE_TEST))) {
 	            	
+					String line;
+					while ((line = br.readLine()) != null) {
+						//splitto i dati per renderli utilizzabili
+		            	String[] splittedLineStrings = line.split(";");
+		            	String userFile = splittedLineStrings[0];
+//		            	System.out.println(userFile);
+		            	userMentionsHashMap.put(userFile, splittedLineStrings[1]);
+		            	
+					}
+					
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	            
+	            
+	            for (int i = 0; i < listUsers.size(); i++) {
+	            	JSONObject userJsonObject = (JSONObject) listUsers.get(i);
+	            	String idUserJson = Long.toString((long) userJsonObject.get("idUser"));
+	            	//appena trovo la corrispondenza tramite idUser procedo ad aggiungere il json array all'object dell'utente già esistente
+	            
+	            	//System.out.println(idUserJson);
+	            	
+	            	
+	            	
+	            	String idUserHash =  userMentionsHashMap.get(idUserJson.trim());
+	            	String[] occurrenceStrings = idUserHash.split(" ");
+
+	
 	            	//creo il jsonarray che andra a contenere le nuove informazioni
 	            	JSONArray  jsonArrMentions = new JSONArray();
 	            	jsonArrMentions.add(occurrenceStrings[0]);
@@ -181,42 +207,114 @@ public class Util {
 	            	jsonArrMentions.add(occurrenceStrings[2]);
 	            	jsonArrMentions.add(occurrenceStrings[3]);
 
-	            	// ciclo il gli utenti del json originale
-	            	for (int i = 0; i < listUsers.size(); i++) {
-	                	JSONObject userJsonObject = (JSONObject) listUsers.get(i);
-	                	String idUserJson = Long.toString((long) userJsonObject.get("idUser"));
-	                	
-	                	//appena trovo la corrispondenza tramite idUser procedo ad aggiungere il json array all'object dell'utente già esistente
-	                	if(userFile.trim().equalsIgnoreCase(idUserJson.trim())){
-	                		userJsonObject.put("mentionsCandidates", jsonArrMentions);
-	                		//System.out.println(userJsonObject.toString());
-	                		listUsersNew.add(userJsonObject);
-	                	}
-	                	
-	    			}				
-				}
-				
-				newJsonObject.put("ListUsers", listUsersNew);
-				
-	            System.out.println("Prima di aggiornare il json, size newJsonObject :"+newJsonObject.size());
-	            //aggiorno il file  json con i dati relativi alle menzioni dei candidati
-	            writeJsonUserOnFile(newJsonObject);
-	            System.out.println("Fine update file json");
-				
+	            	   	
 
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-           
-		
+            		userJsonObject.put("mentionsCandidates", jsonArrMentions);
+//		            System.out.println(count++ +")  idUserJson "+idUserJson+ "  userfile id "+userFile);
+
+            		//System.out.println(userJsonObject.toString());
+            		listUsersNew.add(userJsonObject);
+	            	//System.out.println("count utente aggiornato num :"+ count++);
+
+	                	
+	            	
+	            }
+	            
+				newJsonObject.put("ListUsers", listUsersNew);
+
+
+            
+            System.out.println("Prima di aggiornare il json, size newJsonObject :"+newJsonObject.size());
+            //aggiorno il file  json con i dati relativi alle menzioni dei candidati
+            writeJsonUserOnFile(newJsonObject);
+            System.out.println("Fine update file json");
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
 	}
 	 
 	
+	
+	
+	
+	
+	
+//	private static void updateInfoFileJson(){
+//		//prendo il file json
+//		JSONParser parser = new JSONParser();
+//        try {
+// 
+//            Object obj = parser.parse(new FileReader(PATH_FILE_FRIENDSHIP_JSON_UPDATED));
+// 
+//            JSONObject jsonObject = (JSONObject) obj;
+// 
+//            JSONArray listUsers = (JSONArray) jsonObject.get("ListUsers");
+//            System.out.println("List users old size"+ listUsers.size());
+//            JSONObject newJsonObject = new JSONObject();
+//            JSONArray listUsersNew = new JSONArray();
+//            //prendo tutti gli i tweet degli user
+//            
+//            int count = 0;
+//            
+//            //ciclo sul file contenenente le menzioni dei candidati per ogni utente
+//            try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_USER_OCCURRENCE_TEST))) {
+//            	
+//				String line;
+//				while ((line = br.readLine()) != null) {
+//					//splitto i dati per renderli utilizzabili
+//	            	String[] splittedLineStrings = line.split(";");
+//	            	String userFile = splittedLineStrings[1];
+//	            	String[] occurrenceStrings = splittedLineStrings[2].split(" ");
+//	            	
+//	            	//creo il jsonarray che andra a contenere le nuove informazioni
+//	            	JSONArray  jsonArrMentions = new JSONArray();
+//	            	jsonArrMentions.add(occurrenceStrings[0]);
+//	            	jsonArrMentions.add(occurrenceStrings[1]);
+//	            	jsonArrMentions.add(occurrenceStrings[2]);
+//	            	jsonArrMentions.add(occurrenceStrings[3]);
+//
+//	            	// ciclo il gli utenti del json originale
+//	            	for (int i = 0; i < listUsers.size(); i++) {
+//	                	JSONObject userJsonObject = (JSONObject) listUsers.get(i);
+//	                	String idUserJson = Long.toString((long) userJsonObject.get("idUser"));
+//	                	//appena trovo la corrispondenza tramite idUser procedo ad aggiungere il json array all'object dell'utente già esistente
+//	                	
+//	                	if(idUserJson.trim().equalsIgnoreCase(userFile.trim())){
+//	                		userJsonObject.put("mentionsCandidates", jsonArrMentions);
+//	        	            writeJsonUserOnFile(newJsonObject);
+//		                	System.out.println(count++ +")  idUserJson "+idUserJson+ "  userfile id "+userFile);
+//
+//	                		//System.out.println(userJsonObject.toString());
+//	                		listUsersNew.add(userJsonObject);
+//	    	            	//System.out.println("count utente aggiornato num :"+ count++);
+//
+//	                	}
+//	                	
+//	    			}	
+//
+//				}
+//				
+//				newJsonObject.put("ListUsers", listUsersNew);
+//				
+//	            System.out.println("Prima di aggiornare il json, size newJsonObject :"+newJsonObject.size());
+//	            //aggiorno il file  json con i dati relativi alle menzioni dei candidati
+//	            //writeJsonUserOnFile(newJsonObject);
+//	            System.out.println("Fine update file json");
+//				
+//
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//           
+//		
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//	}
 	
 	
 	public static void writeJsonUserOnFile(JSONObject jsonUser) throws IOException {
@@ -224,7 +322,7 @@ public class Util {
 		// inserire [] inizio e fine cosí da avere un json completo
 
 		PrintWriter writer = new PrintWriter(new FileOutputStream(new File(PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON_COMPLETE")), true));
-		writer.println(jsonUser.toString() + ",");
+		writer.println(jsonUser.toString());
 		writer.close();
 	}
 	 
