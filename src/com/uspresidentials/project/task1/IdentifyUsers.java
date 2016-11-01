@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.concurrent.CountDownLatch;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -101,7 +102,7 @@ public class IdentifyUsers {
 			//System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip.toString());
 	
 			// ********COMPONENTE CONNESSE - write in folder 'log4j_logs'
-			FriendShipGraph.searchConnectedComponents(graphFriendShip);
+			//FriendShipGraph.searchConnectedComponents(graphFriendShip);
 	
 			// ********PAGE RANK
 	
@@ -111,13 +112,15 @@ public class IdentifyUsers {
 			
 		
 			// ********CENTRALITY OF M' USERS (who mentioned a candidate)
-			calculateCentrality(graphSparse);
+			HashMap<String, String> userCentrality = new HashMap<>();
+			userCentrality=calculateCentrality(graphSparse);
 			
 			//Partion user in M
-			partitionUsers();
+			Hashtable<String, HashMap<String, String>> tableM = new Hashtable<>();
+			tableM = partitionUsers();
 			
 			//cerco i 10  utenti per ogni candidato  che hanno la centrality più alta e hanno menzionato di più i candidati.
-			findUserByMentionsAndCentrality();
+			findUserByMentionsAndCentrality(tableM,userCentrality);
 			
 			
 			
@@ -232,13 +235,21 @@ public class IdentifyUsers {
 	}
 	
 	
-	public static void calculateCentrality(SparseMultigraph<String, DefaultEdge> graph) {
-				
-	      ClosenessCentrality<String,DefaultEdge> centralityUser = new ClosenessCentrality<String, DefaultEdge>(graph);
-	      for (String v : graph.getVertices()){
-	    	  double userCenScore = centralityUser.getVertexScore(v);
-	    	  loggerCentrality.info("Vertext: " + v + " centrality-score: " + userCenScore);
-	      }
+	public static HashMap<String, String> calculateCentrality(SparseMultigraph<String, DefaultEdge> graph) {
+			
+		HashMap<String, String> userCentrality = new HashMap<>();
+		
+	    ClosenessCentrality<String,DefaultEdge> centralityUser = new ClosenessCentrality<String, DefaultEdge>(graph);
+	    
+	    for (String v : graph.getVertices()){
+	    	double userCenScore = centralityUser.getVertexScore(v);
+	    	loggerCentrality.info("Vertext: " + v + " centrality-score: " + userCenScore);
+	    	userCentrality.put(v, String.valueOf(userCenScore));
+	    }
+	     
+	    //ordino per valore l'hashmap delle centrality	
+	    userCentrality = (HashMap<String, String>) Util.sortByValue(userCentrality);  
+	    return userCentrality;
 	}
 	
 	
@@ -248,8 +259,10 @@ public class IdentifyUsers {
 	//Find the 10 (for each candidate)  who both mention the candidate frequently and are highly central (define some combined measure to select such candidates). 
 	//	Let M' in M be these users.
 	// prendo in input il file json contenente tutti gli utenti, creo 4 liste contenenti le 10 persone più attive per ogni candidato.
-	public static void partitionUsers(){
+	public static Hashtable<String, HashMap<String, String>> partitionUsers(){
 		
+		Hashtable<String, HashMap<String, String>> tableM = new Hashtable<>();
+
 		HashMap<String, String> hashTrump = new HashMap<>();
 		HashMap<String, String> hashClinton = new HashMap<>();
 		HashMap<String, String> hashRubio = new HashMap<>();
@@ -267,7 +280,6 @@ public class IdentifyUsers {
 		hashSanders = (HashMap<String, String>) Util.sortByValue(hashSanders);
  
 		
-		Hashtable<String, HashMap<String, String>> tableM = new Hashtable<>();
 		
 		tableM.put("TRUMP", hashTrump);
 		tableM.put("CLINTON", hashClinton);
@@ -278,12 +290,36 @@ public class IdentifyUsers {
 		
 		System.out.println("FINE PARTIZIONE UTENTI");
 		
-		
+		return tableM;
 		
 	}
 	
-	private static void findUserByMentionsAndCentrality() {
+	private static void findUserByMentionsAndCentrality(Hashtable<String, HashMap<String, String>> tableM, HashMap<String, String> userCentrality  ) {
 		
+		//trovare il valore medio per la centrality totale e per le menzioni. poi cercare i primi 10 elementi che siano sopra la mediae prendere quelli 
+		//con i valori piu bilanciati
+		
+//		double mValueCentrality =userCentrality.keySet(). userCentrality.size()
+		
+		double mMentions = 4.5;
+		HashMap<String, String> hashApp = new HashMap<>();
+		hashApp = tableM.get("TRUMP");
+		
+		
+		for (String key : hashApp.keySet()) {
+		    String value = hashApp.get(key);
+		   
+		    for (String centr : userCentrality.keySet()) {
+			    String valueCentr = userCentrality.get(centr);
+			    if(key.equalsIgnoreCase(centr)){
+			    	System.out.println(key +" "+value+" "+valueCentr );
+					loggerCentrality.info(key +" "+value+" "+valueCentr );
+
+			    }
+			    
+		    }			    
+		
+		}	
 		
 		
 		
