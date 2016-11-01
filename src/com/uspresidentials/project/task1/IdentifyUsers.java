@@ -69,6 +69,7 @@ public class IdentifyUsers {
 	final static String PATH_FILE_USER_OCCURRENCE = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_OCCURRENCE");
 	final static String PATH_FILE_IDUSER_IN_FILE_JSON = PropertiesManager.getPropertiesFromFile("PATH_FILE_IDUSER_IN_FILE_JSON");
 	final static String PATH_FILE_FRIENDSHIP_JSON_UPDATED = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON_UPDATED");
+	final static String PATH_FILE_USER_JSON_COMPLETE = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_JSON_COMPLETE");
 
 	
 	/**
@@ -96,29 +97,35 @@ public class IdentifyUsers {
 			//occurrenceCandidatesInTweets();
 		    
 		
-			//ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = FriendShipGraph.createGraphFromFriendShip(); 																							
+			ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = FriendShipGraph.createGraphFromFriendShip(); 																							
 			//System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip.toString());
 	
 			// ********COMPONENTE CONNESSE - write in folder 'log4j_logs'
-			//FriendShipGraph.searchConnectedComponents(graphFriendShip);
+			FriendShipGraph.searchConnectedComponents(graphFriendShip);
 	
 			// ********PAGE RANK
 	
-			//SparseMultigraph<String, DefaultEdge> graphSparse = FriendShipGraph.convertListenableGraph(graphFriendShip);
+			SparseMultigraph<String, DefaultEdge> graphSparse = FriendShipGraph.convertListenableGraph(graphFriendShip);
 			//calculatePageRank(graphSparse);
+			
+			
+		
+			// ********CENTRALITY OF M' USERS (who mentioned a candidate)
+			calculateCentrality(graphSparse);
 			
 			//Partion user in M
 			partitionUsers();
-		
-			// ********CENTRALITY OF M' USERS (who mentioned a candidate)
-			//calculateCentrality(graphSparse);
+			
+			//cerco i 10  utenti per ogni candidato  che hanno la centrality più alta e hanno menzionato di più i candidati.
+			findUserByMentionsAndCentrality();
+			
+			
 			
 			
 	}
 	
 	
-	
-	
+
 	public static TopDocs createDataset() {
 		
 		TopDocs resultDocs = null;
@@ -275,6 +282,15 @@ public class IdentifyUsers {
 		
 	}
 	
-	
+	private static void findUserByMentionsAndCentrality() {
+		
+		
+		
+		
+		
+	}
+
+
+
 
 }

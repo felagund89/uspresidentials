@@ -67,6 +67,9 @@ public class FriendShipGraph {
 	final static String PATH_FILE_FRIENDSHIP_JSON = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON");
 	final static String PATH_FILE_LOG4J_CONNECTED_COMPONENTS = PropertiesManager.getPropertiesFromFile("PATH_FILE_LOG4J_CONNECTED_COMPONENTS");
 	final static String PATH_FILE_LOG4J_PAGERANK = PropertiesManager.getPropertiesFromFile("PATH_FILE_LOG4J_PAGERANK");
+	final static String PATH_FILE_USER_JSON_COMPLETE = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_JSON_COMPLETE");
+
+	
 	
 	static int NUMERO_UTENTI; 
 	static Boolean isPrivateFriends = false;
@@ -367,7 +370,7 @@ public class FriendShipGraph {
 		// read from friendship file with this format -->
 		// //nomeUtente1:amico1;amico2;amico3
 		JSONParser parser = new JSONParser();
-		JSONObject obj = (JSONObject) parser.parse(new FileReader(PATH_FILE_FRIENDSHIP_JSON));
+		JSONObject obj = (JSONObject) parser.parse(new FileReader(PATH_FILE_USER_JSON_COMPLETE));
 		JSONObject jsonObjectUser = (JSONObject) obj;
 
 		JSONArray listUsers = (JSONArray) jsonObjectUser.get("ListUsers");
@@ -375,7 +378,7 @@ public class FriendShipGraph {
 				DefaultEdge.class);
 
 		Iterator<JSONObject> iterator = listUsers.iterator();
-
+		int  numberOfVertex=0;
 		while (iterator.hasNext()) {
 			JSONObject currentUs = iterator.next();
 			String currentUser = currentUs.get("userName").toString();
@@ -383,8 +386,11 @@ public class FriendShipGraph {
 			String userToScan = currentUser+";" + currentId + ";";
 			
 			//if (!myGraph.containsVertex(currentUser))
-			if (!myGraph.containsVertex(userToScan))
+			if (!myGraph.containsVertex(userToScan)){
 				myGraph.addVertex(userToScan);
+				numberOfVertex++;
+//				System.out.println("1aggiunto nodo:" + userToScan);
+			}
 
 			//System.out.println("*****" + currentUser);
 			JSONArray listFriends = (JSONArray) currentUs.get("friends");
@@ -394,19 +400,25 @@ public class FriendShipGraph {
 
 					String currentFriend = listFriends.get(i).toString();
 
-					if (!myGraph.containsVertex(currentFriend)) // se non contiene
-																// giá quel nodo
+					if (!myGraph.containsVertex(currentFriend)){ // se non contiene
+						numberOfVertex++;										// giá quel nodo
 						myGraph.addVertex(currentFriend);
-
+//						System.out.println("2aggiunto nodo:" + currentFriend);
+					}
 					// se non contiene giá quell'arco
-					if (!myGraph.containsEdge(userToScan, currentFriend))   //currentUser
-						myGraph.addEdge(userToScan, currentFriend);			//currentUser
+					if (!myGraph.containsEdge(userToScan, currentFriend)){   //currentUser
+						myGraph.addEdge(userToScan, currentFriend);
+//						System.out.println("aggiunto arco: " +userToScan+" "+currentFriend);
+
+					}//currentUser
 				}
 			}
 			
 		}
+		System.out.println("numberOfVertex createGraph = "+numberOfVertex);
 		System.out.println("FINE ------ createGraphFromFriendShip");
-
+		
+		//loggerComponents.info("GRAFO: " + myGraph.toString());
 		return myGraph;
 	}
 
@@ -488,8 +500,7 @@ public class FriendShipGraph {
 						+ "\n\n\n***********";
 			}
 
-			loggerComponents.info("****Start Vertex:" + currentVertex.toString() + "\nconnected components: "
-					+ listVertexConnected.toString() + "\n\n\n*********************************");
+			loggerComponents.info("****Start Vertex:" + currentVertex.toString()+" - count: " + countMajorComponents + "\nconnected components: "+ listVertexConnected.toString() + "\n\n\n*********************************");
 		}
 
 		System.out.println("Search Connected Components COMPLETED!");
@@ -505,20 +516,27 @@ public class FriendShipGraph {
 		// read from friendship file with this format -->
 		// //nomeUtente1:amico1;amico2;amico3
 		JSONParser parser = new JSONParser();
-		JSONObject obj = (JSONObject) parser.parse(new FileReader(PATH_FILE_FRIENDSHIP_JSON));
+		JSONObject obj = (JSONObject) parser.parse(new FileReader(PATH_FILE_USER_JSON_COMPLETE));
 		JSONObject jsonObjectUser = (JSONObject) obj;
 
 		JSONArray listUsers = (JSONArray) jsonObjectUser.get("ListUsers");
 		Iterator<JSONObject> iterator = listUsers.iterator();
-
+		int numberOfVertex=0;
 		while (iterator.hasNext()) {
 			JSONObject currentUs = iterator.next();
 			String currentUser = currentUs.get("userName").toString();
+			String currentId = currentUs.get("idUser").toString();
+			String userToScan = currentUser+";" + currentId + ";";
+			
+			
+			
+			
+			if (!myGraph.containsVertex(userToScan)){
+				numberOfVertex++;
+				myGraph.addVertex(userToScan);
+			}
 
-			if (!myGraph.containsVertex(currentUser))
-				myGraph.addVertex(currentUser);
-
-			System.out.println("*****currentUser" + currentUser);
+//			System.out.println("*****currentUser" + currentUser);
 			JSONArray listFriends = (JSONArray) currentUs.get("friends");
 			if (listFriends!=null) {
 				for (int i = 0; i < listFriends.size(); i++) {
@@ -526,16 +544,18 @@ public class FriendShipGraph {
 
 					String currentFriend = listFriends.get(i).toString();
 
-					if (!myGraph.containsVertex(currentFriend))
+					if (!myGraph.containsVertex(currentFriend)){
+						numberOfVertex++;
 						myGraph.addVertex(currentFriend);
+					}
 
 					DefaultEdge currentEdge = new DefaultEdge();
-					myGraph.addEdge(currentEdge, currentUser, currentFriend, EdgeType.DIRECTED);
+					myGraph.addEdge(currentEdge, userToScan, currentFriend, EdgeType.DIRECTED);
 				}
 			}
 			
 		}
-
+		System.out.println("numberOfVertex convert in linkedsparsedgraph: "+ numberOfVertex);
 		//logger.info("SparseMultigraph GENERATED: \n\n" + myGraph.getVertices().toString());
 		
 		return myGraph;

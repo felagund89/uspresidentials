@@ -267,7 +267,6 @@ public class Util {
                 Iterator<String> iterator = mentionsArray.iterator();
                 String mentions = mentionsArray.toString();
 
-            	String[] occurrenceStrings = mentions.split(",");
             	String[] mentionsNum;
             	String numString = null;
         		
@@ -278,7 +277,9 @@ public class Util {
 					if(string.contains(candidateName)){
 						mentionsNum = string.split(":");
 						numString = mentionsNum[1];
-						if(!numString.equalsIgnoreCase("0"))
+						
+						//scommentare se si vuole tenere traccia solo degli utenti che hanno menzionato almeno una volta il candidato
+						//if(!numString.equalsIgnoreCase("0"))  
 							hashMapCandidateHashMap.put(userJsonObject.get("userName")+";"+userJsonObject.get("idUser")+";", numString);      	
 						break;				
 					}		
