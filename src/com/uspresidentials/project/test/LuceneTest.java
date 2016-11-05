@@ -37,7 +37,7 @@ import twitter4j.TwitterObjectFactory;
 public class LuceneTest {
 	
 	final static String PATH_DEBATES = "/Users/alessiocampanelli/Desktop/debates";
-//	final static String PATH_PRIMARY = "/home/felagund89/Scrivania/Progetto web and social/DOCPRIMARYNY";	
+	final static String PATH_PRIMARY = "/home/felagund89/Scrivania/Progetto web and social/DOCPRIMARYNY";	
   
   final static String PATH_INDEXDIR = "/Users/alessiocampanelli/Desktop/resultQuery";
   final static String PATH_INDEXDIR_PRIMAR = "/home/felagund89/Scrivania/Progetto web and social/resultQuery/resultQueryPrimary";	

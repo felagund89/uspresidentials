@@ -119,9 +119,12 @@ public class IdentifyUsers {
 			Hashtable<String, HashMap<String, String>> tableM = new Hashtable<>();
 			tableM = partitionUsers();
 			
-			//cerco i 10  utenti per ogni candidato  che hanno la centrality più alta e hanno menzionato di più i candidati.
-			findUserByMentionsAndCentrality(tableM,userCentrality);
-			
+			//cerco i 10  utenti per ogni candidato  che hanno la centrality piu alta e hanno menzionato di piu i candidati.
+			findUserByMentionsAndCentrality(tableM,userCentrality,"TRUMP");
+			findUserByMentionsAndCentrality(tableM,userCentrality,"CLINTON");
+			findUserByMentionsAndCentrality(tableM,userCentrality,"RUBIO");
+			findUserByMentionsAndCentrality(tableM,userCentrality,"SANDERS");
+
 			
 			
 			
@@ -243,8 +246,10 @@ public class IdentifyUsers {
 	    
 	    for (String v : graph.getVertices()){
 	    	double userCenScore = centralityUser.getVertexScore(v);
-	    	loggerCentrality.info("Vertext: " + v + " centrality-score: " + userCenScore);
-	    	userCentrality.put(v, String.valueOf(userCenScore));
+	    	if(!Double.isNaN(userCenScore)){
+		    	//loggerCentrality.info("Vertext: " + v + " centrality-score: " + userCenScore);
+		    	userCentrality.put(v, String.valueOf(userCenScore));
+	    	}
 	    }
 	     
 	    //ordino per valore l'hashmap delle centrality	
@@ -294,39 +299,71 @@ public class IdentifyUsers {
 		
 	}
 	
-	private static void findUserByMentionsAndCentrality(Hashtable<String, HashMap<String, String>> tableM, HashMap<String, String> userCentrality  ) {
+	private static void findUserByMentionsAndCentrality(Hashtable<String, HashMap<String, String>> tableM, HashMap<String, String> userCentrality, String candidateName  ) {
 		
 		//trovare il valore medio per la centrality totale e per le menzioni. poi cercare i primi 10 elementi che siano sopra la mediae prendere quelli 
 		//con i valori piu bilanciati
 		
 //		double mValueCentrality =userCentrality.keySet(). userCentrality.size()
 		
-		double mMentions = 4.5;
+		loggerCentrality.info("\nTEN FIRST USERS FOR --> " +candidateName);
+		
+		
 		HashMap<String, String> hashApp = new HashMap<>();
-		hashApp = tableM.get("TRUMP");
+		hashApp = tableM.get(candidateName);
+		
+		Map.Entry<String,String> entry=hashApp.entrySet().iterator().next();
+		String keyMap= entry.getKey();
+		double mMentions=Double.valueOf(entry.getValue());
+		System.out.println("MEDIA MENZIONI HASHMAP ANALIZZATO"+mMentions);
 		
 		
-		for (String key : hashApp.keySet()) {
-		    String value = hashApp.get(key);
-		   
-		    for (String centr : userCentrality.keySet()) {
-			    String valueCentr = userCentrality.get(centr);
-			    if(key.equalsIgnoreCase(centr)){
-			    	System.out.println(key +" "+value+" "+valueCentr );
-					loggerCentrality.info(key +" "+value+" "+valueCentr );
+		Map.Entry<String,String> userCentralityFirstVal=userCentrality.entrySet().iterator().next();
+		double mCentr=Double.valueOf(userCentralityFirstVal.getValue());
+		System.out.println("MEDIA CENTRALITY TUTTI GLI UTENTI"+mCentr);
 
-			    }
-			    
-		    }			    
+		List<String> userM = new ArrayList<>();
+		List<String> userC= new ArrayList<>();
+
+		//prendo i primi 100 elementi degli hasmap
+		int count=0;
+		Iterator itM = hashApp.entrySet().iterator();
+		while(itM.hasNext() && count<=300){
+	        Map.Entry pair = (Map.Entry)itM.next();
+
+			String chiaveM= (String) pair.getKey();
+			String valoreM=(String) pair.getValue();
+			userM.add(chiaveM);
+			count++;
+			
+			
+		}
+		count =0;
+		Iterator itC = userCentrality.entrySet().iterator();
+		while(itC.hasNext() && count<=300){
+	        Map.Entry pair = (Map.Entry)itC.next();
+
+			String chiaveC= (String) pair.getKey();
+			String valoreC=(String) pair.getValue();
+			userC.add(chiaveC);
+			count++;
+		}
 		
-		}	
 		
+		int uCount=10;
+		for (String stringM : userM) {
 		
-		
-		
+			for (String stringC : userC) {
+				if(stringC.equalsIgnoreCase(stringM)){
+					//System.out.println(stringC);
+					if(uCount>0){
+						loggerCentrality.info(stringC);
+						uCount--;
+					}
+				}
+			}
+		}
 	}
-
-
-
-
+	
+	
 }
