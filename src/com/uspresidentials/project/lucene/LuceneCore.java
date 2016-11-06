@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -26,6 +27,8 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -35,6 +38,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.Version;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
@@ -373,6 +377,46 @@ public class LuceneCore {
 		//return currentUser + "; mentionsCandidates:" + "[ Trump:" + occTrump+ " Clinton:" + occHillary + " Rubio:" + occRubio + " Sanders:"+ occSanders + "]";
 
 	}
+	
+	
+	public static  Set<String> getTerms(String pathIndexer, String fieldForQuery, String queryLucene) throws IOException, ParseException {
+    	IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(pathIndexer))); 
+
+		
+        Set<String> terms = new HashSet<>();
+
+		
+ 	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
+ 	    
+ 	    Query q1 = qp.parse(queryLucene);
+ 	    TopDocs hits = searcher.search(q1, 100000);
+ 	    
+//		loggerUsersAndTweets.info("##### "+hits.totalHits + " Docs found for the query \"" + q1.toString() + "\"");
+
+ 	    int num = 0;
+ 	    for (ScoreDoc sd : hits.scoreDocs) {
+ 	    	Document d = searcher.doc(sd.doc);
+ 	      
+	 	    Terms vector = reader.getTermVector(sd.doc, d.getField("tweetTex").toString());
+	 		TermsEnum termsEnum = null;
+	 		termsEnum = vector.iterator(termsEnum);
+	 		Map<String, Integer> frequencies = new HashMap<>();
+	 		BytesRef text = null;
+	 		while ((text = termsEnum.next()) != null) {
+	 		    String term = text.utf8ToString();
+	 		    System.out.println(term);
+	 		    int freq = (int) termsEnum.totalTermFreq();
+	 		    frequencies.put(term, freq);
+	 		    terms.add(term);
+	 		}
+ 	      
+ 	      
+ 	    }
+ 	      	    
+ 	    return terms;
+	 }
+	
+	
 	
 	
 	private static void printHashMap(HashMap<String, ArrayList<String>> hashMapUser){

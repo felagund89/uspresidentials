@@ -216,7 +216,6 @@ public class IdentifyUsers {
 	}
 	
 	
-	
 	public static void calculatePageRank(SparseMultigraph<String, DefaultEdge> graph) {
 
 		
@@ -312,15 +311,15 @@ public class IdentifyUsers {
 		HashMap<String, String> hashApp = new HashMap<>();
 		hashApp = tableM.get(candidateName);
 		
-		Map.Entry<String,String> entry=hashApp.entrySet().iterator().next();
-		String keyMap= entry.getKey();
-		double mMentions=Double.valueOf(entry.getValue());
-		System.out.println("MEDIA MENZIONI HASHMAP ANALIZZATO"+mMentions);
-		
-		
-		Map.Entry<String,String> userCentralityFirstVal=userCentrality.entrySet().iterator().next();
-		double mCentr=Double.valueOf(userCentralityFirstVal.getValue());
-		System.out.println("MEDIA CENTRALITY TUTTI GLI UTENTI"+mCentr);
+//		Map.Entry<String,String> entry=hashApp.entrySet().iterator().next();
+//		String keyMap= entry.getKey();
+//		double mMentions=Double.valueOf(entry.getValue());
+//		System.out.println("MEDIA MENZIONI HASHMAP ANALIZZATO"+mMentions);
+//		
+//		
+//		Map.Entry<String,String> userCentralityFirstVal=userCentrality.entrySet().iterator().next();
+//		double mCentr=Double.valueOf(userCentralityFirstVal.getValue());
+//		System.out.println("MEDIA CENTRALITY TUTTI GLI UTENTI"+mCentr);
 
 		List<String> userM = new ArrayList<>();
 		List<String> userC= new ArrayList<>();
@@ -351,8 +350,7 @@ public class IdentifyUsers {
 		
 		
 		int uCount=10;
-		for (String stringM : userM) {
-		
+		for (String stringM : userM) {		
 			for (String stringC : userC) {
 				if(stringC.equalsIgnoreCase(stringM)){
 					//System.out.println(stringC);
