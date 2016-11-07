@@ -36,7 +36,27 @@ public class ScrapeNews {
 			System.out.println(i+"   "+linkModString);
 		}
 		
-		scrapeNewsFromGoole(link);
+		
+		// 1)Chiamata per effettuare scraping su google news.
+		//scrapeNewsFromGoole(link);
+		
+		
+		
+		//2)Richiamare algoritmo per cercare le main occurrence word.
+		
+		
+		
+		
+		//3)Confrontare le main occurrence words del task3 con quelle trovate nelle scraping news.
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 	
 	
