@@ -14,8 +14,17 @@ import com.uspresidentials.project.utils.PropertiesManager;
 public class MainOccurenceWords {
 
 	
+	/*
+	 * For each candidate, analyze (on the full set of mentions T(M)) the most frequently co-occurring words. You should use Jaccard to avoid selecting words that co-occur by chance. 
+	 * 
+	 * 
+	 */
+	
 	final static String PATH_INDEXDIR_PRIMAR = PropertiesManager.getPropertiesFromFile("PATH_INDEXDIR_PRIMAR");
-	final static String QUERY_STRING_CANDIDATES_NAME_STRING ="donald* OR hillary* OR rubio* OR trump* OR clinton* OR Sanders*";
+	final static String QUERY_STRING_CANDIDATES_NAME_TRUMP ="donald* OR trump*";
+	final static String QUERY_STRING_CANDIDATES_NAME_CLINTON ="hillary* OR clinton*";
+	final static String QUERY_STRING_CANDIDATES_NAME_RUBIO ="rubio* OR Rubio*";
+	final static String QUERY_STRING_CANDIDATES_NAME_SANDERS ="Sanders* OR sanders*";
 
 	
 	public static void main(String[] args) {
@@ -25,20 +34,29 @@ public class MainOccurenceWords {
 //		String[] tokens = tweet.split(" ");
 //		Tokenize1(tweet);
 		
-		getTermFrequency();
 		
 		
+		//Devo richiamare su ogni candidato la ricerca con lucene e sui documenti trovati cercare le co-occurrence words. Usando Jaccard.
+		
+		getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_TRUMP);
+		getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_CLINTON);
+		getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_RUBIO);
+		getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_SANDERS);
+
+		
+		
+		System.out.println("FINE MAIN");
 	}
 	
 	
 	
-	public static void getTermFrequency(){
+	public static void getTermFrequencyByCandidate(String query){
 		
 		
 		
 		try {
 			
-			LuceneCore.getTerms(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
+			LuceneCore.getTerms(PATH_INDEXDIR_PRIMAR, "tweetText", query);
 			
 			System.out.println("FINE OCCURRENCE TERMS");
 			} catch (ParseException | IOException e) {
@@ -57,7 +75,7 @@ public class MainOccurenceWords {
 		String[] tokens = tweet.split(" ");
 		for (String token : tokens) {
 		    System.out.println("Token: " + token);
-		}
+		}	
 	    
 	}
 	
