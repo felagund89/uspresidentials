@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
@@ -106,7 +107,7 @@ public class LuceneCore {
 				Elements elementsT = docJsoup.select("t");					   
 				Elements elementsL = docJsoup.select("l");		
 				
-				logger.info("<--- elementi nel file corrente : " + elementsP.size());
+				//logger.info("<--- elementi nel file corrente : " + elementsP.size());
 				
 				for (int i = 0; i < elementsP.size(); i++) {   
 	
@@ -125,12 +126,20 @@ public class LuceneCore {
 	//				listaTweet.add(tweetEnt);
 					
 					docLucene = new Document();
+					
 					docLucene.add(new StringField("idTweet", tweetEnt.getId(),Field.Store.YES));
 					docLucene.add(new StringField("languageTweet", tweetEnt.getLanguage(),Field.Store.YES));
 					docLucene.add(new TextField("tweetUser", tweetEnt.getTweetStatus().getUser().getName().toString().toLowerCase(),Field.Store.YES));
 					docLucene.add(new LongField("tweetUserId", tweetEnt.getTweetStatus().getUser().getId(),Field.Store.YES)); //aggiunto il campo id
-					docLucene.add(new TextField("tweetText", tweetEnt.getTweetStatus().getText().toString().toLowerCase(),Field.Store.YES ));
-			
+					docLucene.add(new TextField("tweetText", tweetEnt.getTweetStatus().getText().toString().toLowerCase(),Field.Store.YES));
+					
+					//aggiunto l'index per il campo tweetText 7/novembre
+					FieldType type = new FieldType();
+					type.setIndexed(true);
+					type.setStored(true);
+					type.setStoreTermVectors(true);
+					Field field = new Field("tweetTextIndexed", tweetEnt.getTweetStatus().getText().toString().toLowerCase(), type);
+					docLucene.add(field);
 					
 						
 					//TODO: AGGIUNGERE ALTRI CAMPI UTILI PER LE RICERCHE
@@ -141,12 +150,16 @@ public class LuceneCore {
 	
 	//			indexWriter.addDocuments(listaDocLucene);
 				indexWriter.commit();
-				logger.info("indexWriter numero di doc lucene = " + indexWriter.numDocs());
-				logger.info(files.length -j +"--->");	
+				//logger.info("indexWriter numero di doc lucene = " + indexWriter.numDocs());
+				//logger.info(files.length -j +"--->");	
+				System.out.println("indexWriter numero di doc lucene = " + indexWriter.numDocs());
+
 			}
 			
 			closeIndexWriter(indexWriter);			
-			logger.info("fine creazione documenti per lucene");
+			System.out.println("fine creazione documenti per lucene");
+
+			//logger.info("fine creazione documenti per lucene");
 		}
 		
 	
@@ -381,6 +394,7 @@ public class LuceneCore {
 	
 	public static  Set<String> getTerms(String pathIndexer, String fieldForQuery, String queryLucene) throws IOException, ParseException {
     	IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(pathIndexer))); 
+		searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
 
 		
         Set<String> terms = new HashSet<>();
@@ -397,7 +411,7 @@ public class LuceneCore {
  	    for (ScoreDoc sd : hits.scoreDocs) {
  	    	Document d = searcher.doc(sd.doc);
  	      
-	 	    Terms vector = reader.getTermVector(sd.doc, d.getField("tweetTex").toString());
+	 	    Terms vector = reader.getTermVector(sd.doc, "tweetTextIndexed");
 	 		TermsEnum termsEnum = null;
 	 		termsEnum = vector.iterator(termsEnum);
 	 		Map<String, Integer> frequencies = new HashMap<>();

@@ -21,6 +21,8 @@ public class MainOccurenceWords {
 	 */
 	
 	final static String PATH_INDEXDIR_PRIMAR = PropertiesManager.getPropertiesFromFile("PATH_INDEXDIR_PRIMAR");
+	final static String PATH_INDEXDIR_PRIMAR_7NOV = PropertiesManager.getPropertiesFromFile("PATH_INDEXDIR_PRIMAR_7NOV");
+
 	final static String QUERY_STRING_CANDIDATES_NAME_TRUMP ="donald* OR trump*";
 	final static String QUERY_STRING_CANDIDATES_NAME_CLINTON ="hillary* OR clinton*";
 	final static String QUERY_STRING_CANDIDATES_NAME_RUBIO ="rubio* OR Rubio*";
@@ -56,7 +58,7 @@ public class MainOccurenceWords {
 		
 		try {
 			
-			LuceneCore.getTerms(PATH_INDEXDIR_PRIMAR, "tweetText", query);
+			LuceneCore.getTerms(PATH_INDEXDIR_PRIMAR_7NOV, "tweetText", query);
 			
 			System.out.println("FINE OCCURRENCE TERMS");
 			} catch (ParseException | IOException e) {

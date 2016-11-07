@@ -64,6 +64,9 @@ public class IdentifyUsers {
 	final static String PATH_PRIMARY = PropertiesManager.getPropertiesFromFile("PATH_PRIMARY");
 
 	final static String PATH_INDEXDIR_PRIMAR = PropertiesManager.getPropertiesFromFile("PATH_INDEXDIR_PRIMAR");
+	final static String PATH_INDEXDIR_PRIMAR_7NOV = PropertiesManager.getPropertiesFromFile("PATH_INDEXDIR_PRIMAR_7NOV");
+
+	
 	final static String PATH_FILE_UTENTI_ID = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID");
 	final static String PATH_FILE_UTENTI_ID_TEST = PropertiesManager.getPropertiesFromFile("PATH_FILE_UTENTI_ID_TEST");
 	
@@ -98,7 +101,7 @@ public class IdentifyUsers {
 			//occurrenceCandidatesInTweets();
 		    
 		
-			ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = FriendShipGraph.createGraphFromFriendShip(); 																							
+			//ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = FriendShipGraph.createGraphFromFriendShip(); 																							
 			//System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip.toString());
 	
 			// ********COMPONENTE CONNESSE - write in folder 'log4j_logs'
@@ -106,24 +109,24 @@ public class IdentifyUsers {
 	
 			// ********PAGE RANK
 	
-			SparseMultigraph<String, DefaultEdge> graphSparse = FriendShipGraph.convertListenableGraph(graphFriendShip);
+			//SparseMultigraph<String, DefaultEdge> graphSparse = FriendShipGraph.convertListenableGraph(graphFriendShip);
 			//calculatePageRank(graphSparse);
 			
 			
 		
 			// ********CENTRALITY OF M' USERS (who mentioned a candidate)
-			HashMap<String, String> userCentrality = new HashMap<>();
-			userCentrality=calculateCentrality(graphSparse);
+			//HashMap<String, String> userCentrality = new HashMap<>();
+			//userCentrality=calculateCentrality(graphSparse);
 			
 			//Partion user in M
-			Hashtable<String, HashMap<String, String>> tableM = new Hashtable<>();
-			tableM = partitionUsers();
+			//Hashtable<String, HashMap<String, String>> tableM = new Hashtable<>();
+			//tableM = partitionUsers();
 			
 			//cerco i 10  utenti per ogni candidato  che hanno la centrality piu alta e hanno menzionato di piu i candidati.
-			findUserByMentionsAndCentrality(tableM,userCentrality,"TRUMP");
-			findUserByMentionsAndCentrality(tableM,userCentrality,"CLINTON");
-			findUserByMentionsAndCentrality(tableM,userCentrality,"RUBIO");
-			findUserByMentionsAndCentrality(tableM,userCentrality,"SANDERS");
+//			findUserByMentionsAndCentrality(tableM,userCentrality,"TRUMP");
+//			findUserByMentionsAndCentrality(tableM,userCentrality,"CLINTON");
+//			findUserByMentionsAndCentrality(tableM,userCentrality,"RUBIO");
+//			findUserByMentionsAndCentrality(tableM,userCentrality,"SANDERS");
 
 			
 			
@@ -132,22 +135,22 @@ public class IdentifyUsers {
 	
 	
 
-	public static TopDocs createDataset() {
+	public static TopDocs createDataset() throws ParseException {
 		
 		TopDocs resultDocs = null;
 		
 		try {
 		
 		//Richiamo l'indexer, commentare se già fatto
-		LuceneCore.createIndex(PATH_PRIMARY, PATH_INDEXDIR_PRIMAR);
-	    LuceneCore.createIndex(PATH_DEBATES, PATH_INDEXDIR_PRIMAR);
+		LuceneCore.createIndex(PATH_PRIMARY, PATH_INDEXDIR_PRIMAR_7NOV);
+	    LuceneCore.createIndex(PATH_DEBATES, PATH_INDEXDIR_PRIMAR_7NOV);
 		//1)identify tweets of users that mention one of the U.S. presidential candidates.
 		
 	    //Richiamo il searcher con la query per i candidati menzionati
-	    resultDocs = LuceneCore.searchEngine(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
+	    //resultDocs = LuceneCore.searchEngine(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
 	    
 	    
-		} catch (IOException | ParseException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (TwitterException e) {
 			e.printStackTrace();
