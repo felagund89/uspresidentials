@@ -392,7 +392,9 @@ public class LuceneCore {
 	}
 	
 	
-	public static  Set<String> getTerms(String pathIndexer, String fieldForQuery, String queryLucene) throws IOException, ParseException {
+	
+	//Cerco tutti i termini e la loro frequenza nei documenti tirati fuori da lucene.
+	public static  Map<String, Integer> getTerms(String pathIndexer, String fieldForQuery, String queryLucene) throws IOException, ParseException {
     	IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(pathIndexer))); 
 		searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
 
@@ -408,26 +410,32 @@ public class LuceneCore {
 //		loggerUsersAndTweets.info("##### "+hits.totalHits + " Docs found for the query \"" + q1.toString() + "\"");
 
  	    int num = 0;
+ 	    Map<String, Integer> frequencies = new HashMap<>();
  	    for (ScoreDoc sd : hits.scoreDocs) {
  	    	Document d = searcher.doc(sd.doc);
  	      
 	 	    Terms vector = reader.getTermVector(sd.doc, "tweetTextIndexed");
 	 		TermsEnum termsEnum = null;
 	 		termsEnum = vector.iterator(termsEnum);
-	 		Map<String, Integer> frequencies = new HashMap<>();
+	 		
 	 		BytesRef text = null;
 	 		while ((text = termsEnum.next()) != null) {
 	 		    String term = text.utf8ToString();
-	 		    System.out.println(term);
-	 		    int freq = (int) termsEnum.totalTermFreq();
-	 		    frequencies.put(term, freq);
+	 		    if(frequencies.get(term)!=null && frequencies.get(term)>=1 ){
+	 		    	frequencies.put(term, frequencies.get(term) + 1);
+//		 		    int freq = (int) termsEnum.totalTermFreq();
+//		 		    System.out.println(term +" "+frequencies.get(term));
+	 		    }else{
+	 		    	frequencies.put(term, 1);
+	 		    }
+	 		    
 	 		    terms.add(term);
 	 		}
  	      
  	      
  	    }
  	      	    
- 	    return terms;
+ 	    return frequencies;
 	 }
 	
 	

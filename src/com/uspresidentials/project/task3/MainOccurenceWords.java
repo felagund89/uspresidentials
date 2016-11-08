@@ -2,7 +2,11 @@ package com.uspresidentials.project.task3;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.lucene.analysis.util.TokenizerFactory;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -10,6 +14,7 @@ import org.apache.lucene.search.TopDocs;
 
 import com.uspresidentials.project.lucene.LuceneCore;
 import com.uspresidentials.project.utils.PropertiesManager;
+import com.uspresidentials.project.utils.Util;
 
 public class MainOccurenceWords {
 
@@ -17,7 +22,7 @@ public class MainOccurenceWords {
 	/*
 	 * For each candidate, analyze (on the full set of mentions T(M)) the most frequently co-occurring words. You should use Jaccard to avoid selecting words that co-occur by chance. 
 	 * 
-	 * 
+	 * guardare http://sujitpal.blogspot.it/2008/09/ir-math-with-java-similarity-measures.html
 	 */
 	
 	final static String PATH_INDEXDIR_PRIMAR = PropertiesManager.getPropertiesFromFile("PATH_INDEXDIR_PRIMAR");
@@ -30,35 +35,50 @@ public class MainOccurenceWords {
 
 	
 	public static void main(String[] args) {
-		
-//		String tweet = "RT @mparent77772: Should Obama's 'internet kill switch' power be curbed? http://bbc.in/hcVGoz";
-//		System.out.println("Tweet: " + tweet);
-//		String[] tokens = tweet.split(" ");
-//		Tokenize1(tweet);
-		
-		
-		
-		//Devo richiamare su ogni candidato la ricerca con lucene e sui documenti trovati cercare le co-occurrence words. Usando Jaccard.
-		
-		getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_TRUMP);
-		getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_CLINTON);
-		getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_RUBIO);
-		getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_SANDERS);
 
 		
 		
-		System.out.println("FINE MAIN");
+		//Devo richiamare su ogni candidato la ricerca con lucene e sui documenti trovati cercare le co-occurrence words. Non so a cosa serve Jaccard nel nostro caso.
+		
+		Map<String,Integer> mapTrump = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_TRUMP);
+		Map<String,Integer> mapHillary = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_CLINTON);
+		Map<String,Integer> mapRubio = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_RUBIO);
+		Map<String,Integer> mapSanders = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_SANDERS);
+
+		
+		
+		System.out.println("FINE MAIN OCCURRENCE");
 	}
 	
 	
 	
-	public static void getTermFrequencyByCandidate(String query){
+	public static Map<String,Integer> getTermFrequencyByCandidate(String query){
 		
+		Set<String> setTerms = null;
+		Map<String,Integer> mapTerms= new HashMap<String, Integer>(); 
 		
 		
 		try {
 			
-			LuceneCore.getTerms(PATH_INDEXDIR_PRIMAR_7NOV, "tweetText", query);
+			mapTerms = LuceneCore.getTerms(PATH_INDEXDIR_PRIMAR_7NOV, "tweetText", query);
+			mapTerms = Util.sortByValue(mapTerms);
+			
+			
+			
+			int count = 0;
+			Iterator itM = mapTerms.entrySet().iterator();
+			while(itM.hasNext() && count<=100){
+		        Map.Entry pair = (Map.Entry)itM.next();
+
+				String chiaveM= (String) pair.getKey();
+				int valoreM=(Integer) pair.getValue();
+				System.out.println(chiaveM+" "+valoreM);
+				count++;
+			}
+			
+			
+			
+			
 			
 			System.out.println("FINE OCCURRENCE TERMS");
 			} catch (ParseException | IOException e) {
@@ -66,7 +86,7 @@ public class MainOccurenceWords {
 			}
 		
 		
-		
+		return mapTerms;
 		
 		
 	}
@@ -107,7 +127,6 @@ public class MainOccurenceWords {
 //		    }
 //	}
 //	
-//	
 //		public static List filterTweetsJaccard(List texts,TokenizerFactory tokFactory, double cutoff) {
 //			JaccardDistance jaccardD = new JaccardDistance(tokFactory);
 //			List filteredTweets = new ArrayList();
@@ -127,5 +146,43 @@ public class MainOccurenceWords {
 //			return filteredTweets;
 //			}
 //		}
+//	
+	
+	
+//	public void testJaccardSimilarityWithLsiVector() throws Exception {
+//	    LsiIndexer indexer = new LsiIndexer();
+//	    Matrix termDocMatrix = indexer.transform(vectorGenerator.getMatrix());
+//	    JaccardSimilarity jaccardSimilarity = new JaccardSimilarity();
+//	    Matrix similarity = jaccardSimilarity.transform(termDocMatrix);
+//	    prettyPrintMatrix("Jaccard Similarity (LSI)", similarity, 
+//	      vectorGenerator.getDocumentNames(), new PrintWriter(System.out, true));
+//	  }
+//	
+//	
+//	private void prettyPrintMatrix(String legend, Matrix matrix, 
+//		      String[] documentNames, PrintWriter writer) {
+//		    writer.printf("=== %s ===%n", legend);
+//		    writer.printf("%6s", " ");
+//		    for (int i = 0; i < documentNames.length; i++) {
+//		      writer.printf("%8s", documentNames[i]);
+//		    }
+//		    writer.println();
+//		    for (int i = 0; i < documentNames.length; i++) {
+//		      writer.printf("%6s", documentNames[i]);
+//		      for (int j = 0; j < documentNames.length; j++) {
+//		        writer.printf("%8.4f", matrix.get(i, j));
+//		      }
+//		      writer.println();
+//		    }
+//		    writer.flush();
+//		  }
+//		  
+//		  private void prettyPrintResults(String query, 
+//		      List<SearchResult> results) {
+//		    System.out.printf("Results for query: [%s]%n", query);
+//		    for (SearchResult result : results) {
+//		      System.out.printf("%s (score = %8.4f)%n", result.title, result.score);
+//		    }
+//		  }
 	
 }
