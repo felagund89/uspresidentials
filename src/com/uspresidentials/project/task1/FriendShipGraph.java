@@ -136,7 +136,8 @@ public class FriendShipGraph {
 																						// degli
 																						// amici
 																						// relativi
-																						// a
+														
+					// a
 																						// idUser
 					userName = line.split(";")[0];	
 					isPrivateFriends = false;

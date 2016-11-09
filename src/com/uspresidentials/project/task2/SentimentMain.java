@@ -19,20 +19,10 @@ import com.uspresidentials.project.utils.PropertiesManager;
  * 
  * 
  * PER LE NEGAZIONI DARE UN OCCHAITA QUI http://sentiment.christopherpotts.net/lingstruc.html#negation
- * 
- * 
- * 
- * 
 */
-
-
 
 public class SentimentMain {
 	
-	
-	
-	
-
 	private static final String PATH_SENTIMENT_CANDIDATE_FILE = PropertiesManager.getPropertiesFromFile("PATH_SENTIMENT_CANDIDATE_FILE");
 	
 	static ArrayList<String> posWords = new ArrayList<String>() {{
@@ -42,9 +32,6 @@ public class SentimentMain {
     static ArrayList<String> negWords = new ArrayList<String>() {{
         add("bad"); add("worst"); add("worthless"); add("negative"); add("not");
     }};
-	
-	
-	
 	
 	
 	public static void main(String[] args) throws IOException {
@@ -67,9 +54,6 @@ public class SentimentMain {
 		System.out.println("suck#n " + sentiwordnet.extract("suck", "n"));
 
 	}
-	
-	
-	
 	
 	//test con algoritmo custom.
 	private static int getSentimentScore(String input) {

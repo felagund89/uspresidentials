@@ -398,10 +398,8 @@ public class LuceneCore {
     	IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(pathIndexer))); 
 		searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
 
-		
         Set<String> terms = new HashSet<>();
-
-		
+        
  	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
  	    
  	    Query q1 = qp.parse(queryLucene);
@@ -413,7 +411,7 @@ public class LuceneCore {
  	    Map<String, Integer> frequencies = new HashMap<>();
  	    for (ScoreDoc sd : hits.scoreDocs) {
  	    	Document d = searcher.doc(sd.doc);
- 	      
+ 	        
 	 	    Terms vector = reader.getTermVector(sd.doc, "tweetTextIndexed");
 	 		TermsEnum termsEnum = null;
 	 		termsEnum = vector.iterator(termsEnum);
@@ -438,7 +436,25 @@ public class LuceneCore {
  	    return frequencies;
 	 }
 	
-	
+	public static void getTweetsCoreForSentiment(String pathIndexer, String fieldForQuery, String queryLucene) throws IOException, ParseException {
+		IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(pathIndexer))); 
+		searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
+
+        Set<String> terms = new HashSet<>();
+        
+ 	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
+ 	    
+ 	    Query q1 = qp.parse(queryLucene);
+ 	    TopDocs hits = searcher.search(q1, 100000);
+ 	   for (ScoreDoc sd : hits.scoreDocs) {
+	    	Document d = searcher.doc(sd.doc);
+	    	System.out.println("tweet: " + d.getField("tweetUser") + "forUser: " + d.getField("tweetUser"));
+ 	   }
+ 	   
+ 	   //return array with tweets (for each candidates)
+ 	   //filter unnecessary word
+ 	   //apply SentimentWordNet (attention for negation not-good / not bad)
+	}
 	
 	
 	private static void printHashMap(HashMap<String, ArrayList<String>> hashMapUser){

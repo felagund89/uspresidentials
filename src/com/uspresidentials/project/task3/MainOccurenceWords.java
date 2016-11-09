@@ -39,6 +39,7 @@ public class MainOccurenceWords {
 		
 		
 		//Devo richiamare su ogni candidato la ricerca con lucene e sui documenti trovati cercare le co-occurrence words. Non so a cosa serve Jaccard nel nostro caso.
+		//ogni documento equivale ad un tweet in Lucene
 		
 		Map<String,Integer> mapTrump = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_TRUMP);
 		Map<String,Integer> mapHillary = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_CLINTON);
@@ -50,8 +51,7 @@ public class MainOccurenceWords {
 		System.out.println("FINE MAIN OCCURRENCE");
 	}
 	
-	
-	
+
 	public static Map<String,Integer> getTermFrequencyByCandidate(String query){
 		
 		Set<String> setTerms = null;
@@ -76,14 +76,10 @@ public class MainOccurenceWords {
 				count++;
 			}
 			
-			
-			
-			
-			
 			System.out.println("FINE OCCURRENCE TERMS");
-			} catch (ParseException | IOException e) {
+		} catch (ParseException | IOException e) {
 				e.printStackTrace();
-			}
+		}
 		
 		
 		return mapTerms;
