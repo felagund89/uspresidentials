@@ -64,7 +64,7 @@ public class MainOccurenceWords {
 			mapTerms = Util.sortByValue(mapTerms);
 			
 			
-			
+			//PROVA prendo le prime 100 parole con più occorrenze e le stampo.
 			int count = 0;
 			Iterator itM = mapTerms.entrySet().iterator();
 			while(itM.hasNext() && count<=100){
