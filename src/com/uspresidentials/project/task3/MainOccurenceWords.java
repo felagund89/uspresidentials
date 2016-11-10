@@ -3,6 +3,7 @@ package com.uspresidentials.project.task3;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,9 +43,10 @@ public class MainOccurenceWords {
 		//ogni documento equivale ad un tweet in Lucene
 		
 		Map<String,Integer> mapTrump = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_TRUMP);
-		Map<String,Integer> mapHillary = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_CLINTON);
-		Map<String,Integer> mapRubio = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_RUBIO);
-		Map<String,Integer> mapSanders = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_SANDERS);
+		jaccard(mapTrump);
+		//Map<String,Integer> mapHillary = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_CLINTON);
+		//Map<String,Integer> mapRubio = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_RUBIO);
+		//Map<String,Integer> mapSanders = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_SANDERS);
 
 		
 		
@@ -91,7 +93,34 @@ public class MainOccurenceWords {
 		
 	}
 	
+	//ciclo su tutte le parole e mi faccio tornare  una mappa con dentro l'indice di jaccard per ogni coppia di parole
+	public static Map<String,Double> jaccard(Map<String,Integer> mapWords){
+		//num_docs(term1,term2)/(term1.docfreq+term2.docfreq - num_docs(term1,term2))
+		Map<String,Double> wordJaccIndex = new HashMap<>();
+		
+		
+		
+		Iterator it = mapWords.entrySet().iterator();
+		while(it.hasNext()){
+	        Map.Entry pair = (Map.Entry)it.next();
 
+			String chiaveM= (String) pair.getKey();
+			int valore=(Integer) pair.getValue();
+			for (String key : mapWords.keySet()) {
+								
+				wordJaccIndex.put(chiaveM+";"+key, jaccard_coeffecient(chiaveM,key));
+				
+			}
+			
+		}
+
+		
+		
+		
+		return wordJaccIndex;
+	}
+	
+	
 	public static void Tokenize1(String tweet) {
 	    //Approach #1, find token seperators
 		String[] tokens = tweet.split(" ");
@@ -100,6 +129,69 @@ public class MainOccurenceWords {
 		}	
 	    
 	}
+	
+	
+	 private static double jaccard_coeffecient(String s1, String s2) {
+
+	        double j_coeffecient;
+	        ArrayList<String> j1 = new ArrayList<String>();
+	        ArrayList<String> j2 = new ArrayList<String>();
+	        HashSet<String> set1 = new HashSet<String>();
+	        HashSet<String> set2 = new HashSet<String>();
+	        
+	            s1="$"+s1+"$";
+	            s2="$"+s2+"$";
+	            int j=0;
+	            int i=3;
+	        
+	            while(i<=s1.length())
+	            {
+	                j1.add(s1.substring(j, i));
+	                    j++;
+	                    i++;
+	            }    
+	            j=0;
+	            i=3;
+	            while(i<=s2.length())
+	            {
+	                j2.add(s2.substring(j, i));
+	                    j++;
+	                    i++;
+	            }    
+
+	            
+	            Iterator<String> itr1 = j1.iterator();
+	            while (itr1.hasNext()) {
+	                  String element = itr1.next();
+	                  System.out.print(element + " ");
+	                }
+	                System.out.println();
+	                Iterator<String> itr2 = j2.iterator();
+	                while (itr2.hasNext()) {
+	                  String element = itr2.next();
+	                  System.out.print(element + " ");
+	                }
+	                System.out.println();
+	            
+	                
+	                set2.addAll(j2);
+	                set2.addAll(j1);
+	                set1.addAll(j1);
+	                set1.retainAll(j2);
+	                
+	                    
+	                System.out.println("Union="+set2.size());
+	                System.out.println("Intersection="+set1.size());
+	                
+	                j_coeffecient=((double)set1.size())/((double)set2.size());
+	                System.out.println("Jaccard coeffecient="+j_coeffecient);
+	                
+	                return j_coeffecient;
+
+	    }
+	    
+	
+	
 	
 	
 //	public static void jaccardDistance(){
