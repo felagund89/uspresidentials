@@ -409,6 +409,10 @@ public class LuceneCore {
 
  	    int num = 0;
  	    Map<String, Integer> frequencies = new HashMap<>();
+ 	    
+ 	    //Nel primo elemento della mappa inserisco il numero dei documenti trovati per quel determinato candidato.
+ 	    //gli elementi successivi della mappa sono tutti i termini trovati e la loro frequenza in tutti i documenti
+ 	    frequencies.put("NumberOfDocs", hits.totalHits);
  	    for (ScoreDoc sd : hits.scoreDocs) {
  	    	Document d = searcher.doc(sd.doc);
  	        

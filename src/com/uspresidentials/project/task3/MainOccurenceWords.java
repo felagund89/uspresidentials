@@ -52,6 +52,10 @@ public class MainOccurenceWords {
 	}
 	
 
+	
+	
+	//trovo tutti i termini e le rispettive frequenze di tutti i documenti trovati per ogni candidato.
+	//per jaccard si dovrebbe usare cosi : jaccard(term1,term2)=num_docs(term1,term2)/(term1.docfreq+term2.docfreq - num_docs(term1,term2))
 	public static Map<String,Integer> getTermFrequencyByCandidate(String query){
 		
 		Set<String> setTerms = null;
