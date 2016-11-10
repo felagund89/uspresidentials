@@ -1,17 +1,34 @@
 package com.uspresidentials.project.task2;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.store.FSDirectory;
+
+import com.uspresidentials.project.lucene.LuceneCore;
 import com.uspresidentials.project.utils.PropertiesManager;
 
 public class SentiWordNetDemoCode {
 
 	private Map<String, Double> dictionary;
 	private static final String PATH_SENTIMENT_WORDNET_FILE = PropertiesManager.getPropertiesFromFile("PATH_SENTIMENT_WORDNET_FILE");
+	final static String PATH_INDEXDIR_PRIMAR = PropertiesManager.getPropertiesFromFile("PATH_INDEXDIR_PRIMAR");
+	
+	final static String QUERY_STRING_CANDIDATES_NAME_TRUMP ="donald* OR trump*";
+	final static String QUERY_STRING_CANDIDATES_NAME_CLINTON ="hillary* OR clinton*";
+	final static String QUERY_STRING_CANDIDATES_NAME_RUBIO ="rubio* OR Rubio*";
+	final static String QUERY_STRING_CANDIDATES_NAME_SANDERS ="Sanders* OR sanders*";
+	
+	public static final String[] unnecessaryWords = new String[] {"to","in","and","or", "is", "as", "of", "the", "#", "@"};
 	
 	public SentiWordNetDemoCode(String pathToSWN) throws IOException {
 		// This is our main dictionary representation
@@ -111,14 +128,99 @@ public class SentiWordNetDemoCode {
 	public double extract(String word, String pos) {
 		return dictionary.get(word + "#" + pos);
 	}
+		
+	private static void processTweets() throws IOException, ParseException {
+			
+			IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(PATH_INDEXDIR_PRIMAR))));
+			ScoreDoc[] scoredocs = LuceneCore.getTweetsCoreForSentiment(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_TRUMP);
+			for (ScoreDoc sd : scoredocs) {
+		    	Document d = searcher.doc(sd.doc);
+		    	String tweetCleaned = deleteUnnecessaryWords(d.get("tweetText"));
+		    	String userScanned = d.get("tweetUser");
+		    	System.out.println("tweet cleaned: " + tweetCleaned + " for user: " + userScanned);
+		    	analyzeSentimentPhrase(tweetCleaned, userScanned);
+		    	
+	 	   }
+	}
+	
+	private static String deleteUnnecessaryWords(String completeString) {
+		
+		String resultClean = "";
+		boolean isJustAdded = false;
+		String[] splitted = completeString.split(" ");
+		for(int i=0;i<splitted.length;i++){
+			for(int j=0;j<unnecessaryWords.length;j++){
+				if(splitted[i].equals(unnecessaryWords[j])){
+					break;
+				}else{
+					if(!isJustAdded){
+						resultClean = resultClean + splitted[i] + " ";
+						isJustAdded = true;
+					}
+				}
+			}
+			isJustAdded = false;
+		}
+		return resultClean;
+	}
+	
+	private static double analyzeSentimentPhrase(String tweet, String user) throws IOException{
+		
+		int countPositive = 0;
+		int countNegative = 0;
+		int countNeutral = 0;
+		String currentWord;
+		
+		double sumSentiment = 0;
+		
+		String[] splitted = tweet.split(" ");
+		for(int i=0;i<splitted.length;i++){
+			currentWord = splitted[i];
+			if(currentWord.length() > 1){
+			double sentimentValue = getSentimentWordValue(currentWord);
+			System.out.println("word to examine : " + currentWord + " - " + sentimentValue);
+			if(sentimentValue > 0)
+				countPositive++;
+			else if(sentimentValue < 0)
+				countNegative++;
+			else
+				countNeutral++;
+
+			if(sentimentValue != -1)
+				sumSentiment += sentimentValue;
+			
+			}
+		}
+		
+		if(sumSentiment > 0)
+			System.out.println("************\n" + user + " is a Supporter!" + "************\n");
+		else
+			System.out.println("************\n" + user + " is a Opponent!" + "************\n");
+		
+		/*if((countPositive > countNegative) && (countPositive > countNeutral))
+			System.out.println("************\n" + user + " is a Supporter!" + "************\n");
+		else if((countNegative > countNegative) && (countNegative > countNeutral))
+			System.out.println("************\n" + user + " is a Opponent!" + "************\n");
+		else
+			System.out.println("************\n" + user + " is Neutral!" + "************\n"); */
+		
+		return 0;
+	}
 	
 	public static double getSentimentWordValue(String s) throws IOException
 	{
-		SentiWordNetDemoCode sentiwordnet = new SentiWordNetDemoCode(PATH_SENTIMENT_WORDNET_FILE);
-		return sentiwordnet.extract(s, "a");
+		try{
+			SentiWordNetDemoCode sentiwordnet = new SentiWordNetDemoCode(PATH_SENTIMENT_WORDNET_FILE);
+			return sentiwordnet.extract(s, "a");
+		}catch(java.lang.NullPointerException ex){
+			return -1;
+		}
 	}
 	
-	public static void main(String [] args) throws IOException {
+
+	public static void main(String [] args) throws IOException, ParseException {
+		
+		processTweets();
 		
 		SentiWordNetDemoCode sentiwordnet = new SentiWordNetDemoCode(PATH_SENTIMENT_WORDNET_FILE);
 		

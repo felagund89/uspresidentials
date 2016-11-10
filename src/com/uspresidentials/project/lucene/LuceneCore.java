@@ -440,7 +440,7 @@ public class LuceneCore {
  	    return frequencies;
 	 }
 	
-	public static void getTweetsCoreForSentiment(String pathIndexer, String fieldForQuery, String queryLucene) throws IOException, ParseException {
+	public static ScoreDoc[] getTweetsCoreForSentiment(String pathIndexer, String fieldForQuery, String queryLucene) throws IOException, ParseException {
 		IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(pathIndexer))); 
 		searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
 
@@ -450,16 +450,19 @@ public class LuceneCore {
  	    
  	    Query q1 = qp.parse(queryLucene);
  	    TopDocs hits = searcher.search(q1, 100000);
- 	   for (ScoreDoc sd : hits.scoreDocs) {
+ 	   
+ 	    return hits.scoreDocs;
+ 	    /*for (ScoreDoc sd : hits.scoreDocs) {
 	    	Document d = searcher.doc(sd.doc);
-	    	System.out.println("tweet: " + d.getField("tweetUser") + "forUser: " + d.getField("tweetUser"));
- 	   }
+	    	String tweetCleaned = deleteUnnecessaryWords(d.get("tweetText"));
+	    	System.out.println("tweet cleaned: " + tweetCleaned + " for user: " + d.get("tweetUser"));
+	    	
+ 	   } */
  	   
  	   //return array with tweets (for each candidates)
  	   //filter unnecessary word
  	   //apply SentimentWordNet (attention for negation not-good / not bad)
 	}
-	
 	
 	private static void printHashMap(HashMap<String, ArrayList<String>> hashMapUser){
 		
