@@ -153,6 +153,10 @@ public class SentiWordNetDemoCode {
 		int countPositive = 0;
 		int countNegative = 0;
 		int countNeutral = 0;
+		
+		boolean isNegation = false;
+		boolean isClauseLevelPunctuation = false;
+		
 		String currentWord;
 		
 		double sumSentiment = 0;
@@ -160,9 +164,21 @@ public class SentiWordNetDemoCode {
 		String[] splitted = tweet.split(" ");
 		for(int i=0;i<splitted.length;i++){
 			currentWord = splitted[i];
+			
+			if(isNegation == false)
+				isNegation = isNegation(currentWord);
+			
+			if(isNegation){   //se c'é stata una parola di negazione in precedenza
+				if(isClauseLevelPunctuation(currentWord) == false){   //se non é una punteggiatura
+					currentWord = currentWord + "_NEG";
+				}else{
+					isNegation = false;   								//reset della negazione....
+				}
+			}
+						
 			if(currentWord.length() > 1){
-			double sentimentValue = getSentimentWordValue(currentWord);
-			System.out.println("word to examine : " + currentWord + " - " + sentimentValue);
+				double sentimentValue = getSentimentWordValue(currentWord);
+				System.out.println("word to examine : " + currentWord + " - " + sentimentValue);
 			
 			/*if(sentimentValue > 0)
 				countPositive++;
@@ -174,11 +190,12 @@ public class SentiWordNetDemoCode {
 			//check parola precedente con array negationWords
 			if(sentimentValue != -1)
 				sumSentiment += sentimentValue;
-			
 			}
 		}
 		
-		if(sumSentiment > 0)
+		if(sumSentiment == 0){
+			System.out.println("************\n" + user + " is Neutral!" + "************\n");
+		}else if(sumSentiment > 0)
 			System.out.println("************\n" + user + " is a Supporter!" + "************\n");
 		else
 			System.out.println("************\n" + user + " is a Opponent!" + "************\n");
@@ -193,11 +210,24 @@ public class SentiWordNetDemoCode {
 		return 0;
 	}
 	
+	private static boolean isNegation(String word){
+		return word.matches("(?:^(?:never|no|nothing|nowhere|noone|none|not|havent|hasnt|hadnt|cant|couldnt|shouldnt|wont|wouldnt|dont|doesnt|didnt|isnt|arent|aint)$)|(n't|don't|isn't|haven't|hasn't|hadn't|can't|couldn't|shouldn't|wouldn't|didn't|aren't|ain't)");
+	}
+	
+	private static boolean isClauseLevelPunctuation(String word){
+		return word.matches("^[.:;!?]$");
+	}
+	
 	public static double getSentimentWordValue(String s) throws IOException
 	{
+		int moltiplic = 1;
+		if(s.contains("_NEG")){
+			s = s.replace("_NEG", "");
+			moltiplic = -1;
+		}
 		try{
 			SentiWordNetDemoCode sentiwordnet = new SentiWordNetDemoCode(PATH_SENTIMENT_WORDNET_FILE);
-			return sentiwordnet.extract(s, "a");
+			return (sentiwordnet.extract(s, "a") * moltiplic);
 		}catch(java.lang.NullPointerException ex){
 			return -1;
 		}
