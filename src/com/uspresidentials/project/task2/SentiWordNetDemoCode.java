@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.document.Document;
@@ -28,7 +31,8 @@ public class SentiWordNetDemoCode {
 	final static String QUERY_STRING_CANDIDATES_NAME_RUBIO ="rubio* OR Rubio*";
 	final static String QUERY_STRING_CANDIDATES_NAME_SANDERS ="Sanders* OR sanders*";
 	
-	public static final String[] unnecessaryWords = new String[] {"to","in","and","or", "is", "as", "of", "the", "#", "@"};
+	public static final List<String> unnecessaryWords = Arrays.asList("to","in","and","or", "is", "as", "of", "the", "#", "@");
+	public static final String[] negationWords = new String[] {"not" };
 	
 	public SentiWordNetDemoCode(String pathToSWN) throws IOException {
 		// This is our main dictionary representation
@@ -146,20 +150,11 @@ public class SentiWordNetDemoCode {
 	private static String deleteUnnecessaryWords(String completeString) {
 		
 		String resultClean = "";
-		boolean isJustAdded = false;
 		String[] splitted = completeString.split(" ");
 		for(int i=0;i<splitted.length;i++){
-			for(int j=0;j<unnecessaryWords.length;j++){
-				if(splitted[i].equals(unnecessaryWords[j])){
-					break;
-				}else{
-					if(!isJustAdded){
-						resultClean = resultClean + splitted[i] + " ";
-						isJustAdded = true;
-					}
-				}
+			if(!unnecessaryWords.contains(splitted[i])){	
+				resultClean = resultClean + splitted[i];
 			}
-			isJustAdded = false;
 		}
 		return resultClean;
 	}
@@ -179,13 +174,15 @@ public class SentiWordNetDemoCode {
 			if(currentWord.length() > 1){
 			double sentimentValue = getSentimentWordValue(currentWord);
 			System.out.println("word to examine : " + currentWord + " - " + sentimentValue);
-			if(sentimentValue > 0)
+			
+			/*if(sentimentValue > 0)
 				countPositive++;
 			else if(sentimentValue < 0)
 				countNegative++;
 			else
-				countNeutral++;
-
+				countNeutral++; */
+			
+			//check parola precedente con array negationWords
 			if(sentimentValue != -1)
 				sumSentiment += sentimentValue;
 			
