@@ -13,6 +13,7 @@ import org.apache.lucene.analysis.util.TokenizerFactory;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.TopDocs;
 
+import com.uspresidentials.project.entity.WordEntity;
 import com.uspresidentials.project.lucene.LuceneCore;
 import com.uspresidentials.project.utils.PropertiesManager;
 import com.uspresidentials.project.utils.Util;
@@ -42,8 +43,8 @@ public class MainOccurenceWords {
 		//Devo richiamare su ogni candidato la ricerca con lucene e sui documenti trovati cercare le co-occurrence words. Non so a cosa serve Jaccard nel nostro caso.
 		//ogni documento equivale ad un tweet in Lucene
 		
-		Map<String,Integer> mapTrump = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_TRUMP);
-		jaccard(mapTrump);
+		Set<WordEntity> setTrump = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_TRUMP);
+		jaccard(setTrump);
 		//Map<String,Integer> mapHillary = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_CLINTON);
 		//Map<String,Integer> mapRubio = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_RUBIO);
 		//Map<String,Integer> mapSanders = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_SANDERS);
@@ -58,16 +59,16 @@ public class MainOccurenceWords {
 	
 	//trovo tutti i termini e le rispettive frequenze di tutti i documenti trovati per ogni candidato.
 	//per jaccard si dovrebbe usare cosi : jaccard(term1,term2)=num_docs(term1,term2)/(term1.docfreq+term2.docfreq - num_docs(term1,term2))
-	public static Map<String,Integer> getTermFrequencyByCandidate(String query){
+	public static Set<WordEntity> getTermFrequencyByCandidate(String query){
 		
-		Set<String> setTerms = null;
+		Set<WordEntity> setTerms = null;
 		Map<String,Integer> mapTerms= new HashMap<String, Integer>(); 
 		
 		
 		try {
 			
-			mapTerms = LuceneCore.getTerms(PATH_INDEXDIR_PRIMAR_7NOV, "tweetText", query);
-			mapTerms = Util.sortByValue(mapTerms);
+			setTerms = LuceneCore.getTerms(PATH_INDEXDIR_PRIMAR_7NOV, "tweetText", query);
+			//mapTerms = Util.sortByValue(mapTerms);
 			
 			
 			//PROVA prendo le prime 100 parole con più occorrenze e le stampo.
@@ -88,31 +89,37 @@ public class MainOccurenceWords {
 		}
 		
 		
-		return mapTerms;
+		return setTerms;
 		
 		
 	}
 	
 	//ciclo su tutte le parole e mi faccio tornare  una mappa con dentro l'indice di jaccard per ogni coppia di parole
-	public static Map<String,Double> jaccard(Map<String,Integer> mapWords){
+	public static Map<String,Double> jaccard(Set<WordEntity> mapWords){
 		//num_docs(term1,term2)/(term1.docfreq+term2.docfreq - num_docs(term1,term2))
 		Map<String,Double> wordJaccIndex = new HashMap<>();
 		
+		//Devo lavorare sugli indici delle parole che ho nel set, ogni oggetto ha la parola, e i dati relativi al numero di volte che compaiono in totale 
+		//e al numero di documenti in cui compaiono in totale.
 		
 		
-		Iterator it = mapWords.entrySet().iterator();
-		while(it.hasNext()){
-	        Map.Entry pair = (Map.Entry)it.next();
-
-			String chiaveM= (String) pair.getKey();
-			int valore=(Integer) pair.getValue();
-			for (String key : mapWords.keySet()) {
-								
-				wordJaccIndex.put(chiaveM+";"+key, jaccard_coeffecient(chiaveM,key));
-				
-			}
-			
-		}
+		//APPLICARE LA FORMULA
+		
+		
+		
+//		Iterator it = mapWords.entrySet().iterator();
+//		while(it.hasNext()){
+//	        Map.Entry pair = (Map.Entry)it.next();
+//
+//			String chiaveM= (String) pair.getKey();
+//			int valore=(Integer) pair.getValue();
+//			for (String key : mapWords.keySet()) {
+//								
+//				wordJaccIndex.put(chiaveM+";"+key, jaccard_coeffecient(chiaveM,key));
+//				
+//			}
+//			
+//		}
 
 		
 		
