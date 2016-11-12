@@ -19,6 +19,7 @@ import org.apache.lucene.store.FSDirectory;
 
 import com.uspresidentials.project.lucene.LuceneCore;
 import com.uspresidentials.project.utils.PropertiesManager;
+import com.uspresidentials.project.utils.Util;
 
 public class SentiWordNetDemoCode {
 
@@ -31,7 +32,6 @@ public class SentiWordNetDemoCode {
 	final static String QUERY_STRING_CANDIDATES_NAME_RUBIO ="rubio* OR Rubio*";
 	final static String QUERY_STRING_CANDIDATES_NAME_SANDERS ="Sanders* OR sanders*";
 	
-	public static final List<String> unnecessaryWords = Arrays.asList("to","in","and","or", "is", "as", "of", "the", "#", "@");
 	public static final String[] negationWords = new String[] {"not" };
 	
 	public SentiWordNetDemoCode(String pathToSWN) throws IOException {
@@ -139,7 +139,7 @@ public class SentiWordNetDemoCode {
 			ScoreDoc[] scoredocs = LuceneCore.getTweetsCoreForSentiment(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_TRUMP);
 			for (ScoreDoc sd : scoredocs) {
 		    	Document d = searcher.doc(sd.doc);
-		    	String tweetCleaned = deleteUnnecessaryWords(d.get("tweetText"));
+		    	String tweetCleaned = Util.deleteUnnecessaryWords(d.get("tweetText"));
 		    	String userScanned = d.get("tweetUser");
 		    	System.out.println("tweet cleaned: " + tweetCleaned + " for user: " + userScanned);
 		    	analyzeSentimentPhrase(tweetCleaned, userScanned);
@@ -147,17 +147,6 @@ public class SentiWordNetDemoCode {
 	 	   }
 	}
 	
-	private static String deleteUnnecessaryWords(String completeString) {
-		
-		String resultClean = "";
-		String[] splitted = completeString.split(" ");
-		for(int i=0;i<splitted.length;i++){
-			if(!unnecessaryWords.contains(splitted[i])){	
-				resultClean = resultClean + splitted[i];
-			}
-		}
-		return resultClean;
-	}
 	
 	private static double analyzeSentimentPhrase(String tweet, String user) throws IOException{
 		

@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ public class Util {
 	final static String PATH_FILE_USER_OCCURRENCE_TEST = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_OCCURRENCE_TEST");
 	final static String PATH_FILE_USER_JSON_COMPLETE = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_JSON_COMPLETE");
 
-	
+	public static final List<String> unnecessaryWords = Arrays.asList("rt","to","in","and","or", "is", "as", "of", "the", "#", "@");
 	
 	public static void main(String[] args) {
 
@@ -413,7 +414,17 @@ public class Util {
 	    return result;
 	}
 	
-	
+	public static String deleteUnnecessaryWords(String completeString) {
+		
+		String resultClean = "";
+		String[] splitted = completeString.split(" ");
+		for(int i=0;i<splitted.length;i++){
+			if(!unnecessaryWords.contains(splitted[i])){	
+				resultClean = resultClean + splitted[i] + " ";
+			}
+		}
+		return resultClean;
+	}
 	
 	 
 }
