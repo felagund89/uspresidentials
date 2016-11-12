@@ -46,6 +46,7 @@ import org.jsoup.select.Elements;
 
 import com.uspresidentials.project.entity.TweetInfoEntity;
 import com.uspresidentials.project.entity.TweetsEntity;
+import com.uspresidentials.project.entity.WordEntity;
 
 import twitter4j.Status;
 import twitter4j.TwitterException;
@@ -394,11 +395,11 @@ public class LuceneCore {
 	
 	
 	//Cerco tutti i termini e la loro frequenza nei documenti tirati fuori da lucene.
-	public static  Map<String, Integer> getTerms(String pathIndexer, String fieldForQuery, String queryLucene) throws IOException, ParseException {
+	public static  Set<WordEntity> getTerms(String pathIndexer, String fieldForQuery, String queryLucene) throws IOException, ParseException {
     	IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(pathIndexer))); 
 		searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
 
-        Set<String> terms = new HashSet<>();
+        Set<WordEntity> words = new HashSet<>();
         
  	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
  	    
@@ -415,29 +416,51 @@ public class LuceneCore {
  	    frequencies.put("NumberOfDocs", hits.totalHits);
  	    for (ScoreDoc sd : hits.scoreDocs) {
  	    	Document d = searcher.doc(sd.doc);
+ 	        boolean countDoc=false;
  	        
+ 	        //VEDERE COME APPLICARE L ALGORITMO PER TOGLIERE LE PAROLE INUTILI
 	 	    Terms vector = reader.getTermVector(sd.doc, "tweetTextIndexed");
 	 		TermsEnum termsEnum = null;
 	 		termsEnum = vector.iterator(termsEnum);
 	 		
+	 		//aggiungere il numero di volte che la parola è contenuta piu volte nello stesso tweet
 	 		BytesRef text = null;
 	 		while ((text = termsEnum.next()) != null) {
+	 		    boolean wordIsPresent = false;
 	 		    String term = text.utf8ToString();
-	 		    if(frequencies.get(term)!=null && frequencies.get(term)>=1 ){
-	 		    	frequencies.put(term, frequencies.get(term) + 1);
-//		 		    int freq = (int) termsEnum.totalTermFreq();
-//		 		    System.out.println(term +" "+frequencies.get(term));
-	 		    }else{
-	 		    	frequencies.put(term, 1);
-	 		    }
+	 		   //se la parola è gia contenuta nel set, aggiorno i dati relativi a quella parola, altrimenti la aggiungo al set con i dati
+	 		   for (Iterator<WordEntity> it = words.iterator(); it.hasNext(); ) {
+	 		        WordEntity w = it.next();
+	 		        if (w.getWord().equalsIgnoreCase(term)){
+	 		        	w.setTotalOcc(w.getTotalOcc()+1);
+	 		        	if(!countDoc){
+	 		        		w.setNumDocOcc(w.getNumDocOcc()+1);
+	 		        		countDoc=true;
+	 		        	}
+	 		        	//aggiorno il valore booleano indicando che la parola è presente nel set ed è stata solo aggiornata
+	 		        	wordIsPresent=true;        	
+	 		        }  	
+	 		    }	 		    
+	 		   //se la parola non era presenta nel set la aggiungo, con frequenza 1 e occorrenza 1
+	 		   if(!wordIsPresent){
+		 		    WordEntity word = new WordEntity();
+
+		 		    word.setWord(term);
+		 		    word.setNumDocOcc(1);
+		 		    word.setTotalOcc(1);
+		 		    words.add(word);
+	 		   }
+	 		   
+	 		   
+	 		   //passo alla parola successiva
+	 
 	 		    
-	 		    terms.add(term);
 	 		}
  	      
  	      
  	    }
  	      	    
- 	    return frequencies;
+ 	    return words;
 	 }
 	
 	public static ScoreDoc[] getTweetsCoreForSentiment(String pathIndexer, String fieldForQuery, String queryLucene) throws IOException, ParseException {
