@@ -220,20 +220,26 @@ public class SentiWordNetDemoCode {
 	
 	public static double getSentimentWordValue(String s) throws IOException
 	{
+		SentiWordNetDemoCode sentiwordnet = new SentiWordNetDemoCode(PATH_SENTIMENT_WORDNET_FILE);
+		String[] idsDB = new String[] {"a", "n", "r", "v" };
 		int moltiplic = 1;
+		int indexIds = 0;
+		
 		if(s.contains("_NEG")){
 			s = s.replace("_NEG", "");
 			moltiplic = -1;
 		}
-		try{
-			SentiWordNetDemoCode sentiwordnet = new SentiWordNetDemoCode(PATH_SENTIMENT_WORDNET_FILE);
-			return (sentiwordnet.extract(s, "a") * moltiplic);
-		}catch(java.lang.NullPointerException ex){
-			return -1;
+		
+		while(indexIds < 4){
+			if(sentiwordnet.dictionary.containsKey(s.toLowerCase() + "#" + idsDB[indexIds])){
+				return (sentiwordnet.extract(s, idsDB[indexIds]) * moltiplic);
+			}else{
+				indexIds++;
+			}
 		}
+		return -1;
 	}
 	
-
 	public static void main(String [] args) throws IOException, ParseException {
 		
 		processTweets();
