@@ -12,9 +12,9 @@ public class WordEntity implements Serializable{
 	
 	String word;
 	
-	int totalOcc;
+	Double totalOcc;
 	
-	int numDocOcc;
+	Double numDocOcc;
 
 	
 	
@@ -26,21 +26,23 @@ public class WordEntity implements Serializable{
 		this.word = word;
 	}
 
-	public int getTotalOcc() {
+	public Double getTotalOcc() {
 		return totalOcc;
 	}
 
-	public void setTotalOcc(int totalOcc) {
+	public void setTotalOcc(Double totalOcc) {
 		this.totalOcc = totalOcc;
 	}
 
-	public int getNumDocOcc() {
+	public Double getNumDocOcc() {
 		return numDocOcc;
 	}
 
-	public void setNumDocOcc(int numDocOcc) {
+	public void setNumDocOcc(Double numDocOcc) {
 		this.numDocOcc = numDocOcc;
 	}
+
+	
 	
 	
 	

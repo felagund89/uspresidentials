@@ -36,7 +36,7 @@ public class MainOccurenceWords {
 	final static String QUERY_STRING_CANDIDATES_NAME_SANDERS ="Sanders* OR sanders*";
 
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
 		
 		
@@ -49,10 +49,15 @@ public class MainOccurenceWords {
 		//Map<String,Integer> mapRubio = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_RUBIO);
 		//Map<String,Integer> mapSanders = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_SANDERS);
 
-		
-		
+		//Map<String,Integer> mapTotal = LuceneCore.computeTermIdMap(PATH_INDEXDIR_PRIMAR_7NOV);
+//		System.out.println(mapTotal.size());
+//		System.out.println(mapTotal.keySet().size());
 		System.out.println("FINE MAIN OCCURRENCE");
 	}
+	
+	  
+	
+	
 	
 
 	
@@ -72,16 +77,16 @@ public class MainOccurenceWords {
 			
 			
 			//PROVA prendo le prime 100 parole con più occorrenze e le stampo.
-			int count = 0;
-			Iterator itM = mapTerms.entrySet().iterator();
-			while(itM.hasNext() && count<=100){
-		        Map.Entry pair = (Map.Entry)itM.next();
-
-				String chiaveM= (String) pair.getKey();
-				int valoreM=(Integer) pair.getValue();
-				System.out.println(chiaveM+" "+valoreM);
-				count++;
-			}
+//			int count = 0;
+//			Iterator itM = mapTerms.entrySet().iterator();
+//			while(itM.hasNext() && count<=100){
+//		        Map.Entry pair = (Map.Entry)itM.next();
+//
+//				String chiaveM= (String) pair.getKey();
+//				int valoreM=(Integer) pair.getValue();
+//				System.out.println(chiaveM+" "+valoreM);
+//				count++;
+//			}
 			
 			System.out.println("FINE OCCURRENCE TERMS");
 		} catch (ParseException | IOException e) {
@@ -97,6 +102,7 @@ public class MainOccurenceWords {
 	//ciclo su tutte le parole e mi faccio tornare  una mappa con dentro l'indice di jaccard per ogni coppia di parole
 	public static Map<String,Double> jaccard(Set<WordEntity> mapWords){
 		//num_docs(term1,term2)/(term1.docfreq+term2.docfreq - num_docs(term1,term2))
+		//nella prima stringa devo mettere la coppia di parole, divisa da ; in double cè l'indice di jaccard per quelle due parole
 		Map<String,Double> wordJaccIndex = new HashMap<>();
 		
 		//Devo lavorare sugli indici delle parole che ho nel set, ogni oggetto ha la parola, e i dati relativi al numero di volte che compaiono in totale 
@@ -104,25 +110,31 @@ public class MainOccurenceWords {
 		
 		
 		//APPLICARE LA FORMULA
-		
-		
-		
-//		Iterator it = mapWords.entrySet().iterator();
-//		while(it.hasNext()){
-//	        Map.Entry pair = (Map.Entry)it.next();
-//
-//			String chiaveM= (String) pair.getKey();
-//			int valore=(Integer) pair.getValue();
-//			for (String key : mapWords.keySet()) {
-//								
-//				wordJaccIndex.put(chiaveM+";"+key, jaccard_coeffecient(chiaveM,key));
-//				
-//			}
-//			
-//		}
+		//scorro tutte le coppie di parole, calcolando l'indice di jaccard su ognuna, inserisco tutte le coppie e il risultatnte indice in una mappa.
+		for (WordEntity wordEnt1 : mapWords) {
+			String word1 = wordEnt1.getWord();
+			
+			for (WordEntity wordEnt2 : mapWords) {
+				
+				String word2= wordEnt2.getWord();
+				if(!word1.equalsIgnoreCase(word2)){
 
+					Double numDocWords = wordEnt1.getNumDocOcc()+wordEnt2.getNumDocOcc();
+					
+					Double jaccardIndex = (double) numDocWords/(((wordEnt1.getTotalOcc()+wordEnt2.getTotalOcc()) - numDocWords));
+					if(jaccardIndex.isInfinite())
+						jaccardIndex=0.0;
+					
+					wordJaccIndex.put(word1+";"+word2, jaccardIndex);
+				    //System.out.println(word1+";"+word2+"  "+jaccardIndex);
+				}
+
+			}
+			
+		}
 		
 		
+		wordJaccIndex = Util.sortByValue(wordJaccIndex);
 		
 		return wordJaccIndex;
 	}
@@ -284,4 +296,11 @@ public class MainOccurenceWords {
 //		    }
 //		  }
 	
+	 
+	 
+	 
+	 
+	 
+	 
+	 
 }
