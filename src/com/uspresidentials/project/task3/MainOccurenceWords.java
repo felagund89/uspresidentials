@@ -122,14 +122,19 @@ public class MainOccurenceWords {
 					Double numDocWords = wordEnt1.getNumDocOcc()+wordEnt2.getNumDocOcc();
 					
 					Double jaccardIndex = (double) numDocWords/(((wordEnt1.getTotalOcc()+wordEnt2.getTotalOcc()) - numDocWords));
+					if(jaccardIndex.isInfinite())
+						jaccardIndex=0.0;
+					
 					wordJaccIndex.put(word1+";"+word2, jaccardIndex);
-				    System.out.println(word1+";"+word2+"  "+jaccardIndex);
+				    //System.out.println(word1+";"+word2+"  "+jaccardIndex);
 				}
 
 			}
 			
 		}
 		
+		
+		wordJaccIndex = Util.sortByValue(wordJaccIndex);
 		
 		return wordJaccIndex;
 	}

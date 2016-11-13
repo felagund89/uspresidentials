@@ -27,6 +27,7 @@ import org.apache.lucene.index.Fields;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
@@ -56,6 +57,7 @@ import twitter4j.User;
 import com.uspresidentials.project.entity.TweetInfoEntity;
 import com.uspresidentials.project.entity.TweetsEntity;
 import com.uspresidentials.project.entity.WordEntity;
+import com.uspresidentials.project.utils.Util;
 
 public class LuceneCore {
 
@@ -407,7 +409,7 @@ public class LuceneCore {
  	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
  	    
  	    Query q1 = qp.parse(queryLucene);
- 	    TopDocs hits = searcher.search(q1, 1000);
+ 	    TopDocs hits = searcher.search(q1, 100);
  	    
 //		loggerUsersAndTweets.info("##### "+hits.totalHits + " Docs found for the query \"" + q1.toString() + "\"");
 
@@ -421,7 +423,6 @@ public class LuceneCore {
  	    	Document d = searcher.doc(sd.doc);
  	        boolean countDoc=false;
  	        
- 	        //VEDERE COME APPLICARE L ALGORITMO PER TOGLIERE LE PAROLE INUTILI
 	 	    Terms vector = reader.getTermVector(sd.doc, "tweetTextIndexed");
 	 		TermsEnum termsEnum = null;
 	 		termsEnum = vector.iterator(termsEnum);
@@ -431,9 +432,14 @@ public class LuceneCore {
 	 		while ((text = termsEnum.next()) != null) {
 	 		    boolean wordIsPresent = false;
 	 		    String term = text.utf8ToString();
-	 		   //se la parola è gia contenuta nel set, aggiorno i dati relativi a quella parola, altrimenti la aggiungo al set con i dati
-	 		   for (Iterator<WordEntity> it = words.iterator(); it.hasNext(); ) {
-	 		        WordEntity w = it.next();
+	 		    
+	 		    //Se il termine compare tra quelli non necessari si passa al termine successivo.
+	 		    if(Util.unnecessaryWords.contains(term))
+	 		    	continue;
+
+	 		    //se la parola è gia contenuta nel set, aggiorno i dati relativi a quella parola, altrimenti la aggiungo al set con i dati
+	 		    for (Iterator<WordEntity> it = words.iterator(); it.hasNext(); ) {
+	 			   WordEntity w = it.next();
 	 		        if (w.getWord().equalsIgnoreCase(term)){
 	 		        	w.setTotalOcc(w.getTotalOcc()+1);
 	 		        	if(!countDoc){
@@ -443,7 +449,8 @@ public class LuceneCore {
 	 		        	//aggiorno il valore booleano indicando che la parola è presente nel set ed è stata solo aggiornata
 	 		        	wordIsPresent=true;        	
 	 		        }  	
-	 		    }	 		    
+	 		   
+	 		   }	 		    
 	 		   //se la parola non era presenta nel set la aggiungo, con frequenza 1 e occorrenza 1
 	 		   if(!wordIsPresent){
 		 		    WordEntity word = new WordEntity();
