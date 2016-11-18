@@ -46,6 +46,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.Version;
+import org.json.simple.JSONArray;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 
@@ -616,6 +617,19 @@ public class LuceneCore {
 //	    }       
 //	    return tdMatrix;
 //	}
+	
+	
+	
+	public static IndexReader createDataSetScrapingNews(JSONArray jsonArrayNews){
+		
+		IndexReader indexReader = new IndexReader();
+		
+		
+		
+		
+		
+	}
+	
 	
 	
 	
