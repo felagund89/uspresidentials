@@ -44,7 +44,8 @@ public class MainOccurenceWords {
 		//ogni documento equivale ad un tweet in Lucene
 		
 		Set<WordEntity> setTrump = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_TRUMP);
-		jaccard(setTrump);
+		Map<String,Integer> mapTermsAndDocuments = getTermsDocFrequency(QUERY_STRING_CANDIDATES_NAME_TRUMP,setTrump);
+		jaccard(setTrump, mapTermsAndDocuments);
 		//Map<String,Integer> mapHillary = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_CLINTON);
 		//Map<String,Integer> mapRubio = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_RUBIO);
 		//Map<String,Integer> mapSanders = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_SANDERS);
@@ -67,14 +68,12 @@ public class MainOccurenceWords {
 	public static Set<WordEntity> getTermFrequencyByCandidate(String query){
 		
 		Set<WordEntity> setTerms = null;
-		Map<String,Integer> mapTerms= new HashMap<String, Integer>(); 
 		
 		
 		try {
 			
 			setTerms = LuceneCore.getTerms(PATH_INDEXDIR_PRIMAR_7NOV, "tweetText", query);
 			//mapTerms = Util.sortByValue(mapTerms);
-			
 			
 			//PROVA prendo le prime 100 parole con più occorrenze e le stampo.
 //			int count = 0;
@@ -99,8 +98,25 @@ public class MainOccurenceWords {
 		
 	}
 	
+	public static Map<String,Integer>  getTermsDocFrequency(String query, Set<WordEntity> setTerms ){
+		
+		Map<String,Integer> mapTerms= new HashMap<String, Integer>(); 
+		
+		
+		mapTerms = LuceneCore.getDocFreqForTwoTerms(setTerms, PATH_INDEXDIR_PRIMAR_7NOV, "tweetText", query);
+		
+		System.out.println("FINE term doc frequency");
+		
+		
+		return mapTerms;
+		
+		
+	}
+	
+	
+	
 	//ciclo su tutte le parole e mi faccio tornare  una mappa con dentro l'indice di jaccard per ogni coppia di parole
-	public static Map<String,Double> jaccard(Set<WordEntity> mapWords){
+	public static Map<String,Double> jaccard(Set<WordEntity> mapWords, Map<String,Integer> mapTerms){
 		//num_docs(term1,term2)/(term1.docfreq+term2.docfreq - num_docs(term1,term2))
 		//nella prima stringa devo mettere la coppia di parole, divisa da ; in double cè l'indice di jaccard per quelle due parole
 		Map<String,Double> wordJaccIndex = new HashMap<>();
@@ -118,10 +134,10 @@ public class MainOccurenceWords {
 				
 				String word2= wordEnt2.getWord();
 				if(!word1.equalsIgnoreCase(word2)){
-
-					Double numDocWords = wordEnt1.getNumDocOcc()+wordEnt2.getNumDocOcc();
+					int docFreq = mapTerms.get(word1+word2);
+//					Double numDocWords = wordEnt1.getNumDocOcc()+wordEnt2.getNumDocOcc();
 					
-					Double jaccardIndex = (double) numDocWords/(((wordEnt1.getTotalOcc()+wordEnt2.getTotalOcc()) - numDocWords));
+					Double jaccardIndex = (double) docFreq/(((wordEnt1.getTotalOcc()+wordEnt2.getTotalOcc()) - docFreq));
 					if(jaccardIndex.isInfinite())
 						jaccardIndex=0.0;
 					

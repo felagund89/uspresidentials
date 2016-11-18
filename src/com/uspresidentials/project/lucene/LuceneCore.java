@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -474,6 +475,72 @@ public class LuceneCore {
  	    return words;
 	 }
 	
+	
+	public static Map<String, Integer> getDocFreqForTwoTerms(Set<WordEntity> mapWords, String pathIndexer, String fieldForQuery, String queryLucene){
+		
+		Map<String, Integer> termsAndNumOfDocs = new HashMap<>();
+		
+		
+		
+		try {
+			IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(pathIndexer)));
+		
+			searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
+	
+	        
+	        //Trovo i documenti inerenti ai vari candidati, su quelli andrò ad effettuare le query per le coppie di parole
+//	 	    QueryParser qp1 = new QueryParser(fieldForQuery, new StandardAnalyzer());
+	
+//	 	    Query q1 = qp1.parse(queryLucene);
+//	 	    TopDocs hitsFirsQuery = searcher.search(q1, 10000);
+
+			
+	 	    
+	 	   for (WordEntity wordEnt1 : mapWords) {
+				String word1 = wordEnt1.getWord();
+				
+				for (WordEntity wordEnt2 : mapWords) {
+					
+					String word2= wordEnt2.getWord();
+					//controllo se le due parole sono diverse tra loro, se il contenuto è maggiore di una sillaba e se le parole sono numeri.
+					//sfrutto la libreria Apache Lang
+					if(!word1.equalsIgnoreCase(word2) && word1.length()>1 && word2.length()>1 && !StringUtils.isNumeric(word1) && !StringUtils.isNumeric(word2)){
+						
+						String query =queryLucene+" AND ( " + word1 + "* AND " + word2+"*)";
+						//String query =queryLucene+" AND ( tweetText:" + word1 + " AND tweetText:" + word2+")";
+
+				 	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
+				 	    Query q = qp.parse(query);
+						
+				 	    
+				 	    TopDocs topDocs= searcher.search(q, 10000);
+						
+				 	    //se i documenti trovati con entrambe le parole sono > 0 aggiorno la mappa, con la coppia di termini e il numero di documenti
+				 	    if(topDocs.totalHits != 0){
+				 	    	termsAndNumOfDocs.put(word1+";"+word2, topDocs.totalHits);
+				 	    System.out.println(word1+";"+word2+"  "+topDocs.totalHits);
+				 	    }
+					}
+
+				}
+				
+			}
+	 	    
+
+		} catch (IOException | ParseException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		return termsAndNumOfDocs; 
+		
+		
+		
+	}
+	
+	
+	
 	public static ScoreDoc[] getTweetsCoreForSentiment(String pathIndexer, String fieldForQuery, String queryLucene) throws IOException, ParseException {
 		IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(pathIndexer))); 
 		searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
@@ -620,15 +687,15 @@ public class LuceneCore {
 	
 	
 	
-	public static IndexReader createDataSetScrapingNews(JSONArray jsonArrayNews){
+//	public static IndexReader createDataSetScrapingNews(JSONArray jsonArrayNews){
 		
-		IndexReader indexReader = new IndexReader();
-		
-		
+		//IndexReader indexReader = new IndexReader();
 		
 		
 		
-	}
+		
+		
+//	}
 	
 	
 	
