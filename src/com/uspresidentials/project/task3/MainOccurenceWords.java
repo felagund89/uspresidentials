@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.apache.lucene.analysis.util.TokenizerFactory;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 
 import com.uspresidentials.project.entity.WordEntity;
@@ -29,6 +30,7 @@ public class MainOccurenceWords {
 	
 	final static String PATH_INDEXDIR_PRIMAR = PropertiesManager.getPropertiesFromFile("PATH_INDEXDIR_PRIMAR");
 	final static String PATH_INDEXDIR_PRIMAR_7NOV = PropertiesManager.getPropertiesFromFile("PATH_INDEXDIR_PRIMAR_7NOV");
+	final static String PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE = PropertiesManager.getPropertiesFromFile("PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE");
 
 	final static String QUERY_STRING_CANDIDATES_NAME_TRUMP ="donald* OR trump*";
 	final static String QUERY_STRING_CANDIDATES_NAME_CLINTON ="hillary* OR clinton*";
@@ -36,15 +38,17 @@ public class MainOccurenceWords {
 	final static String QUERY_STRING_CANDIDATES_NAME_SANDERS ="Sanders* OR sanders*";
 
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ParseException {
 
 		
 		
 		//Devo richiamare su ogni candidato la ricerca con lucene e sui documenti trovati cercare le co-occurrence words. Non so a cosa serve Jaccard nel nostro caso.
 		//ogni documento equivale ad un tweet in Lucene
 		
-		Set<WordEntity> setTrump = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_TRUMP);
-		Map<String,Integer> mapTermsAndDocuments = getTermsDocFrequency(QUERY_STRING_CANDIDATES_NAME_TRUMP,setTrump);
+		
+		ScoreDoc[] scoreDocs = LuceneCore.createIndexForCandidate(PATH_INDEXDIR_PRIMAR, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, QUERY_STRING_CANDIDATES_NAME_TRUMP);
+		Set<WordEntity> setTrump = getTermFrequencyByCandidate(PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, scoreDocs);
+		Map<String,Integer> mapTermsAndDocuments = getTermsDocFrequency(setTrump);
 		jaccard(setTrump, mapTermsAndDocuments);
 		//Map<String,Integer> mapHillary = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_CLINTON);
 		//Map<String,Integer> mapRubio = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_RUBIO);
@@ -65,14 +69,14 @@ public class MainOccurenceWords {
 	
 	//trovo tutti i termini e le rispettive frequenze di tutti i documenti trovati per ogni candidato.
 	//per jaccard si dovrebbe usare cosi : jaccard(term1,term2)=num_docs(term1,term2)/(term1.docfreq+term2.docfreq - num_docs(term1,term2))
-	public static Set<WordEntity> getTermFrequencyByCandidate(String query){
+	public static Set<WordEntity> getTermFrequencyByCandidate(String pathIndexForCandidate, ScoreDoc[] scoreDocs){
 		
 		Set<WordEntity> setTerms = null;
 		
 		
 		try {
 			
-			setTerms = LuceneCore.getTerms(PATH_INDEXDIR_PRIMAR_7NOV, "tweetText", query);
+			setTerms = LuceneCore.getTerms(pathIndexForCandidate, scoreDocs);
 			//mapTerms = Util.sortByValue(mapTerms);
 			
 			//PROVA prendo le prime 100 parole con più occorrenze e le stampo.
@@ -98,12 +102,12 @@ public class MainOccurenceWords {
 		
 	}
 	
-	public static Map<String,Integer>  getTermsDocFrequency(String query, Set<WordEntity> setTerms ){
+	public static Map<String,Integer>  getTermsDocFrequency(Set<WordEntity> setTerms ){
 		
 		Map<String,Integer> mapTerms= new HashMap<String, Integer>(); 
 		
 		
-		mapTerms = LuceneCore.getDocFreqForTwoTerms(setTerms, PATH_INDEXDIR_PRIMAR_7NOV, "tweetText", query);
+		mapTerms = LuceneCore.getDocFreqForTwoTerms(setTerms, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, "tweetText");
 		
 		System.out.println("FINE term doc frequency");
 		
@@ -135,15 +139,17 @@ public class MainOccurenceWords {
 				String word2= wordEnt2.getWord();
 				if(!word1.equalsIgnoreCase(word2)){
 					if(mapTerms.containsKey(word1+";"+word2)){
-						int docFreq = mapTerms.get(word1+";"+word2);
-	//					Double numDocWords = wordEnt1.getNumDocOcc()+wordEnt2.getNumDocOcc();
+							int docFreq = mapTerms.get(word1+";"+word2);
+							System.out.println(docFreq);
+		//					Double numDocWords = wordEnt1.getNumDocOcc()+wordEnt2.getNumDocOcc();
+							
+							Double jaccardIndex = (double) (double)docFreq/(((wordEnt1.getNumDocOcc()+wordEnt2.getNumDocOcc()) - (double)docFreq));
+							if(jaccardIndex.isInfinite())
+								jaccardIndex=0.0;
+							
+							wordJaccIndex.put(word1+";"+word2, jaccardIndex);
+						    System.out.println(word1+" "+wordEnt1.getNumDocOcc()+"; "+word2+" "+wordEnt2.getNumDocOcc() +" "+jaccardIndex);
 						
-						Double jaccardIndex = (double) docFreq/(((wordEnt1.getTotalOcc()+wordEnt2.getTotalOcc()) - docFreq));
-						if(jaccardIndex.isInfinite())
-							jaccardIndex=0.0;
-						
-						wordJaccIndex.put(word1+";"+word2, jaccardIndex);
-					    System.out.println(word1+";"+word2+"  "+jaccardIndex);
 					}
 				}
 

@@ -37,7 +37,8 @@ public class Util {
 	final static String PATH_FILE_USER_OCCURRENCE_TEST = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_OCCURRENCE_TEST");
 	final static String PATH_FILE_USER_JSON_COMPLETE = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_JSON_COMPLETE");
 
-	public static final List<String> unnecessaryWords = Arrays.asList("rt","to","in","and","or", "is", "as", "of", "the", "#", "@");
+	public static final List<String> unnecessaryWords = Arrays.asList("rt","to","in","and","or", "is", "as", "of", "the", "#", "@","0","1","2","3","4","5","6","7","8","9","10","t.co","t.c","http","https","htt","am","i","pm","p.m","a.m","etc");
+	
 	
 	public static void main(String[] args) {
 
