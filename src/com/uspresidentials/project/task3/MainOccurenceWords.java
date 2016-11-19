@@ -134,15 +134,17 @@ public class MainOccurenceWords {
 				
 				String word2= wordEnt2.getWord();
 				if(!word1.equalsIgnoreCase(word2)){
-					int docFreq = mapTerms.get(word1+word2);
-//					Double numDocWords = wordEnt1.getNumDocOcc()+wordEnt2.getNumDocOcc();
-					
-					Double jaccardIndex = (double) docFreq/(((wordEnt1.getTotalOcc()+wordEnt2.getTotalOcc()) - docFreq));
-					if(jaccardIndex.isInfinite())
-						jaccardIndex=0.0;
-					
-					wordJaccIndex.put(word1+";"+word2, jaccardIndex);
-				    //System.out.println(word1+";"+word2+"  "+jaccardIndex);
+					if(mapTerms.containsKey(word1+";"+word2)){
+						int docFreq = mapTerms.get(word1+";"+word2);
+	//					Double numDocWords = wordEnt1.getNumDocOcc()+wordEnt2.getNumDocOcc();
+						
+						Double jaccardIndex = (double) docFreq/(((wordEnt1.getTotalOcc()+wordEnt2.getTotalOcc()) - docFreq));
+						if(jaccardIndex.isInfinite())
+							jaccardIndex=0.0;
+						
+						wordJaccIndex.put(word1+";"+word2, jaccardIndex);
+					    //System.out.println(word1+";"+word2+"  "+jaccardIndex);
+					}
 				}
 
 			}

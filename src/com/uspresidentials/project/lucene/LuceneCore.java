@@ -411,7 +411,7 @@ public class LuceneCore {
  	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
  	    
  	    Query q1 = qp.parse(queryLucene);
- 	    TopDocs hits = searcher.search(q1, 100);
+ 	    TopDocs hits = searcher.search(q1, 10);
  	    
 //		loggerUsersAndTweets.info("##### "+hits.totalHits + " Docs found for the query \"" + q1.toString() + "\"");
 
@@ -512,9 +512,13 @@ public class LuceneCore {
 				 	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
 				 	    Query q = qp.parse(query);
 						
-				 	    
-				 	    TopDocs topDocs= searcher.search(q, 10000);
-						
+				 	    TopDocs topDocs= searcher.search(q, 10);
+						ScoreDoc[] scoreDocs =  topDocs.scoreDocs;
+						for (ScoreDoc sd : topDocs.scoreDocs) {
+							Document d = searcher.doc(sd.doc);
+							String tweet =d.getField("tweetText").stringValue();
+							System.out.println(tweet);
+						}
 				 	    //se i documenti trovati con entrambe le parole sono > 0 aggiorno la mappa, con la coppia di termini e il numero di documenti
 				 	    if(topDocs.totalHits != 0){
 				 	    	termsAndNumOfDocs.put(word1+";"+word2, topDocs.totalHits);
