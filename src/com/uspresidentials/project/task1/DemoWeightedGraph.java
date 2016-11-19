@@ -4,7 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.jgrapht.ListenableGraph;
-import org.jgrapht.ext.*;;
+import org.jgrapht.ext.*;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.ListenableDirectedWeightedGraph;
 import com.mxgraph.layout.mxCircleLayout;

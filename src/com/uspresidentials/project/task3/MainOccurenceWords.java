@@ -143,7 +143,7 @@ public class MainOccurenceWords {
 							jaccardIndex=0.0;
 						
 						wordJaccIndex.put(word1+";"+word2, jaccardIndex);
-					    //System.out.println(word1+";"+word2+"  "+jaccardIndex);
+					    System.out.println(word1+";"+word2+"  "+jaccardIndex);
 					}
 				}
 

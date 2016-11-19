@@ -517,12 +517,12 @@ public class LuceneCore {
 						for (ScoreDoc sd : topDocs.scoreDocs) {
 							Document d = searcher.doc(sd.doc);
 							String tweet =d.getField("tweetText").stringValue();
-							System.out.println(tweet);
+							//System.out.println(tweet);
 						}
 				 	    //se i documenti trovati con entrambe le parole sono > 0 aggiorno la mappa, con la coppia di termini e il numero di documenti
 				 	    if(topDocs.totalHits != 0){
 				 	    	termsAndNumOfDocs.put(word1+";"+word2, topDocs.totalHits);
-				 	    System.out.println(word1+";"+word2+"  "+topDocs.totalHits);
+				 	    //System.out.println(word1+";"+word2+"  "+topDocs.totalHits);
 				 	    }
 					}
 
