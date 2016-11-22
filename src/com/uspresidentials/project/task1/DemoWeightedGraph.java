@@ -4,9 +4,10 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.jgrapht.ListenableGraph;
-import org.jgrapht.ext.*;
+import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.ListenableDirectedWeightedGraph;
+
 import com.mxgraph.layout.mxCircleLayout;
 import com.mxgraph.layout.mxIGraphLayout;
 import com.mxgraph.swing.mxGraphComponent;
@@ -42,7 +43,7 @@ public class DemoWeightedGraph {
     public static class MyEdge extends DefaultWeightedEdge {
         @Override
         public String toString() {
-            return String.valueOf(getWeight());
+            return String.valueOf(0.5);
         }
     }
 

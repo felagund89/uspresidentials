@@ -17,9 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.jgraph.JGraph;
-import org.jgraph.graph.DefaultGraphCell;
-import org.jgraph.graph.GraphConstants;
+
 import org.jgrapht.ext.JGraphModelAdapter;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
@@ -90,7 +88,7 @@ public class SwingContainerDemo extends JApplet {
 	     int distx = 0;
 	     int disty = 0;
 	      ListenableDirectedGraph<String, DefaultEdge> myGraph = (ListenableDirectedGraph<String, DefaultEdge>) FriendShipGraph.createGraphFromFriendShip();
-	      //FriendShipGraph.searchConnectedComponents(myGraph);
+	      FriendShipGraph.searchConnectedComponents(myGraph);
 	      
 	      m_jgAdapter = new JGraphModelAdapter<String, DefaultEdge>(myGraph);
 	      JGraph jgraph = new JGraph( m_jgAdapter);

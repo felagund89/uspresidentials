@@ -403,7 +403,7 @@ public class LuceneCore {
 	}
 	
 	
-	public static ScoreDoc[] createIndexForCandidate(String pathIndexdir, String pathForCandidate, String queryLucene) throws IOException, ParseException {
+	public static Set<WordEntity> createIndexForCandAndSetOfTerms(String pathIndexdir, String pathForCandidate, String queryLucene) throws IOException, ParseException {
        
 		Directory indexDirCandidate = FSDirectory.open(new File(pathForCandidate));
     	
@@ -417,7 +417,8 @@ public class LuceneCore {
 
 			
 		Document docLucene = new Document();     
-		
+        Set<WordEntity> words = new HashSet<>();
+
 
 		//Creazione documenti per LUCENE per un candidato
 		
@@ -434,7 +435,7 @@ public class LuceneCore {
             QueryParser queryParser2 = new QueryParser("tweetText", new StandardAnalyzer());
             Query q = queryParser2.parse(queryLucene);
             TopDocs docs;
-            docs = searcher2.search(q, 1000000);
+            docs = searcher2.search(q, 10);
             hits = docs.scoreDocs;
 
             System.out.println("Numero di tweet per il candidato: " + pathForCandidate + " " + hits.length + " hits.");
@@ -458,7 +459,53 @@ public class LuceneCore {
 				
 
 				indexWriter.addDocument(docLucene);
-                
+//                
+//				
+//				boolean countDoc=false;
+//	 	        
+//		 	    Terms vector = reader2.getTermVector(docId, "tweetTextIndexed");
+//		 		TermsEnum termsEnum = null;
+//		 		termsEnum = vector.iterator(termsEnum);
+//		 		vector.iterator(termsEnum).docFreq();
+//		 		termsEnum.docFreq();
+		 		//aggiungere il numero di volte che la parola è contenuta piu volte nello stesso tweet
+		 		
+		 		    
+		 		    
+		 		    
+//		 		    //Se il termine compare tra quelli non necessari si passa al termine successivo
+//		 		    if(Util.unnecessaryWords.contains(term))
+//		 		    	continue;
+//	
+//		 		    //se la parola è gia contenuta nel set, aggiorno i dati relativi a quella parola, altrimenti la aggiungo al set con i dati
+//		 		    for (Iterator<WordEntity> it = words.iterator(); it.hasNext(); ) {
+//		 			   WordEntity w = it.next();
+//		 		        if (w.getWord().equalsIgnoreCase(term)){
+//		 		        	w.setTotalOcc(w.getTotalOcc()+1);
+//		 		        	if(!countDoc){
+//		 		        		w.setNumDocOcc(w.getNumDocOcc()+1);
+//		 		        		countDoc=true;
+//		 		        	}
+//		 		        	//aggiorno il valore booleano indicando che la parola è presente nel set ed è stata solo aggiornata
+//		 		        	wordIsPresent=true;        	
+//		 		        }  	
+//		 		   
+//		 		   }	 		    
+//		 		   //se la parola non era presenta nel set la aggiungo, con frequenza 1 e occorrenza 1
+//		 		   if(!wordIsPresent){
+//			 		    WordEntity word = new WordEntity();
+//	
+//			 		    word.setWord(term);
+//			 		    word.setNumDocOcc(1.0);
+//			 		    word.setTotalOcc(1.0);
+//			 		    words.add(word);
+//		 		   }
+//				
+//				
+//		 		}
+				
+				
+				
                 
 //                System.out.println("idTweet: " + idTweet + " tweet: " + tweet);
             }
@@ -468,12 +515,40 @@ public class LuceneCore {
             closeIndexWriter(indexWriter);
             
 
+            
+            Fields fields = MultiFields.getFields(reader2);
+
+            for (String field : fields) {
+                if(field.equalsIgnoreCase("tweetTextIndexed")){
+	            	TermsEnum termsEnum = MultiFields.getTerms(reader2, "tweetTextIndexed").iterator(null);
+	                BytesRef bytesRef;
+	                while ((bytesRef = termsEnum.next()) != null) {
+	                	if(Util.unnecessaryWords.contains(bytesRef.utf8ToString()) || bytesRef.utf8ToString().startsWith("_"))
+			 		    	continue;
+	                    int freq = reader2.docFreq(new Term(field, bytesRef));
+	                    WordEntity wordEntity = new WordEntity();
+	                    wordEntity.setWord(bytesRef.utf8ToString());
+	                    wordEntity.setNumDocOcc((double) freq);
+	                    words.add(wordEntity);
+	                    
+	
+	                    
+	                       System.out.println(bytesRef.utf8ToString() + " in " + freq + " documents");
+	                }
+                }
+            }
+               
+            
+            
+            
         }catch (Exception e) {
         	e.printStackTrace();		
         }
 
         
-        return hits;
+        
+        
+        return words;
         
         
     }
@@ -498,14 +573,12 @@ public class LuceneCore {
  	    int num = 0;
  	    Map<String, Integer> frequencies = new HashMap<>();
  	    
- 	    //Nel primo elemento della mappa inserisco il numero dei documenti trovati per quel determinato candidato.
- 	    //gli elementi successivi della mappa sono tutti i termini trovati e la loro frequenza in tutti i documenti
- 	    //frequencies.put("NumberOfDocs", hits.totalHits); non serve
+ 	    
 // 	   for (int k = 0; k < hits.length; ++k) {
  	   for (ScoreDoc sd : hits) {
  		   System.out.println(sd.doc);
- 		   if(sd.doc<=hits.length){
-				Document d = searcher.doc(sd.doc);
+// 		   if(sd.doc<=hits.length){
+				Document d = searcher.getIndexReader().document(sd.doc);
 	           //     System.out.println(stringsList.get(i));
 	//           int docId = hits[k].doc;
 	// 	    	Document d = searcher.doc(docId);
@@ -515,7 +588,7 @@ public class LuceneCore {
 		 	    Terms vector = reader.getTermVector(sd.doc, "tweetTextIndexed");
 		 		TermsEnum termsEnum = null;
 		 		termsEnum = vector.iterator(termsEnum);
-		 		
+		 		termsEnum.docFreq();
 		 		//aggiungere il numero di volte che la parola è contenuta piu volte nello stesso tweet
 		 		BytesRef text = null;
 		 		while ((text = termsEnum.next()) != null) {
@@ -554,7 +627,7 @@ public class LuceneCore {
 		 		   //passo alla parola successiva
 	 
 	 		    
-		 		}
+//		 		}
  	      
  	   		}
  	    }
@@ -599,7 +672,7 @@ public class LuceneCore {
 				 	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
 				 	    Query q = qp.parse(query);
 						
-				 	    TopDocs topDocs= searcher.search(q, 100000);
+				 	    TopDocs topDocs= searcher.search(q, 10);
 						ScoreDoc[] scoreDocs =  topDocs.scoreDocs;
 						for (ScoreDoc sd : topDocs.scoreDocs) {
 							Document d = searcher.doc(sd.doc);
