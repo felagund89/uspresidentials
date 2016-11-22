@@ -46,10 +46,10 @@ public class MainOccurenceWords {
 		
 		
 //		ScoreDoc[] scoreDocs = LuceneCore.createIndexForCandidate(PATH_INDEXDIR_PRIMAR_7NOV, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, QUERY_STRING_CANDIDATES_NAME_TRUMP);
-		Set<WordEntity> setTrump =  LuceneCore.createIndexForCandAndSetOfTerms(PATH_INDEXDIR_PRIMAR_7NOV, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, QUERY_STRING_CANDIDATES_NAME_TRUMP);
-//		Set<WordEntity> setTrump = getTermFrequencyByCandidate(PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, scoreDocs);
-		Map<String,Integer> mapTermsAndDocuments = getTermsDocFrequency(setTrump);
-		jaccard(setTrump, mapTermsAndDocuments);
+		LuceneCore.createIndexForCandidates(PATH_INDEXDIR_PRIMAR_7NOV, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, QUERY_STRING_CANDIDATES_NAME_TRUMP);
+		Map<String,Double> mapTrump = getTermFrequencyByCandidate(PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE);
+		Map<String,Integer> mapTermsAndDocuments = getTermsDocFrequency(mapTrump);
+		jaccard(mapTrump, mapTermsAndDocuments);
 		//Map<String,Integer> mapHillary = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_CLINTON);
 		//Map<String,Integer> mapRubio = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_RUBIO);
 		//Map<String,Integer> mapSanders = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_SANDERS);
@@ -69,14 +69,14 @@ public class MainOccurenceWords {
 	
 	//trovo tutti i termini e le rispettive frequenze di tutti i documenti trovati per ogni candidato.
 	//per jaccard si dovrebbe usare cosi : jaccard(term1,term2)=num_docs(term1,term2)/(term1.docfreq+term2.docfreq - num_docs(term1,term2))
-	public static Set<WordEntity> getTermFrequencyByCandidate(String pathIndexForCandidate, ScoreDoc[] scoreDocs){
+	public static Map<String,Double> getTermFrequencyByCandidate(String pathIndexForCandidate){
 		
-		Set<WordEntity> setTerms = null;
+		Map<String,Double> mapTerms = null;
 		
 		
 		try {
 			
-			setTerms = LuceneCore.getTerms(pathIndexForCandidate, scoreDocs);
+			mapTerms = LuceneCore.getTerms(pathIndexForCandidate);
 			//mapTerms = Util.sortByValue(mapTerms);
 			
 			//PROVA prendo le prime 100 parole con più occorrenze e le stampo.
@@ -97,12 +97,12 @@ public class MainOccurenceWords {
 		}
 		
 		
-		return setTerms;
+		return mapTerms;
 		
 		
 	}
 	
-	public static Map<String,Integer>  getTermsDocFrequency(Set<WordEntity> setTerms ){
+	public static Map<String,Integer>  getTermsDocFrequency(Map<String,Double> setTerms ){
 		
 		Map<String,Integer> mapTerms= new HashMap<String, Integer>(); 
 		
@@ -120,7 +120,7 @@ public class MainOccurenceWords {
 	
 	
 	//ciclo su tutte le parole e mi faccio tornare  una mappa con dentro l'indice di jaccard per ogni coppia di parole
-	public static Map<String,Double> jaccard(Set<WordEntity> mapWords, Map<String,Integer> mapTerms){
+	public static Map<String,Double> jaccard(Map<String,Double> mapWords, Map<String,Integer> mapTerms){
 		//num_docs(term1,term2)/(term1.docfreq+term2.docfreq - num_docs(term1,term2))
 		//nella prima stringa devo mettere la coppia di parole, divisa da ; in double cè l'indice di jaccard per quelle due parole
 		Map<String,Double> wordJaccIndex = new HashMap<>();
@@ -131,20 +131,23 @@ public class MainOccurenceWords {
 		
 		//APPLICARE LA FORMULA
 		//scorro tutte le coppie di parole, calcolando l'indice di jaccard su ognuna, inserisco tutte le coppie e il risultatnte indice in una mappa.
-		for (WordEntity wordEnt1 : mapWords) {
-			String word1 = wordEnt1.getWord();
-			
-			for (WordEntity wordEnt2 : mapWords) {
-				
-				String word2= wordEnt2.getWord();
+		 for (Map.Entry<String, Double> entry : mapWords.entrySet()) {
+			   String word1 = entry.getKey();
+			   double docFreqTerm1 = entry.getValue();
+
+			   for (Map.Entry<String, Double> entry2 : mapWords.entrySet()) {
+
+					String word2= entry2.getKey();
+					   double docFreqTerm2 = entry.getValue();
+
+//				String word2= wordEnt2.getWord();
 				if(!word1.equalsIgnoreCase(word2)){
 					if(mapTerms.containsKey(word1+";"+word2)){
 							int docFreq = mapTerms.get(word1+";"+word2);
 							System.out.println(docFreq);
 		//					Double numDocWords = wordEnt1.getNumDocOcc()+wordEnt2.getNumDocOcc();
-							if(word1.equalsIgnoreCase("cruz") && word2.equalsIgnoreCase("trump"))
-								System.out.println("cruz trump");
-							Double jaccardIndex = (double) (double)docFreq/(((wordEnt1.getNumDocOcc()+wordEnt2.getNumDocOcc()) - (double)docFreq));
+							
+							Double jaccardIndex = (double) (double)docFreq/(((docFreqTerm1 + docFreqTerm2) - (double)docFreq));
 							if(jaccardIndex.isInfinite())
 								jaccardIndex=0.0;
 							
