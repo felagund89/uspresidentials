@@ -481,7 +481,7 @@ public class LuceneCore {
 	
 	
 	//Cerco tutti i termini e la loro frequenza nei documenti tirati fuori da lucene.
-	public static  Map<String, Double> getTerms(String pathIndexForCandidate) throws IOException, ParseException {
+	public static  Map<String, Double> getTerms(String pathIndexForCandidate, String fieldForQuery) throws IOException, ParseException {
     	IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(pathIndexForCandidate))); 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexForCandidate))));
 
@@ -495,7 +495,7 @@ public class LuceneCore {
  	    
  	   for (ScoreDoc sd : hits) {
 	
-	        Terms vector = reader.getTermVector(sd.doc, "tweetTextIndexed");
+	        Terms vector = reader.getTermVector(sd.doc, fieldForQuery);
 	 		TermsEnum termsEnum = null;
 	 		termsEnum = vector.iterator(termsEnum);
 	 		//aggiungere il numero di volte che la parola è contenuta piu volte nello stesso tweet
@@ -507,7 +507,7 @@ public class LuceneCore {
 	 	    	if(Util.unnecessaryWords.contains(termText))
 	 		    	continue;
 	 	    	
-	 	    	Term termInstance = new Term("tweetTextIndexed", term); 
+	 	    	Term termInstance = new Term(fieldForQuery, term); 
 	 	        Double termFreq = (double) reader.totalTermFreq(termInstance);   
 	 	        Double docCount = (double) reader.docFreq(termInstance);
 	 	        
@@ -549,7 +549,7 @@ public class LuceneCore {
 					if(!word1.equalsIgnoreCase(word2) && !StringUtils.isNumeric(word1) && !StringUtils.isNumeric(word2)  && word1.length()>1 && word2.length() >1){
 						
 //						String query =word1 + "* AND " + word2+"*";
-						String query =" ( tweetTextIndexed:" + word1 + " AND tweetTextIndexed:" + word2+")";
+						String query =" ("+ fieldForQuery+":" + word1 + " AND "+ fieldForQuery+":" + word2+")";
 
 				 	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
 				 	    Query q = qp.parse(query);
@@ -558,7 +558,7 @@ public class LuceneCore {
 						ScoreDoc[] scoreDocs =  topDocs.scoreDocs;
 						for (ScoreDoc sd : topDocs.scoreDocs) {
 							Document d = searcher.doc(sd.doc);
-							String tweet =d.getField("tweetTextIndexed").stringValue();
+							String tweet =d.getField(fieldForQuery).stringValue();
 						}
 				 	    //se i documenti trovati con entrambe le parole sono > 0 aggiorno la mappa, con la coppia di termini e il numero di documenti
 				 	    if(topDocs.totalHits != 0){

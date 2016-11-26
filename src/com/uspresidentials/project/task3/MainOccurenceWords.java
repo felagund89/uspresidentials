@@ -52,8 +52,8 @@ public class MainOccurenceWords {
 			
 		
 			LuceneCore.createIndexForCandidates(PATH_INDEXDIR_PRIMAR_7NOV, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, queryCandidates.get(i));
-			Map<String,Double> mapCandidate = getTermFrequencyByCandidate(PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE);
-			Map<String,Double> mapTermsAndDocuments = getTermsDocFrequency(mapCandidate);
+			Map<String,Double> mapCandidate = getTermFrequencyByCandidate(PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE,"tweetIndexed");
+			Map<String,Double> mapTermsAndDocuments = getTermsDocFrequency(mapCandidate,PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, "tweetTextIndexed" );
 			jaccard(mapCandidate, mapTermsAndDocuments,nameCandidates.get(i));
 			
 			
@@ -71,14 +71,14 @@ public class MainOccurenceWords {
 	
 	//trovo tutti i termini e le rispettive frequenze di tutti i documenti trovati per ogni candidato.
 	//per jaccard si dovrebbe usare cosi : jaccard(term1,term2)=num_docs(term1,term2)/(term1.docfreq+term2.docfreq - num_docs(term1,term2))
-	public static Map<String,Double> getTermFrequencyByCandidate(String pathIndexForCandidate){
+	public static Map<String,Double> getTermFrequencyByCandidate(String pathIndexForCandidate, String fieldForQuery){
 		
 		Map<String,Double> mapTerms = null;
 		
 		
 		try {
 			
-			mapTerms = LuceneCore.getTerms(pathIndexForCandidate);
+			mapTerms = LuceneCore.getTerms(pathIndexForCandidate, fieldForQuery);
 			//mapTerms = Util.sortByValue(mapTerms);
 			
 			//PROVA prendo le prime 100 parole con più occorrenze e le stampo.
@@ -104,12 +104,12 @@ public class MainOccurenceWords {
 		
 	}
 	
-	public static Map<String,Double>  getTermsDocFrequency(Map<String,Double> setTerms ){
+	public static Map<String,Double>  getTermsDocFrequency(Map<String,Double> setTerms, String path, String fieldForQuery ){
 		
 		Map<String,Double> mapTerms= new HashMap<String, Double>(); 
 		
 		
-		mapTerms = LuceneCore.getDocFreqForTwoTerms(setTerms, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, "tweetTextIndexed");
+		mapTerms = LuceneCore.getDocFreqForTwoTerms(setTerms,  path,  fieldForQuery);
 		
 		System.out.println("FINE term doc frequency");
 		
