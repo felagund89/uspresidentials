@@ -440,7 +440,7 @@ public class LuceneCore {
             QueryParser queryParser2 = new QueryParser("tweetText", new StandardAnalyzer());
             Query q = queryParser2.parse(queryLucene);
             TopDocs docs;
-            docs = searcher2.search(q, 10);
+            docs = searcher2.search(q, 100000);
             hits = docs.scoreDocs;
 
             System.out.println("Numero di tweet per il candidato: " + pathForCandidate + " " + hits.length + " hits.");
@@ -487,7 +487,7 @@ public class LuceneCore {
 
 
  	   	Query query = new MatchAllDocsQuery();
-	  	TopDocs topDocs = searcher.search(query, 10000);
+	  	TopDocs topDocs = searcher.search(query, 100000);
 	  	ScoreDoc[] hits = topDocs.scoreDocs;
 
  	    Map<String, Double> frequencies = new HashMap<>();
@@ -554,7 +554,7 @@ public class LuceneCore {
 				 	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
 				 	    Query q = qp.parse(query);
 						
-				 	    TopDocs topDocs= searcher.search(q, 10000);
+				 	    TopDocs topDocs= searcher.search(q, 100000);
 						ScoreDoc[] scoreDocs =  topDocs.scoreDocs;
 						for (ScoreDoc sd : topDocs.scoreDocs) {
 							Document d = searcher.doc(sd.doc);

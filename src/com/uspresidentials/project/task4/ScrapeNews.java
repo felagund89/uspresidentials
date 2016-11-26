@@ -164,6 +164,8 @@ public class ScrapeNews {
 //			wordJaccIndex = Util.sortByValue(wordJaccIndex);
 			
 			
+			 
+			//scrivo json su file
 			Util.writeJsonJaccardCandidate(wordsObject,pathFileDestination);
 			
 			

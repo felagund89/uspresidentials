@@ -63,13 +63,6 @@ public final class AuthenticationManager {
 		map.put("OAuthAccessTokenSecret","xuGm37VDuIjGl02XqBl6x9aKqnoaqnKaqIqcCQ4BQDVw2");
 		accounts.add(map);
 
-		// CLAUDIO
-		map = new HashMap<>();
-		map.put("OAuthConsumerKey", "KqYc0PQ1seDR36glxMwxgSq5O");
-		map.put("OAuthConsumerSecret","v05RdurBZRCVmeKc6Tig4eeWdghQXrvubtb1GR7PTOFSKfjWnK");
-		map.put("OAuthAccessToken","469453578-MeraM7YtOFHKYAiAVBNRG676ZHEgnHAUqaYVGx35");
-		map.put("OAuthAccessTokenSecret","OFx87bY2GSxaTkIHKNR9ddST8XChoTg4M4aHQw6PZRA91");
-		accounts.add(map);
 		
 		// GUSTAVO DA
 		map = new HashMap<>();

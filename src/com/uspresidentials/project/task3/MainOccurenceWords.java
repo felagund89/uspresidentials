@@ -36,11 +36,13 @@ public class MainOccurenceWords {
 
 	final static String QUERY_STRING_CANDIDATES_NAME_TRUMP ="donald* OR trump*";
 	final static String QUERY_STRING_CANDIDATES_NAME_CLINTON ="hillary* OR clinton*";
-	final static String QUERY_STRING_CANDIDATES_NAME_RUBIO ="rubio* OR Rubio*";
-	final static String QUERY_STRING_CANDIDATES_NAME_SANDERS ="sanders* OR Sanders*";
+	final static String QUERY_STRING_CANDIDATES_NAME_RUBIO ="rubio* OR mark*";
+	final static String QUERY_STRING_CANDIDATES_NAME_SANDERS ="sanders* OR bernie*";
     static final List<String> queryCandidates = Arrays.asList(QUERY_STRING_CANDIDATES_NAME_TRUMP,QUERY_STRING_CANDIDATES_NAME_CLINTON,QUERY_STRING_CANDIDATES_NAME_RUBIO,QUERY_STRING_CANDIDATES_NAME_SANDERS);
     static final List<String> nameCandidates = Arrays.asList("Trump","Clinton","Rubio","Sanders");
-	public static void main(String[] args) throws IOException, ParseException {
+	
+    
+    public static void main(String[] args) throws IOException, ParseException {
 
 		
 		
@@ -52,7 +54,7 @@ public class MainOccurenceWords {
 			
 		
 			LuceneCore.createIndexForCandidates(PATH_INDEXDIR_PRIMAR_7NOV, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, queryCandidates.get(i));
-			Map<String,Double> mapCandidate = getTermFrequencyByCandidate(PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE,"tweetIndexed");
+			Map<String,Double> mapCandidate = getTermFrequencyByCandidate(PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE,"tweetTextIndexed");
 			Map<String,Double> mapTermsAndDocuments = getTermsDocFrequency(mapCandidate,PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, "tweetTextIndexed" );
 			jaccard(mapCandidate, mapTermsAndDocuments,nameCandidates.get(i));
 			
@@ -184,6 +186,8 @@ public class MainOccurenceWords {
 //		}
 		
 		
+		 
+		//scrivo json su file
 		Util.writeJsonJaccardCandidate(wordsObject,pathFileDestination);
 		
 		
