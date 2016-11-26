@@ -64,8 +64,9 @@ public class Util {
             Object obj = parser.parse(new FileReader(PATH_FILE_FRIENDSHIP_JSON));
  
             JSONObject jsonObject = (JSONObject) obj;
- 
+            
             JSONArray listUsers = (JSONArray) jsonObject.get("ListUsers");
+            
             List<String> idUserTotalList = new ArrayList<String>();
            
             //prendo tutti gli id degli user
@@ -314,6 +315,15 @@ public class Util {
 	}
 	 
 	
+	public static void writeJsonJaccardCandidate(JSONObject jsonUser, String PATH_FILE_JACCARD_JSON) throws IOException {
+
+		// inserire [] inizio e fine cosí da avere un json completo
+
+		PrintWriter writer = new PrintWriter(new FileOutputStream(new File(PATH_FILE_JACCARD_JSON), true));
+		writer.println(jsonUser.toString());
+		writer.close();
+	}
+	
 	
 	public static <K, V> Map<K, V> sortByValue(Map<K, V> map) {
 	    List<Entry<K, V>> list = new LinkedList<>(map.entrySet());
@@ -348,6 +358,54 @@ public class Util {
 		}
 		return resultClean;
 	}
+	
+	
+	public static JSONArray sortJsonFileByValue(JSONArray arrayTerms, final String KEY_NAME){
+		
+		JSONArray sortedJsonArray = new JSONArray();
+
+	    List<JSONObject> jsonValues = new ArrayList<JSONObject>();
+	    for (int i = 0; i < arrayTerms.size(); i++) {
+	        jsonValues.add((JSONObject) arrayTerms.get(i));
+	    }
+	    Collections.sort( jsonValues, new Comparator<JSONObject>() {
+	        //You can change "Name" with "ID" if you want to sort by ID
+
+	        @Override
+	        public int compare(JSONObject a, JSONObject b) {
+	            double valA = 0;
+	            double valB = 0;
+
+	            try {
+	                valA = (double) a.get(KEY_NAME);
+	                valB = (double) b.get(KEY_NAME);
+	                
+	                
+	                
+	            } 
+	            catch (Exception e) {
+	            	e.printStackTrace();
+	            }
+	            
+	            if(valA > valB)
+	            	return -1;
+	            else if (valB > valA) {
+					return 1;
+				}
+	            else return 0;
+            	 
+	           
+	        }
+	    });
+
+	    for (int i = 0; i < arrayTerms.size(); i++) {
+	        sortedJsonArray.add(jsonValues.get(i));
+	    }
+		return sortedJsonArray;
+		
+	}
+	
+	
 	
 	 
 }

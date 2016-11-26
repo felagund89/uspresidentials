@@ -2,6 +2,7 @@ package com.uspresidentials.project.task3;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -13,6 +14,8 @@ import org.apache.lucene.analysis.util.TokenizerFactory;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.uspresidentials.project.entity.WordEntity;
 import com.uspresidentials.project.lucene.LuceneCore;
@@ -34,9 +37,9 @@ public class MainOccurenceWords {
 	final static String QUERY_STRING_CANDIDATES_NAME_TRUMP ="donald* OR trump*";
 	final static String QUERY_STRING_CANDIDATES_NAME_CLINTON ="hillary* OR clinton*";
 	final static String QUERY_STRING_CANDIDATES_NAME_RUBIO ="rubio* OR Rubio*";
-	final static String QUERY_STRING_CANDIDATES_NAME_SANDERS ="Sanders* OR sanders*";
-
-	
+	final static String QUERY_STRING_CANDIDATES_NAME_SANDERS ="sanders* OR Sanders*";
+    static final List<String> queryCandidates = Arrays.asList(QUERY_STRING_CANDIDATES_NAME_TRUMP,QUERY_STRING_CANDIDATES_NAME_CLINTON,QUERY_STRING_CANDIDATES_NAME_RUBIO,QUERY_STRING_CANDIDATES_NAME_SANDERS);
+    static final List<String> nameCandidates = Arrays.asList("Trump","Clinton","Rubio","Sanders");
 	public static void main(String[] args) throws IOException, ParseException {
 
 		
@@ -45,18 +48,17 @@ public class MainOccurenceWords {
 		//ogni documento equivale ad un tweet in Lucene
 		
 		
-//		ScoreDoc[] scoreDocs = LuceneCore.createIndexForCandidate(PATH_INDEXDIR_PRIMAR_7NOV, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, QUERY_STRING_CANDIDATES_NAME_TRUMP);
-		LuceneCore.createIndexForCandidates(PATH_INDEXDIR_PRIMAR_7NOV, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, QUERY_STRING_CANDIDATES_NAME_TRUMP);
-		Map<String,Double> mapTrump = getTermFrequencyByCandidate(PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE);
-		Map<String,Integer> mapTermsAndDocuments = getTermsDocFrequency(mapTrump);
-		jaccard(mapTrump, mapTermsAndDocuments);
-		//Map<String,Integer> mapHillary = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_CLINTON);
-		//Map<String,Integer> mapRubio = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_RUBIO);
-		//Map<String,Integer> mapSanders = getTermFrequencyByCandidate(QUERY_STRING_CANDIDATES_NAME_SANDERS);
-
-		//Map<String,Integer> mapTotal = LuceneCore.computeTermIdMap(PATH_INDEXDIR_PRIMAR_7NOV);
-//		System.out.println(mapTotal.size());
-//		System.out.println(mapTotal.keySet().size());
+		for (int i = 0; i < queryCandidates.size(); i++) {
+			
+		
+			LuceneCore.createIndexForCandidates(PATH_INDEXDIR_PRIMAR_7NOV, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, queryCandidates.get(i));
+			Map<String,Double> mapCandidate = getTermFrequencyByCandidate(PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE);
+			Map<String,Double> mapTermsAndDocuments = getTermsDocFrequency(mapCandidate);
+			jaccard(mapCandidate, mapTermsAndDocuments,nameCandidates.get(i));
+			
+			
+		}
+		
 		System.out.println("FINE MAIN OCCURRENCE");
 	}
 	
@@ -102,12 +104,12 @@ public class MainOccurenceWords {
 		
 	}
 	
-	public static Map<String,Integer>  getTermsDocFrequency(Map<String,Double> setTerms ){
+	public static Map<String,Double>  getTermsDocFrequency(Map<String,Double> setTerms ){
 		
-		Map<String,Integer> mapTerms= new HashMap<String, Integer>(); 
+		Map<String,Double> mapTerms= new HashMap<String, Double>(); 
 		
 		
-		mapTerms = LuceneCore.getDocFreqForTwoTerms(setTerms, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, "tweetText");
+		mapTerms = LuceneCore.getDocFreqForTwoTerms(setTerms, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, "tweetTextIndexed");
 		
 		System.out.println("FINE term doc frequency");
 		
@@ -120,61 +122,79 @@ public class MainOccurenceWords {
 	
 	
 	//ciclo su tutte le parole e mi faccio tornare  una mappa con dentro l'indice di jaccard per ogni coppia di parole
-	public static Map<String,Double> jaccard(Map<String,Double> mapWords, Map<String,Integer> mapTerms){
+	public static Map<String,Double> jaccard(Map<String,Double> mapWords, Map<String,Double> mapTerms, String nameCandidate){
 		//num_docs(term1,term2)/(term1.docfreq+term2.docfreq - num_docs(term1,term2))
 		//nella prima stringa devo mettere la coppia di parole, divisa da ; in double cè l'indice di jaccard per quelle due parole
 		Map<String,Double> wordJaccIndex = new HashMap<>();
+		JSONObject wordsObject = new JSONObject();
+		JSONArray wordsArray = new JSONArray();
+		String pathFileDestination = PropertiesManager.getPropertiesFromFile("PATH_FILE_JACCARD_JSON_CANDIDATES")+nameCandidate+"_jaccard.json";
+		
 		
 		//Devo lavorare sugli indici delle parole che ho nel set, ogni oggetto ha la parola, e i dati relativi al numero di volte che compaiono in totale 
 		//e al numero di documenti in cui compaiono in totale.
 		
-		
+		System.out.println("INIZIO JACCARD");
 		//APPLICARE LA FORMULA
-		//scorro tutte le coppie di parole, calcolando l'indice di jaccard su ognuna, inserisco tutte le coppie e il risultatnte indice in una mappa.
-		 for (Map.Entry<String, Double> entry : mapWords.entrySet()) {
-			   String word1 = entry.getKey();
-			   double docFreqTerm1 = entry.getValue();
-
-			   for (Map.Entry<String, Double> entry2 : mapWords.entrySet()) {
-
-					String word2= entry2.getKey();
-					   double docFreqTerm2 = entry.getValue();
-
-//				String word2= wordEnt2.getWord();
-				if(!word1.equalsIgnoreCase(word2)){
-					if(mapTerms.containsKey(word1+";"+word2)){
-							int docFreq = mapTerms.get(word1+";"+word2);
-							System.out.println(docFreq);
-		//					Double numDocWords = wordEnt1.getNumDocOcc()+wordEnt2.getNumDocOcc();
-							
-							Double jaccardIndex = (double) (double)docFreq/(((docFreqTerm1 + docFreqTerm2) - (double)docFreq));
-							if(jaccardIndex.isInfinite())
-								jaccardIndex=0.0;
-							
-							wordJaccIndex.put(word1+";"+word2, jaccardIndex);
-//						    System.out.println(word1+" "+wordEnt1.getNumDocOcc()+"; "+word2+" "+wordEnt2.getNumDocOcc() +" "+jaccardIndex);
-						
-					}
-				}
-
-			}
-			
-		}
 		
-		int count = 0;
-		wordJaccIndex = Util.sortByValue(wordJaccIndex);
-		Iterator itM = wordJaccIndex.entrySet().iterator();
-		while(itM.hasNext() && count<=100){
-	        Map.Entry pair = (Map.Entry)itM.next();
+		try {
+		
+			
+			for (Map.Entry<String, Double> entry : mapTerms.entrySet()) {
+			 JSONObject coupleWords = new JSONObject();
+			 
+			 String[] words = entry.getKey().split(";");
+			 String word1 = words[0];
+			 String word2 = words[1];
+			 
+			 double countWord1 = mapWords.get(word1);
+			 double countWord2 = mapWords.get(word2);
+			 double docFreqWord1Word2 = entry.getValue();
 
-			String chiaveM= (String) pair.getKey();
-			Double valoreM=(Double) pair.getValue();
-			System.out.println(chiaveM+" "+valoreM);
-			count++;
+			 Double jaccardIndex = docFreqWord1Word2/(((countWord1 + countWord2) - docFreqWord1Word2));
+			 wordJaccIndex.put(word1+";"+word2, jaccardIndex);
+			 
+			 coupleWords.put("term1", word1);
+			 coupleWords.put("term2", word2);
+			 coupleWords.put("docFreqTerm1", countWord1);
+			 coupleWords.put("docFreqTerm2", countWord2);
+			 coupleWords.put("docFreqTerm1Term2", docFreqWord1Word2);
+			 coupleWords.put("jaccard", jaccardIndex);
+			 wordsArray.add(coupleWords);
+	 
+		 }
+			
+			
+//		 wordsArray= Util.sortJsonFileByValue(wordsArray);	
+			
+		 wordsObject.put("TermsFor"+nameCandidate, Util.sortJsonFileByValue(wordsArray,"jaccard"));
+		 
+//		wordJaccIndex = Util.sortByValue(wordJaccIndex);
+		
+		
+		
+//		Iterator itM = wordJaccIndex.entrySet().iterator();
+//		while(itM.hasNext()){
+//	        Map.Entry pair = (Map.Entry)itM.next();
+//
+//			String chiaveM= (String) pair.getKey();
+//			Double valoreM= (Double) pair.getValue();
+//			System.out.println(chiaveM+" "+valoreM);
+////			count++;
+//		}
+		
+		
+		Util.writeJsonJaccardCandidate(wordsObject,pathFileDestination);
+		
+		
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
+		
+		
 		return wordJaccIndex;
 	}
 	
-
-
 }
