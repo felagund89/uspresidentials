@@ -146,14 +146,10 @@ public class MainOccurenceWords {
 					    System.out.println(word1+";"+word2+"  "+jaccardIndex);
 					}
 				}
-
 			}
-			
 		}
 		
-		
 		wordJaccIndex = Util.sortByValue(wordJaccIndex);
-		
 		return wordJaccIndex;
 	}
 	

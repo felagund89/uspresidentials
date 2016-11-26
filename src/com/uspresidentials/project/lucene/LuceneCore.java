@@ -462,14 +462,10 @@ public class LuceneCore {
 		 		    word.setTotalOcc(1.0);
 		 		    words.add(word);
 	 		   }
-	 		   
-	 		   
+	 		   		   
 	 		   //passo alla parola successiva
-	 
-	 		    
+	    
 	 		}
- 	      
- 	      
  	    }
  	    System.out.println("fine getTerms"); 	    
  	    return words;
