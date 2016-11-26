@@ -95,7 +95,7 @@ public class MainOccurenceWords {
 //				count++;
 //			}
 			
-			System.out.println("FINE OCCURRENCE TERMS");
+			System.out.println("FINE getTerms");
 		} catch (ParseException | IOException e) {
 				e.printStackTrace();
 		}
@@ -113,7 +113,7 @@ public class MainOccurenceWords {
 		
 		mapTerms = LuceneCore.getDocFreqForTwoTerms(setTerms,  path,  fieldForQuery);
 		
-		System.out.println("FINE term doc frequency");
+		System.out.println("FINE getTermsDocFrequency");
 		
 		
 		return mapTerms;

@@ -504,7 +504,8 @@ public class LuceneCore {
 	
 	 	    while ((term = termsEnum.next()) != null) {     
 	 	    	String termText = term.utf8ToString();
-	 	    	if(Util.unnecessaryWords.contains(termText))
+
+	 	    	if(Util.unnecessaryWords.contains(termText) || Util.containsIllegals(termText))
 	 		    	continue;
 	 	    	
 	 	    	Term termInstance = new Term(fieldForQuery, term); 
@@ -514,7 +515,7 @@ public class LuceneCore {
 
 	 		   if(!frequencies.containsKey(termText)){
 	 			  frequencies.put(termText, docCount);
-		 		  System.out.println("term: "+termText+", termFreq = "+termFreq+", docCount = "+docCount); 
+//		 		  System.out.println("term: "+termText+", termFreq = "+termFreq+", docCount = "+docCount); 
 	 		   }
 
 	 		   //passo alla parola successiva
@@ -549,8 +550,9 @@ public class LuceneCore {
 					if(!word1.equalsIgnoreCase(word2) && !StringUtils.isNumeric(word1) && !StringUtils.isNumeric(word2)  && word1.length()>1 && word2.length() >1){
 						
 //						String query =word1 + "* AND " + word2+"*";
-						String query =" ("+ fieldForQuery+":" + word1 + " AND "+ fieldForQuery+":" + word2+")";
-
+						
+						String query ="("+ fieldForQuery+":" + word1 +" AND "+ fieldForQuery+":" + word2+")";
+//						System.out.println(query);
 				 	    QueryParser qp = new QueryParser(fieldForQuery, new StandardAnalyzer());
 				 	    Query q = qp.parse(query);
 						
@@ -563,7 +565,7 @@ public class LuceneCore {
 				 	    //se i documenti trovati con entrambe le parole sono > 0 aggiorno la mappa, con la coppia di termini e il numero di documenti
 				 	    if(topDocs.totalHits != 0){
 				 	    	termsAndNumOfDocs.put(word1+";"+word2, (double)topDocs.totalHits);
-				 	    	System.out.println(word1+";"+word2+"  "+topDocs.totalHits);
+//				 	    	System.out.println(word1+";"+word2+"  "+topDocs.totalHits);
 				 	    }
 					}
 

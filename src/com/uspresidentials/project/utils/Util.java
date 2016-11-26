@@ -21,6 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -37,7 +39,7 @@ public class Util {
 	final static String PATH_FILE_USER_OCCURRENCE_TEST = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_OCCURRENCE_TEST");
 	final static String PATH_FILE_USER_JSON_COMPLETE = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_JSON_COMPLETE");
 
-	public static final List<String> unnecessaryWords = Arrays.asList(""," ", "rt","to","in","and","or", "is", "as", "of", "the", "#", "@","0","1","2","3","4","5","6","7","8","9","10","t.co","t.c","http","https","htt","am","i","pm","p.m","a.m","etc");
+	public static final List<String> unnecessaryWords = Arrays.asList(""," ", "rt","to","in","and","or", "is", "as", "of", "the", "#", "@","0","1","2","3","4","5","6","7","8","9","10","t.co","t.c","http","https","htt","am","i","pm","p.m","a.m","etc",":","/");
 	
 	
 	public static void main(String[] args) {
@@ -52,7 +54,11 @@ public class Util {
 		
 	}
 
-	
+	public static boolean containsIllegals(String toExamine) {
+	    Pattern pattern = Pattern.compile("[~#@*+%{}<>\\[\\]|\"\\_:^]");
+	    Matcher matcher = pattern.matcher(toExamine);
+	    return matcher.find();
+	}
 	
 	private static void cleanFileUserFriendsTweets(){
 		
