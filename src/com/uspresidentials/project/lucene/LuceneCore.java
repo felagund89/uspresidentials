@@ -53,6 +53,8 @@ import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.Version;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 
@@ -64,6 +66,7 @@ import twitter4j.User;
 import com.uspresidentials.project.entity.TweetInfoEntity;
 import com.uspresidentials.project.entity.TweetsEntity;
 import com.uspresidentials.project.entity.WordEntity;
+import com.uspresidentials.project.utils.PropertiesManager;
 import com.uspresidentials.project.utils.Util;
 
 public class LuceneCore {
@@ -601,6 +604,69 @@ public class LuceneCore {
  	   //filter unnecessary word
  	   //apply SentimentWordNet (attention for negation not-good / not bad)
 	}
+	
+	
+	
+	public static void createIndexForScrapingNews(String pathFileScrapingNews) throws IOException, ParseException {
+	       
+		Directory indexDirCandidate = FSDirectory.open(new File(PropertiesManager.getPropertiesFromFile("PATH_INDEXDIR_FOR_SCRAP_NEWS")));
+    	
+		IndexWriterConfig config = new IndexWriterConfig(Version.LATEST, new StandardAnalyzer());
+		IndexWriter indexWriter = new IndexWriter(indexDirCandidate, config);
+		
+		//ripulisco la directory prima di inserire i nuovi doc
+		indexWriter.deleteAll();
+        indexWriter.commit();
+
+		
+        
+        
+			
+		Document docLucene = new Document();     
+
+
+		//Creazione documenti per LUCENE per le news
+		try{
+			JSONParser parser = new JSONParser();  
+	        Object obj = parser.parse(new FileReader(pathFileScrapingNews));
+	        
+	        JSONArray jsonArray = (JSONArray) obj;
+			
+			
+            for (int k = 0; k < jsonArray.size(); ++k) {
+               
+            	
+                String title = (String) ((JSONObject)jsonArray.get(k)).get("title");
+                String body = (String) ((JSONObject)jsonArray.get(k)).get("body");
+                
+                docLucene = new Document();
+				docLucene.add(new StringField("title",title,Field.Store.YES));
+
+				FieldType type = new FieldType();
+				type.setIndexed(true);
+				type.setStored(true);
+				type.setStoreTermVectors(true);
+				Field field = new Field("bodyIndexed", body.toLowerCase(), type);
+				docLucene.add(field);
+				
+
+				indexWriter.addDocument(docLucene);
+
+            }
+        
+            indexWriter.commit();
+            
+            closeIndexWriter(indexWriter);
+ 
+        }catch (Exception e) {
+        	e.printStackTrace();		
+        }
+ 
+    }
+	
+	
+	
+	
 	
 	private static void printHashMap(HashMap<String, ArrayList<String>> hashMapUser){
 		

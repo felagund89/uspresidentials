@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.queries.function.valuesource.DivFloatFunction;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
@@ -17,6 +18,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.uspresidentials.project.lucene.LuceneCore;
 import com.uspresidentials.project.utils.PropertiesManager;
 
 public class ScrapeNews {
@@ -27,23 +29,23 @@ public class ScrapeNews {
 
 	
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ParseException {
 	   
 		
-		for (int i = 0; i <= 300; i=i+10) {
-		    String linkModString = "http://www.google.com/search?hl=en&gl=us&q=hillary+clinton&num=100&authuser=0&biw=1745&bih=850&tbm=nws&ei=jOsDWObLFYv_Ur2BmZAD&start="+i+"&sa=N&dpr=1.1&gws_rd=cr";
-			listaLink.add(linkModString);
-			System.out.println(i+"   "+linkModString);
-		}
+//		for (int i = 0; i <= 300; i=i+10) {
+//		    String linkModString = "http://www.google.com/search?hl=en&gl=us&q=hillary+clinton&num=100&authuser=0&biw=1745&bih=850&tbm=nws&ei=jOsDWObLFYv_Ur2BmZAD&start="+i+"&sa=N&dpr=1.1&gws_rd=cr";
+//			listaLink.add(linkModString);
+//			System.out.println(i+"   "+linkModString);
+//		}
 		
 		
 		// 1)Chiamata per effettuare scraping su google news.
-		//scrapeNewsFromGoole(link);
+		//scrapeNewsFromGoogle(link);
 		
 		
 		
-		//2)Richiamare algoritmo per cercare le main occurrence word.
-		
+		//2)Creo indice con le news e richiamare algoritmo per cercare le main occurrence word.
+		LuceneCore.createIndexForScrapingNews(PropertiesManager.getPropertiesFromFile("PATH_FILE_SCRAPING_NEWS_JSON"));
 		
 		
 		
@@ -62,7 +64,7 @@ public class ScrapeNews {
 	
 	
 	
-	public static void scrapeNewsFromGoole(String linkString) throws IOException{
+	public static void scrapeNewsFromGoogle(String linkString) throws IOException{
 		System.out.println("Scraping news for candidate: HILLARY CLINTON");
 		Document doc = null;
 		JSONArray jsonArrayNews = new JSONArray();
@@ -101,6 +103,10 @@ public class ScrapeNews {
 
 		System.out.println("STOP SCRAPING NEWS");
 	}
+	
+	
+	
+	
 	
 	
 	
