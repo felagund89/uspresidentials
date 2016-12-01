@@ -46,7 +46,7 @@ public class MainOccurenceWords {
 
 		
 		
-		//Devo richiamare su ogni candidato la ricerca con lucene e sui documenti trovati cercare le co-occurrence words. Non so a cosa serve Jaccard nel nostro caso.
+		//Devo richiamare su ogni candidato la ricerca con lucene e sui documenti trovati cercare le co-occurrence words.
 		//ogni documento equivale ad un tweet in Lucene
 		
 		
