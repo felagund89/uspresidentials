@@ -56,16 +56,7 @@ public class ScrapeNews {
 		jaccard(mapCandidate, mapTermsAndDocuments,"Clinton");
 		
 		
-		//3)Confrontare le main occurrence words del task3 con quelle trovate nelle scraping news.
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
 	}
 	
 	

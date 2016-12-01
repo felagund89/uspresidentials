@@ -18,6 +18,9 @@ public class ComparingOccurrenceWords {
 		
 		Map<String,Double> occurrenceDataset = Util.readJsonFromFile(PATH_FILE_JACCARD_JSON_CANDIDATES, "TermsForClinton");
 		Map<String,Double> occurrenceScrapNews = Util.readJsonFromFile(PATH_FILE_JACCARD_JSON_FROM_SCRAPING_NEWS, "TermsForClinton");
+		
+		
+		
 		Map<String,Double> mostOccWords = analyzeOccurrenceWords(occurrenceDataset, occurrenceScrapNews);
 
 	}
@@ -45,11 +48,6 @@ public class ComparingOccurrenceWords {
 					   System.out.println("Coppia: "+term1+", "+term2);
 				   }
 				   
-				   
-				   
-				   
-				   
-				   
 			   }
 		
 		 }
@@ -57,16 +55,8 @@ public class ComparingOccurrenceWords {
 		mostOccWords = Util.sortByValue(mostOccWords);
 		 
 		return mostOccWords;
-		
-		
-		
-		
+
 	}
 	
-	
-	
-	
-	
-	
-	
+
 }
