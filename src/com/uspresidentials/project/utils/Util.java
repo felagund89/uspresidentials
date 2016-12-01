@@ -413,5 +413,37 @@ public class Util {
 	
 	
 	
+	public static Map<String, Double> readJsonFromFile(String pathJsonFile, String fieldJson){
+		
+		//prendo il file json
+		JSONParser parser = new JSONParser();
+		Map<String, Double> occurrenceWord = new HashMap<>();
+		
+        try {
+ 
+            Object obj = parser.parse(new FileReader(pathJsonFile));
+ 
+            JSONObject jsonObject = (JSONObject) obj;
+ 
+            JSONArray listWords = (JSONArray) jsonObject.get(fieldJson);
+            
+            
+            for (int i = 0; i < listWords.size(); i++) {
+            	JSONObject userJsonObject = (JSONObject) listWords.get(i);
+            	Double jaccardVal = (double) userJsonObject.get("jaccard");
+
+            	String terms=( (String)userJsonObject.get("term1") +";"+(String) userJsonObject.get("term2"));
+
+            	occurrenceWord.put(terms, jaccardVal);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		return occurrenceWord;
+        
+	}
+	
+	
+	
 	 
 }

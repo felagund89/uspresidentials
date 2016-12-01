@@ -31,7 +31,7 @@ public class ScrapeNews {
 	final static Logger loggerScraping = Logger.getLogger("loggerScraping");
 	static List<String> listaLink= new ArrayList<>();
 	final static String PATH_INDEXDIR_FOR_SCRAP_NEWS = PropertiesManager.getPropertiesFromFile("PATH_INDEXDIR_FOR_SCRAP_NEWS");
-
+	final static int NUM_ELEMENTS=1000;
 	
 	
 	public static void main(String[] args) throws IOException, ParseException {
@@ -157,11 +157,22 @@ public class ScrapeNews {
 		 
 			 }
 				
+			
+			wordsArray = Util.sortJsonFileByValue(wordsArray,"jaccard");
+			
+			//prendo i primi NUM_ELEMENTS oggetti
+			JSONArray wordJaccIndexPortion = new JSONArray();
+			for (int i = 0; i < NUM_ELEMENTS; i++) {
+				
+				wordJaccIndexPortion.add(wordsArray.get(i));
 				
 				
-			 wordsObject.put("TermsFor"+nameCandidate, Util.sortJsonFileByValue(wordsArray,"jaccard"));
+				
+			}
+			
+				
+			 wordsObject.put("TermsFor"+nameCandidate, wordJaccIndexPortion );
 			 
-//			wordJaccIndex = Util.sortByValue(wordJaccIndex);
 			
 			
 			 
