@@ -43,9 +43,12 @@ public class ComparingOccurrenceWords {
 				   String term3 = words2.split(";")[0];
 				   String term4 = words2.split(";")[1];
 				   
-				   if((term1.equalsIgnoreCase(term3) || term1.equalsIgnoreCase(term4)) && (term2.equalsIgnoreCase(term3) || term1.equalsIgnoreCase(term4))){
-					   mostOccWords.put(term1+term2, entry.getValue());
-					   System.out.println("Coppia: "+term1+", "+term2);
+				   if((term1.equalsIgnoreCase(term3) && term2.equalsIgnoreCase(term4)) || (term2.equalsIgnoreCase(term3) && term1.equalsIgnoreCase(term4))){
+					   
+//					   if(!mostOccWords.containsKey(term1+";"+term2)){
+						   mostOccWords.put(term1+";"+term2, entry.getValue());
+					   	   System.out.println("Coppia: "+term1+", "+term2);
+//					   }
 				   }
 				   
 			   }
