@@ -2,20 +2,14 @@ package com.uspresidentials.project.task1;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
-import java.util.Map.Entry;
-import java.util.concurrent.CountDownLatch;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.CorruptIndexException;
@@ -101,16 +95,16 @@ public class IdentifyUsers {
 			//occurrenceCandidatesInTweets();
 		    
 		
-			//ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = FriendShipGraph.createGraphFromFriendShip(); 																							
+			ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = FriendShipGraph.createGraphFromFriendShip(); 																							
 			//System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip.toString());
 	
 			// ********COMPONENTE CONNESSE - write in folder 'log4j_logs'
-			//FriendShipGraph.searchConnectedComponents(graphFriendShip);
+//			FriendShipGraph.searchConnectedComponents(graphFriendShip);
 	
 			// ********PAGE RANK
 	
-			//SparseMultigraph<String, DefaultEdge> graphSparse = FriendShipGraph.convertListenableGraph(graphFriendShip);
-			//calculatePageRank(graphSparse);
+			SparseMultigraph<String, DefaultEdge> graphSparse = FriendShipGraph.convertListenableGraph(graphFriendShip);
+			calculatePageRank(graphSparse);
 			
 			
 		
@@ -221,21 +215,27 @@ public class IdentifyUsers {
 	
 	public static void calculatePageRank(SparseMultigraph<String, DefaultEdge> graph) {
 
-		
+		loggerPageRank.info("First 10 users for pageRank\n");
+
 		PageRank<String, DefaultEdge> rankerManager = new PageRank<String, DefaultEdge>(graph, 0.15);
 		rankerManager.evaluate();
 
 		TreeSet<UserCustom> orderedPageRankUser = new TreeSet<UserCustom>(new ComparatorRank());
 
 		for (String v : graph.getVertices()) {
-			double pageRankScore = rankerManager.getVertexScore(v);
-			UserCustom user = new UserCustom(v, pageRankScore);
-			orderedPageRankUser.add(user);
+			double pageRankScore ;
+
+				pageRankScore= rankerManager.getVertexScore(v);
+				UserCustom user = new UserCustom(v, pageRankScore);
+				orderedPageRankUser.add(user);
 		}
 		
+		int max = 0;
 		for(UserCustom u : orderedPageRankUser){
-			
-			loggerPageRank.info("Vertext: " + u.getUserName() + " score: " + u.getPageRank());
+			if(max>=10)
+				break;
+			loggerPageRank.info("User: " + u.getUserName() + " score: " + u.getPageRank());
+			max++;
 		}
 	}
 	

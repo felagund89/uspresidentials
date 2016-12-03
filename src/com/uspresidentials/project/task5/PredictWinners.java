@@ -11,7 +11,7 @@ public class PredictWinners {
 	 * 
 	 * Sarebbe interessante confrontare un range di tweet, esempio di Maggio e tirare fuori il sentiment dei tweet rispetto clinton e trump,
 	 * confrontare con il sentiment tirato fuori dall'algo del sentiment e anche con le parole calcolate sul dataset delle scraping news,
-	 * verificando cosi se il trend del giudizio verso i candidati è rimasto lo stesso nei mesi o se è cambiato.
+	 * verificando cosi se il trend del giudizio verso i candidati e rimasto lo stesso nei mesi o se e cambiato.
 	 * 
 	 */
 	

@@ -37,23 +37,35 @@ public class ComparingOccurrenceWords {
 			   String term1 = words1.split(";")[0];
 			   String term2 = words1.split(";")[1];
 
+			   if(entry.getValue()> 0.7 ){
+//				   if(!mostOccWords.containsKey(term1+";"+term2)){
+					   mostOccWords.put("dataset "+term1+";"+term2, entry.getValue());
+				   	   System.out.println("Coppia datas: "+term1+", "+term2);
+
+				   }
+			   
+		 }
+			   
+			   
 			   for (Map.Entry<String, Double> entry2 : occurrenceScrapNews.entrySet()) {
 				   
 				   String words2 = entry2.getKey();
 				   String term3 = words2.split(";")[0];
 				   String term4 = words2.split(";")[1];
 				   
-				   if((term1.equalsIgnoreCase(term3) && term2.equalsIgnoreCase(term4)) || (term2.equalsIgnoreCase(term3) && term1.equalsIgnoreCase(term4))){
+//				   if((term1.equalsIgnoreCase(term3) && term2.equalsIgnoreCase(term4)) || (term2.equalsIgnoreCase(term3) && term1.equalsIgnoreCase(term4))){
 					   
-//					   if(!mostOccWords.containsKey(term1+";"+term2)){
-						   mostOccWords.put(term1+";"+term2, entry.getValue());
-					   	   System.out.println("Coppia: "+term1+", "+term2);
-//					   }
-				   }
+					   if( entry2.getValue() > 0.7){
+						   
+						   mostOccWords.put("scrap "+term3+";"+term4, entry2.getValue());
+					   	   System.out.println("Coppia scrap: "+term3+", "+term4);
+
+					   }
 				   
-			   }
+				   
+			   
 		
-		 }
+			   	}
 		
 		mostOccWords = Util.sortByValue(mostOccWords);
 		 
