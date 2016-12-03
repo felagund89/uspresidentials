@@ -1,5 +1,26 @@
 package com.uspresidentials.project.task5;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.TreeSet;
+
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.ListenableDirectedGraph;
+import org.json.simple.parser.ParseException;
+
+import twitter4j.TwitterException;
+
+import com.uspresidentials.project.entity.UserCustom;
+import com.uspresidentials.project.task1.FriendShipGraph;
+import com.uspresidentials.project.task1.IdentifyUsers;
+import com.uspresidentials.project.task2.SentiWordNetDemoCode;
+import com.uspresidentials.project.utils.PropertiesManager;
+
+import edu.uci.ics.jung.graph.SparseMultigraph;
+
 
 public class PredictWinners {
 
@@ -15,15 +36,93 @@ public class PredictWinners {
 	 * 
 	 */
 	
+	final static String QUERY_STRING_CANDIDATES_NAME_TRUMP ="donald* OR trump*";
+	final static String QUERY_STRING_CANDIDATES_NAME_CLINTON ="hillary* OR clinton*";
+	final static String QUERY_STRING_CANDIDATES_NAME_RUBIO ="rubio* OR Rubio*";
+	final static String QUERY_STRING_CANDIDATES_NAME_SANDERS ="Sanders* OR sanders*";
+	final static String pathFileJsonTrump = PropertiesManager.getPropertiesFromFile("PATH_FILE_JACCARD_JSON_CANDIDATES")+"Trump_jaccard.json";
+	final static String pathFileJsonClinton = PropertiesManager.getPropertiesFromFile("PATH_FILE_JACCARD_JSON_CANDIDATES")+"Clinton_jaccard.json";
+	final static int NUM_USERS = 100;
 	
 	
 	public static void main(String[] args) {
 		
 		
-
 		
+		
+		try {
+			//1. Lista dei primi 10 user con pageRank maggiore
+
+			ListenableDirectedGraph<String, DefaultEdge> graphFriendShip;
+			graphFriendShip = FriendShipGraph.createGraphFromFriendShip();
+			SparseMultigraph<String, DefaultEdge> graphSparse = FriendShipGraph.convertListenableGraph(graphFriendShip);
+			TreeSet<UserCustom> rankedUsers= IdentifyUsers.calculatePageRank(graphSparse,NUM_USERS);
+			List<String> rankedUsersName = new ArrayList<>();
+			for(UserCustom u : rankedUsers){
+				rankedUsersName.add(u.getUserName());
+			}
+			
+			
+			//2. liste degli utenti con maggiore centrality per trump e clinton
+			HashMap<String, String> userCentrality = new HashMap<>();
+			userCentrality=IdentifyUsers.calculateCentrality(graphSparse);
+			
+//			Partion user in M
+			Hashtable<String, HashMap<String, String>> tableM = new Hashtable<>();
+			tableM = IdentifyUsers.partitionUsers();
+			
+//			cerco i 10  utenti per ogni candidato  che hanno la centrality piu alta e hanno menzionato di piu i candidati.
+			List<String> trumpTopCentralityUsers = IdentifyUsers.findUserByMentionsAndCentrality(tableM,userCentrality,"TRUMP",NUM_USERS);
+			List<String> clintonTopCentralityUsers = IdentifyUsers.findUserByMentionsAndCentrality(tableM,userCentrality,"CLINTON",NUM_USERS);
+			
+			//3. Sentiment su tutti gli utenti e check sugli utenti con piu influenza (pagerank e centrality)
+			
+			double sentimentValueTrump = SentiWordNetDemoCode.processTweets(QUERY_STRING_CANDIDATES_NAME_TRUMP,rankedUsersName,trumpTopCentralityUsers );
+			double sentimentValueClinton = SentiWordNetDemoCode.processTweets(QUERY_STRING_CANDIDATES_NAME_CLINTON,rankedUsersName,clintonTopCentralityUsers );
+			
+			double sentimentJaccardTrump = SentiWordNetDemoCode.processJaccardWords(pathFileJsonTrump, "TermsForTrump");
+			double sentimentJaccardClinton = SentiWordNetDemoCode.processJaccardWords(pathFileJsonClinton, "TermsForClinton");
+
+			double totalTrump = sentimentValueTrump + sentimentJaccardTrump;
+			double totalClinton = sentimentValueClinton + sentimentJaccardClinton;
+			
+			
+			
+			predictWinner(totalTrump,totalClinton);
+		
+		
+		} catch (TwitterException | IOException | ParseException e) {
+			e.printStackTrace();
+		} catch (org.apache.lucene.queryparser.classic.ParseException e) {
+			e.printStackTrace();
+		} 		
+		
+
 	}
 	
+	
+	public static void predictWinner(double totalTrump, double totalClinton  ){
+		
+		String winner = "";
+		if(totalTrump > totalClinton)
+			winner = "DONALD TRUMP";
+		else {
+			winner = "HILLARY CLINTON";
+
+		}
+			
+			System.out.println("******************************************************");
+			System.out.println("*****                                         ********");
+			System.out.println("*****                                         ********");
+			System.out.println("*****                                         ********");
+			System.out.println("******"+               winner                +"*******");
+			System.out.println("*****                                         ********");
+			System.out.println("*****                                         ********");
+			System.out.println("*****                                         ********");
+			System.out.println("******************************************************");
+
+
+	}
 	
 	
 	

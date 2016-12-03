@@ -68,7 +68,8 @@ public class IdentifyUsers {
 	final static String PATH_FILE_IDUSER_IN_FILE_JSON = PropertiesManager.getPropertiesFromFile("PATH_FILE_IDUSER_IN_FILE_JSON");
 	final static String PATH_FILE_FRIENDSHIP_JSON_UPDATED = PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON_UPDATED");
 	final static String PATH_FILE_USER_JSON_COMPLETE = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_JSON_COMPLETE");
-
+	final static int NUM_USERS = 10;
+	
 	
 	/**
 	 * QUERY
@@ -104,23 +105,23 @@ public class IdentifyUsers {
 			// ********PAGE RANK
 	
 			SparseMultigraph<String, DefaultEdge> graphSparse = FriendShipGraph.convertListenableGraph(graphFriendShip);
-			calculatePageRank(graphSparse);
+			calculatePageRank(graphSparse, NUM_USERS);
 			
 			
 		
 			// ********CENTRALITY OF M' USERS (who mentioned a candidate)
-			//HashMap<String, String> userCentrality = new HashMap<>();
-			//userCentrality=calculateCentrality(graphSparse);
+//			HashMap<String, String> userCentrality = new HashMap<>();
+//			userCentrality=calculateCentrality(graphSparse);
 			
-			//Partion user in M
-			//Hashtable<String, HashMap<String, String>> tableM = new Hashtable<>();
-			//tableM = partitionUsers();
+//			Partion user in M
+//			Hashtable<String, HashMap<String, String>> tableM = new Hashtable<>();
+//			tableM = partitionUsers();
 			
 			//cerco i 10  utenti per ogni candidato  che hanno la centrality piu alta e hanno menzionato di piu i candidati.
-//			findUserByMentionsAndCentrality(tableM,userCentrality,"TRUMP");
-//			findUserByMentionsAndCentrality(tableM,userCentrality,"CLINTON");
-//			findUserByMentionsAndCentrality(tableM,userCentrality,"RUBIO");
-//			findUserByMentionsAndCentrality(tableM,userCentrality,"SANDERS");
+//			findUserByMentionsAndCentrality(tableM,userCentrality,"TRUMP",NUM_USERS);
+//			findUserByMentionsAndCentrality(tableM,userCentrality,"CLINTON",NUM_USERS);
+//			findUserByMentionsAndCentrality(tableM,userCentrality,"RUBIO",NUM_USERS);
+//			findUserByMentionsAndCentrality(tableM,userCentrality,"SANDERS",NUM_USERS);
 
 			
 			
@@ -213,9 +214,9 @@ public class IdentifyUsers {
 	}
 	
 	
-	public static void calculatePageRank(SparseMultigraph<String, DefaultEdge> graph) {
+	public static TreeSet<UserCustom> calculatePageRank(SparseMultigraph<String, DefaultEdge> graph, int numUsers) {
 
-		loggerPageRank.info("First 10 users for pageRank\n");
+		loggerPageRank.info("First"+ numUsers+" users for pageRank\n");
 
 		PageRank<String, DefaultEdge> rankerManager = new PageRank<String, DefaultEdge>(graph, 0.15);
 		rankerManager.evaluate();
@@ -232,11 +233,13 @@ public class IdentifyUsers {
 		
 		int max = 0;
 		for(UserCustom u : orderedPageRankUser){
-			if(max>=10)
+			if(max>=numUsers)
 				break;
 			loggerPageRank.info("User: " + u.getUserName() + " score: " + u.getPageRank());
 			max++;
 		}
+		
+		return orderedPageRankUser;
 	}
 	
 	
@@ -301,7 +304,7 @@ public class IdentifyUsers {
 		
 	}
 	
-	private static void findUserByMentionsAndCentrality(Hashtable<String, HashMap<String, String>> tableM, HashMap<String, String> userCentrality, String candidateName  ) {
+	public static List<String> findUserByMentionsAndCentrality(Hashtable<String, HashMap<String, String>> tableM, HashMap<String, String> userCentrality, String candidateName, int numUsers  ) {
 		
 		//trovare il valore medio per la centrality totale e per le menzioni. poi cercare i primi 10 elementi che siano sopra la mediae prendere quelli 
 		//con i valori piu bilanciati
@@ -312,6 +315,8 @@ public class IdentifyUsers {
 		
 		
 		HashMap<String, String> hashApp = new HashMap<>();
+		List<String> firstTenCentr = new ArrayList<String>();
+		
 		hashApp = tableM.get(candidateName);
 		
 //		Map.Entry<String,String> entry=hashApp.entrySet().iterator().next();
@@ -352,18 +357,24 @@ public class IdentifyUsers {
 		}
 		
 		
-		int uCount=10;
+		int uCount=numUsers;
 		for (String stringM : userM) {		
 			for (String stringC : userC) {
 				if(stringC.equalsIgnoreCase(stringM)){
 					//System.out.println(stringC);
 					if(uCount>0){
+						firstTenCentr.add(stringC);
 						loggerCentrality.info(stringC);
 						uCount--;
 					}
 				}
 			}
 		}
+		
+		
+		
+	return firstTenCentr;
+		
 	}
 	
 	

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -16,7 +17,9 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.FSDirectory;
+import org.json.simple.JSONObject;
 
+import com.uspresidentials.project.entity.UserCustom;
 import com.uspresidentials.project.lucene.LuceneCore;
 import com.uspresidentials.project.utils.PropertiesManager;
 import com.uspresidentials.project.utils.Util;
@@ -133,19 +136,60 @@ public class SentiWordNetDemoCode {
 		return dictionary.get(word + "#" + pos);
 	}
 		
-	private static void processTweets() throws IOException, ParseException {
+	public static Double processTweets(String queryStringCandidates, List<String> rankedUsers, List<String> topCentralityUsers ) throws IOException, ParseException {
 			
+			double finalSentiment = 0;
+		
+			double boost = 0.3;
 			IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(PATH_INDEXDIR_PRIMAR))));
-			ScoreDoc[] scoredocs = LuceneCore.getTweetsCoreForSentiment(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_TRUMP);
+			ScoreDoc[] scoredocs = LuceneCore.getTweetsCoreForSentiment(PATH_INDEXDIR_PRIMAR, "tweetText", queryStringCandidates);
 			for (ScoreDoc sd : scoredocs) {
 		    	Document d = searcher.doc(sd.doc);
 		    	String tweetCleaned = Util.deleteUnnecessaryWords(d.get("tweetText"));
 		    	String userScanned = d.get("tweetUser");
+		    	
+		    	Double returnedSentiment = analyzeSentimentPhrase(tweetCleaned, userScanned);
+		    	finalSentiment += returnedSentiment;
+		    	
 		    	System.out.println("tweet cleaned: " + tweetCleaned + " for user: " + userScanned);
-		    	analyzeSentimentPhrase(tweetCleaned, userScanned);
+
+		    	if(topCentralityUsers.contains(userScanned) || rankedUsers.contains(userScanned) ){
+		    		
+		    		if(returnedSentiment > 0 )
+		    			finalSentiment += boost;
+		    		else if( returnedSentiment < 0)
+		    			finalSentiment-=boost;
+		    			
+		    		System.out.println("utente ranked e centr, aumento di 0.3");
+		    	}
 		    	
 	 	   }
+			
+			
+			
+			
+			return finalSentiment;
 	}
+	
+	
+	
+	public static Double processJaccardWords(String pathFileJson, String fieldJson ) throws IOException, ParseException {
+		
+		double finalSentiment = 0;
+		Map<String, Double> mapWords = Util.readJsonFromFile(pathFileJson, fieldJson);
+		
+		for (Map.Entry<String, Double> entry : mapWords.entrySet()) {
+			
+			if(entry.getValue() > 0.7){
+				finalSentiment += analyzeSentimentPhrase(entry.getKey().replace(";", " "), "user");
+		    	System.out.println("words: " + entry.getKey().replace(";", " ") );
+			}
+		}
+		
+		return finalSentiment;
+}
+	
+	
 	
 	
 	private static double analyzeSentimentPhrase(String tweet, String user) throws IOException{
@@ -207,7 +251,7 @@ public class SentiWordNetDemoCode {
 		else
 			System.out.println("************\n" + user + " is Neutral!" + "************\n"); */
 		
-		return 0;
+		return sumSentiment;
 	}
 	
 	private static boolean isNegation(String word){
@@ -242,7 +286,7 @@ public class SentiWordNetDemoCode {
 	
 	public static void main(String [] args) throws IOException, ParseException {
 		
-		processTweets();
+		processTweets(QUERY_STRING_CANDIDATES_NAME_TRUMP, null, null);
 		
 		SentiWordNetDemoCode sentiwordnet = new SentiWordNetDemoCode(PATH_SENTIMENT_WORDNET_FILE);
 		
