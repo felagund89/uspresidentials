@@ -21,6 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -37,7 +39,7 @@ public class Util {
 	final static String PATH_FILE_USER_OCCURRENCE_TEST = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_OCCURRENCE_TEST");
 	final static String PATH_FILE_USER_JSON_COMPLETE = PropertiesManager.getPropertiesFromFile("PATH_FILE_USER_JSON_COMPLETE");
 
-	public static final List<String> unnecessaryWords = Arrays.asList(""," ", "rt","to","in","and","or", "is", "as", "of", "the", "#", "@","0","1","2","3","4","5","6","7","8","9","10","t.co","t.c","http","https","htt","am","i","pm","p.m","a.m","etc");
+	public static final List<String> unnecessaryWords = Arrays.asList(""," ", "rt","to","in","and","or", "is", "as", "of", "the", "#", "@","0","1","2","3","4","5","6","7","8","9","10","t.co","t.c","http","https","htt","am","i","pm","p.m","a.m","etc",":","/");
 	
 	
 	public static void main(String[] args) {
@@ -52,7 +54,11 @@ public class Util {
 		
 	}
 
-	
+	public static boolean containsIllegals(String toExamine) {
+	    Pattern pattern = Pattern.compile("[~#@*+%{}<>\\[\\]|\"\\_:^]");
+	    Matcher matcher = pattern.matcher(toExamine);
+	    return matcher.find();
+	}
 	
 	private static void cleanFileUserFriendsTweets(){
 		
@@ -349,5 +355,88 @@ public class Util {
 		return resultClean;
 	}
 	
+<<<<<<< HEAD
+=======
+	
+	public static JSONArray sortJsonFileByValue(JSONArray arrayTerms, final String KEY_NAME){
+		
+		JSONArray sortedJsonArray = new JSONArray();
+
+	    List<JSONObject> jsonValues = new ArrayList<JSONObject>();
+	    for (int i = 0; i < arrayTerms.size(); i++) {
+	        jsonValues.add((JSONObject) arrayTerms.get(i));
+	    }
+	    Collections.sort( jsonValues, new Comparator<JSONObject>() {
+	        //You can change "Name" with "ID" if you want to sort by ID
+
+	        @Override
+	        public int compare(JSONObject a, JSONObject b) {
+	            double valA = 0;
+	            double valB = 0;
+
+	            try {
+	                valA = (double) a.get(KEY_NAME);
+	                valB = (double) b.get(KEY_NAME);
+	                
+	                
+	                
+	            } 
+	            catch (Exception e) {
+	            	e.printStackTrace();
+	            }
+	            
+	            if(valA > valB)
+	            	return -1;
+	            else if (valB > valA) {
+					return 1;
+				}
+	            else return 0;
+            	 
+	           
+	        }
+	    });
+
+	    for (int i = 0; i < arrayTerms.size(); i++) {
+	        sortedJsonArray.add(jsonValues.get(i));
+	    }
+		return sortedJsonArray;
+		
+	}
+	
+	
+	
+	public static Map<String, Double> readJsonFromFile(String pathJsonFile, String fieldJson){
+		
+		//prendo il file json
+		JSONParser parser = new JSONParser();
+		Map<String, Double> occurrenceWord = new HashMap<>();
+		
+        try {
+ 
+            Object obj = parser.parse(new FileReader(pathJsonFile));
+ 
+            JSONObject jsonObject = (JSONObject) obj;
+ 
+            JSONArray listWords = (JSONArray) jsonObject.get(fieldJson);
+            
+            
+            for (int i = 0; i < listWords.size(); i++) {
+            	JSONObject userJsonObject = (JSONObject) listWords.get(i);
+            	Double jaccardVal = (double) userJsonObject.get("jaccard");
+
+            	String terms=( (String)userJsonObject.get("term1") +";"+(String) userJsonObject.get("term2"));
+
+            	occurrenceWord.put(terms, jaccardVal);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		return occurrenceWord;
+        
+	}
+	
+	
+	
+>>>>>>> 6c664acb3e6d501f4104daabf756c171c4a65a61
 	 
 }
