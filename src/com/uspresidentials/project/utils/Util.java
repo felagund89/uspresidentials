@@ -445,5 +445,48 @@ public class Util {
 	
 	
 	
+	public static Map<String, String> readUsersFromJsonFile (){
+		
+		//prendo il file json
+		JSONParser parser = new JSONParser();
+		Map<String, String> tweetsText = new HashMap<>();
+
+		
+        try {
+ 
+            Object obj = parser.parse(new FileReader(PATH_FILE_USER_JSON_COMPLETE));
+ 
+            JSONObject jsonObject = (JSONObject) obj;
+ 
+            JSONArray listUsers = (JSONArray) jsonObject.get("ListUsers");
+            //prendo tutti gli i tweet degli user
+
+	        for (int i = 0; i < listUsers.size(); i++) {
+	        	JSONObject userJsonObject = (JSONObject) listUsers.get(i);
+	            JSONArray tweetsArray = (JSONArray) userJsonObject.get("tweets");
+	            Iterator<String> iterator = tweetsArray.iterator();
+	            String tweets = tweetsArray.toString();
+	
+	    		
+	            
+	            while (iterator.hasNext()) {
+	    			String string = iterator.next();
+	
+						if(!tweets.equalsIgnoreCase("")){  
+							tweetsText.put(userJsonObject.get("userName")+";"+userJsonObject.get("idUser")+";", string);   
+							System.out.println();
+						}
+							
+				}
+	        }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        
+        return tweetsText;
+	}
+	
+	
 	 
 }

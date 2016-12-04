@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 import org.json.simple.parser.ParseException;
@@ -43,11 +44,12 @@ public class PredictWinners {
 	final static String pathFileJsonTrump = PropertiesManager.getPropertiesFromFile("PATH_FILE_JACCARD_JSON_CANDIDATES")+"Trump_jaccard.json";
 	final static String pathFileJsonClinton = PropertiesManager.getPropertiesFromFile("PATH_FILE_JACCARD_JSON_CANDIDATES")+"Clinton_jaccard.json";
 	final static int NUM_USERS = 100;
-	
+	final static Logger loggerPredictWinner = Logger.getLogger("loggerPredictWinner");
+
 	
 	public static void main(String[] args) {
 		
-		
+		loggerPredictWinner.info("PREVISIONE DEL VINCITORE DELLE ELEZIONI PRESIDENZIALI AMERICANE 2016");
 		
 		
 		try {
@@ -76,17 +78,40 @@ public class PredictWinners {
 			List<String> clintonTopCentralityUsers = IdentifyUsers.findUserByMentionsAndCentrality(tableM,userCentrality,"CLINTON",NUM_USERS);
 			
 			//3. Sentiment su tutti gli utenti e check sugli utenti con piu influenza (pagerank e centrality)
+			loggerPredictWinner.info(" ");	
+
+			loggerPredictWinner.info("Calcolando il valore del sentiment sul dataset per i candidati si ha che:");	
+
 			
 			double sentimentValueTrump = SentiWordNetDemoCode.processTweets(QUERY_STRING_CANDIDATES_NAME_TRUMP,rankedUsersName,trumpTopCentralityUsers );
 			double sentimentValueClinton = SentiWordNetDemoCode.processTweets(QUERY_STRING_CANDIDATES_NAME_CLINTON,rankedUsersName,clintonTopCentralityUsers );
 			
+			loggerPredictWinner.info("Sentiment per Donald Trump = "+sentimentValueTrump);	
+			loggerPredictWinner.info("Sentiment per Hillary Clinton = "+sentimentValueClinton);	
+			loggerPredictWinner.info(" ");	
+
+			loggerPredictWinner.info("Calcolando il valore del sentiment sulle coppie di parole che co-occorrono di piu secondo l'indice di jaccard si ha:");	
+
 			double sentimentJaccardTrump = SentiWordNetDemoCode.processJaccardWords(pathFileJsonTrump, "TermsForTrump");
 			double sentimentJaccardClinton = SentiWordNetDemoCode.processJaccardWords(pathFileJsonClinton, "TermsForClinton");
 
+			loggerPredictWinner.info("Sentiment per le co-occurrence words per Donald Trump = "+sentimentJaccardTrump);	
+			loggerPredictWinner.info("Sentiment per le co-occurrence words per Hillary Clinton = "+sentimentJaccardClinton);	
+			loggerPredictWinner.info(" ");	
+
+			
+			
 			double totalTrump = sentimentValueTrump + sentimentJaccardTrump;
 			double totalClinton = sentimentValueClinton + sentimentJaccardClinton;
 			
-			
+			loggerPredictWinner.info("La somma dei sentiment per ogni candidato:");	
+			loggerPredictWinner.info("Totale Donald Trump = "+totalTrump);	
+			loggerPredictWinner.info("Totale Hillary Clinton = "+totalClinton);	
+			loggerPredictWinner.info(" ");	
+
+
+			System.out.println("sentimentValueTrump: "+sentimentValueTrump +" sentimentValueClinton: "+sentimentValueClinton+" sentimentJaccardTrump:"+sentimentJaccardTrump+" sentimentJaccardClinton:"+sentimentJaccardClinton);
+			System.out.println("totalTrump: "+totalTrump+" totalClinton:"+totalClinton);
 			
 			predictWinner(totalTrump,totalClinton);
 		
@@ -115,13 +140,28 @@ public class PredictWinners {
 			System.out.println("*****                                         ********");
 			System.out.println("*****                                         ********");
 			System.out.println("*****                                         ********");
-			System.out.println("******"+               winner                +"*******");
+			System.out.println("******             "+winner                +"*******");
 			System.out.println("*****                                         ********");
 			System.out.println("*****                                         ********");
 			System.out.println("*****                                         ********");
 			System.out.println("******************************************************");
 
 
+			loggerPredictWinner.info(" ");	
+			loggerPredictWinner.info(" ");	
+
+			loggerPredictWinner.info("******************************************************");
+			loggerPredictWinner.info("*****                                         ********");
+			loggerPredictWinner.info("*****                                         ********");
+			loggerPredictWinner.info("*****                                         ********");
+			loggerPredictWinner.info("******             "+winner                +"*******");
+			loggerPredictWinner.info("*****                                         ********");
+			loggerPredictWinner.info("*****                                         ********");
+			loggerPredictWinner.info("*****                                         ********");
+			loggerPredictWinner.info("******************************************************");
+			
+			
+			
 	}
 	
 	

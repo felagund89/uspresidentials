@@ -151,7 +151,7 @@ public class SentiWordNetDemoCode {
 		    	Double returnedSentiment = analyzeSentimentPhrase(tweetCleaned, userScanned);
 		    	finalSentiment += returnedSentiment;
 		    	
-		    	System.out.println("tweet cleaned: " + tweetCleaned + " for user: " + userScanned);
+//		    	System.out.println("tweet cleaned: " + tweetCleaned + " for user: " + userScanned);
 
 		    	if(topCentralityUsers.contains(userScanned) || rankedUsers.contains(userScanned) ){
 		    		
@@ -187,7 +187,24 @@ public class SentiWordNetDemoCode {
 		}
 		
 		return finalSentiment;
-}
+	}
+	
+	
+	
+	public static Double processTweetsJsonUsers(String pathFileJson, String fieldJson ) throws IOException, ParseException {
+		
+		double finalSentiment = 0;
+		Map<String, String> mapWords = Util.readUsersFromJsonFile();
+		
+		for (Map.Entry<String, String> entry : mapWords.entrySet()) {
+			
+				finalSentiment += analyzeSentimentPhrase(entry.getValue(), entry.getKey());
+		    	System.out.println("words: " + entry.getKey() );
+			
+		}
+		
+		return finalSentiment;
+	}
 	
 	
 	
@@ -222,7 +239,7 @@ public class SentiWordNetDemoCode {
 						
 			if(currentWord.length() > 1){
 				double sentimentValue = getSentimentWordValue(currentWord);
-				System.out.println("word to examine : " + currentWord + " - " + sentimentValue);
+//				System.out.println("word to examine : " + currentWord + " - " + sentimentValue);
 			
 			/*if(sentimentValue > 0)
 				countPositive++;
@@ -237,12 +254,12 @@ public class SentiWordNetDemoCode {
 			}
 		}
 		
-		if(sumSentiment == 0){
-			System.out.println("************\n" + user + " is Neutral!" + "************\n");
-		}else if(sumSentiment > 0)
-			System.out.println("************\n" + user + " is a Supporter!" + "************\n");
-		else
-			System.out.println("************\n" + user + " is a Opponent!" + "************\n");
+//		if(sumSentiment == 0){
+//			System.out.println("************\n" + user + " is Neutral!" + "************\n");
+//		}else if(sumSentiment > 0)
+//			System.out.println("************\n" + user + " is a Supporter!" + "************\n");
+//		else
+//			System.out.println("************\n" + user + " is a Opponent!" + "************\n");
 		
 		/*if((countPositive > countNegative) && (countPositive > countNeutral))
 			System.out.println("************\n" + user + " is a Supporter!" + "************\n");
