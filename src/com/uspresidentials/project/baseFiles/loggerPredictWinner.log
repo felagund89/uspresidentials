@@ -1,0 +1,25 @@
+PREVISIONE DEL VINCITORE DELLE ELEZIONI PRESIDENZIALI AMERICANE 2016
+ 
+Calcolando il valore del sentiment sul dataset per i candidati si ha che:
+Sentiment per Donald Trump = 101.86868568029014
+Sentiment per Hillary Clinton = 289.2457326169809
+ 
+Calcolando il valore del sentiment sulle coppie di parole che co-occorrono di piu secondo l'indice di jaccard si ha:
+Sentiment per le co-occurrence words per Donald Trump = -6.737597876575979
+Sentiment per le co-occurrence words per Hillary Clinton = -0.0753340440298137
+ 
+La somma dei sentiment per ogni candidato:
+Totale Donald Trump = 95.13108780371417
+Totale Hillary Clinton = 289.17039857295106
+ 
+ 
+ 
+******************************************************
+*****                                         ********
+*****                                         ********
+*****                                         ********
+******             HILLARY CLINTON             *******
+*****                                         ********
+*****                                         ********
+*****                                         ********
+******************************************************
