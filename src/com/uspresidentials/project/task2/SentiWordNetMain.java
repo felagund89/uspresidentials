@@ -160,7 +160,7 @@ public class SentiWordNetMain {
 		    		else if( returnedSentiment < 0)
 		    			finalSentiment-=boost;
 		    			
-		    		System.out.println("utente ranked e centr, aumento di 0.3");
+		    		System.out.println("utente ranked e centr, aumento/diminuzione di 0.3");
 		    	}
 		    	
 	 	   }
