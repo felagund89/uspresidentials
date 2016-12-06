@@ -234,7 +234,6 @@ public class LuceneCore {
 	 	     uniqueUsers.add(d.getField("tweetUser").stringValue());
 	 	    }
 		 
-
 	 	 logger.info("##### Number of different user in this set of documents:" +uniqueUsers.size() );
 
 		 return uniqueUsers;
@@ -317,12 +316,7 @@ public class LuceneCore {
 	
 	public static void occurrenceCandidates(String pathFileUtentiFiltrati, String pathFileOccurrenceCandidates, String pathIndexer) throws  ParseException, IOException{
 		
-//		PrintWriter writer=null;
-		
-//		writer = new PrintWriter(pathFileOccurrenceCandidates, "UTF-8");
-		   
-		        	
-		
+
 		searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(pathIndexer))));
 
 		QueryParser qp = new QueryParser("tweetText", new StandardAnalyzer());
@@ -347,20 +341,16 @@ public class LuceneCore {
 //						System.out.println(occurrenceTotalString);
 //						writer.println(occurrenceTotalString);
 						loggerOccurrenceMentions.info(occurrenceTotalString);
-					
-				
+							
 				}
-			
-			
-			
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 //		writer.close();
-
-	   
+ 
 	}
 	
 	
@@ -419,8 +409,7 @@ public class LuceneCore {
 		//ripulisco la directory prima di inserire i documenti per un altro candidato
 		indexWriter.deleteAll();
         indexWriter.commit();
-
-			
+	
 		Document docLucene = new Document();     
         Set<WordEntity> words = new HashSet<>();
 
@@ -429,7 +418,6 @@ public class LuceneCore {
 		
 
         try{
-        	
         	
             Directory index2 = new SimpleFSDirectory(new File(pathIndexdir));
             IndexReader reader2 = DirectoryReader.open(index2);
@@ -462,7 +450,6 @@ public class LuceneCore {
 				Field field = new Field("tweetTextIndexed", tweet.toLowerCase(), type);
 				docLucene.add(field);
 				
-
 				indexWriter.addDocument(docLucene);
 
             }
@@ -474,12 +461,10 @@ public class LuceneCore {
         }catch (Exception e) {
         	e.printStackTrace();		
         }
- 
     }
 	
 	
-	
-	
+
 	//Cerco tutti i termini e la loro frequenza nei documenti tirati fuori da lucene.
 	public static  Map<String, Double> getTerms(String pathIndexForCandidate, String fieldForQuery) throws IOException, ParseException {
     	IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(pathIndexForCandidate))); 
@@ -531,7 +516,6 @@ public class LuceneCore {
 		Map<String, Double> termsAndNumOfDocs = new HashMap<>();
 		
 		
-		
 		try {
 			IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(pathIndexer)));
 		
@@ -568,15 +552,11 @@ public class LuceneCore {
 //				 	    	System.out.println(word1+";"+word2+"  "+topDocs.totalHits);
 				 	    }
 					}
-
-				}
-				
-			}
-	 	    
+				}		
+			}	    
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 		}
-		
 		System.out.println("FINE getDocFreqForTwoTerms");
 		return termsAndNumOfDocs; 	
 	}
@@ -595,16 +575,6 @@ public class LuceneCore {
  	    TopDocs hits = searcher.search(q1, 2000);
  	   
  	    return hits.scoreDocs;
- 	    /*for (ScoreDoc sd : hits.scoreDocs) {
-	    	Document d = searcher.doc(sd.doc);
-	    	String tweetCleaned = deleteUnnecessaryWords(d.get("tweetText"));
-	    	System.out.println("tweet cleaned: " + tweetCleaned + " for user: " + d.get("tweetUser"));
-	    	
- 	   } */
- 	   
- 	   //return array with tweets (for each candidates)
- 	   //filter unnecessary word
- 	   //apply SentimentWordNet (attention for negation not-good / not bad)
 	}
 	
 	
@@ -620,10 +590,6 @@ public class LuceneCore {
 		indexWriter.deleteAll();
         indexWriter.commit();
 
-		
-        
-        
-			
 		Document docLucene = new Document();     
 
 
@@ -651,13 +617,10 @@ public class LuceneCore {
 				Field field = new Field("bodyIndexed", body.toLowerCase(), type);
 				docLucene.add(field);
 				
-
 				indexWriter.addDocument(docLucene);
 
-            }
-        
-            indexWriter.commit();
-            
+            }    
+            indexWriter.commit();         
             closeIndexWriter(indexWriter);
  
         }catch (Exception e) {
@@ -673,24 +636,11 @@ public class LuceneCore {
 	private static void printHashMap(HashMap<String, ArrayList<String>> hashMapUser){
 		
 		for (String key : hashMapUser.keySet()) {
-		    // gets the value
 		    List<String> value = hashMapUser.get(key);
-		    // checks for null value
-//		    if (value != null) {
-		        // iterates over String elements of value
-//		        for (Object element : value) {
-		            // checks for null 
-//		            if (element != null) {
-		                // prints whether the key is equal to the String 
-		                // representation of that List's element
-//		                System.out.println(key.equals(element.toString()));
+
 		        	logger.info("L'utente :"+key.toString()+" ha scritto "+value.size()+" tweet.");
-//		            }
-//		        }
-//		    }
 		}	
 	}
-	
 	
 	public static String readContentFile(File file) throws IOException{
 		
@@ -713,97 +663,10 @@ public class LuceneCore {
 	    return content;
 	}
 	
-	
 	public static void closeIndexWriter(IndexWriter indexWriter) throws IOException {
 	    if (indexWriter != null) {
 	        indexWriter.close();
 	    }
 	}
-	
-	
-
-	/** PROVA PROVA PROVA
-	*  Map term to a fix integer so that we can build document matrix later.
-	*  It's used to assign term to specific row in Term-Document matrix
-	*/
-	public static Map<String, Integer> computeTermIdMap(String pathIndexer) throws IOException {
-	   
-		IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(pathIndexer))); 
-
-	    searcher = new IndexSearcher(reader);
-		Map<String,Integer> termIdMap = new HashMap<String,Integer>();
-	    int id = 0;
-	    Fields fields = MultiFields.getFields(reader);
-	    Terms terms = fields.terms("tweetTextIndexed");
-	    TermsEnum itr = terms.iterator(null);
-	    BytesRef term = null;
-	    while ((term = itr.next()) != null) {               
-	        String termText = term.utf8ToString();              
-	        if (termIdMap.containsKey(termText))
-	            continue;
-	        //System.out.println(termText); 
-	        termIdMap.put(termText, id++);
-	        System.out.println(termText +" "+ id); 
-
-	    }
-
-	    return termIdMap;
-	}
-
-	/**
-	*  build term-document matrix for the given directory
-	*/
-//	public RealMatrix buildTermDocumentMatrix () throws IOException {
-//	    //iterate through directory to work with each doc
-//	    int col = 0;
-//	    int numDocs = countDocs(corpus);            //get the number of documents here      
-//	    int numTerms = termIdMap.size();    //total number of terms     
-//	    RealMatrix tdMatrix = new Array2DRowRealMatrix(numTerms, numDocs);
-//
-//	    for (File f : corpus.listFiles()) {
-//	        if (!f.isHidden() && f.canRead()) {
-//	            //I build term document matrix for a subset of corpus so
-//	            //I need to lookup document by path name. 
-//	            //If you build for the whole corpus, just iterate through all documents
-//	            String path = f.getPath();
-//	            BooleanQuery pathQuery = new BooleanQuery();
-//	            pathQuery.add(new TermQuery(new Term("path", path)), BooleanClause.Occur.SHOULD);
-//	            TopDocs hits = searcher.search(pathQuery, 1);
-//
-//	            //get term vector
-//	            Terms termVector = reader.getTermVector(hits.scoreDocs[0].doc, "contents");
-//	            TermsEnum itr = termVector.iterator(null);
-//	            BytesRef term = null;
-//
-//	            //compute term weight
-//	            while ((term = itr.next()) != null) {               
-//	                String termText = term.utf8ToString();              
-//	                int row = termIdMap.get(termText);
-//	                long termFreq = itr.totalTermFreq();
-//	                long docCount = itr.docFreq();
-//	                double weight = computeTfIdfWeight(termFreq, docCount, numDocs);
-//	                tdMatrix.setEntry(row, col, weight);
-//	            }
-//	            col++;
-//	        }
-//	    }       
-//	    return tdMatrix;
-//	}
-	
-	
-	
-//	public static IndexReader createDataSetScrapingNews(JSONArray jsonArrayNews){
-		
-		//IndexReader indexReader = new IndexReader();
-		
-		
-		
-		
-		
-//	}
-	
-	
-	
-	
 	
 }

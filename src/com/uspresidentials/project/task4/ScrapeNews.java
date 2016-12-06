@@ -35,15 +35,7 @@ public class ScrapeNews {
 	
 	
 	public static void main(String[] args) throws IOException, ParseException {
-	   
-		
-//		for (int i = 0; i <= 300; i=i+10) {
-//		    String linkModString = "http://www.google.com/search?hl=en&gl=us&q=hillary+clinton&num=100&authuser=0&biw=1745&bih=850&tbm=nws&ei=jOsDWObLFYv_Ur2BmZAD&start="+i+"&sa=N&dpr=1.1&gws_rd=cr";
-//			listaLink.add(linkModString);
-//			System.out.println(i+"   "+linkModString);
-//		}
-		
-		
+	
 		// 1)Chiamata per effettuare scraping su google news.
 		//scrapeNewsFromGoogle(link);
 		
@@ -54,12 +46,7 @@ public class ScrapeNews {
 		Map<String,Double> mapCandidate = MainOccurenceWords.getTermFrequencyByCandidate(PATH_INDEXDIR_FOR_SCRAP_NEWS,"bodyIndexed");
 		Map<String,Double> mapTermsAndDocuments = MainOccurenceWords.getTermsDocFrequency(mapCandidate, PATH_INDEXDIR_FOR_SCRAP_NEWS, "bodyIndexed");
 		jaccard(mapCandidate, mapTermsAndDocuments,"Clinton");
-		
-		
-
 	}
-	
-	
 	
 	
 	public static void scrapeNewsFromGoogle(String linkString) throws IOException{
@@ -86,25 +73,18 @@ public class ScrapeNews {
 		            objNews.put("body", body.text());
 		            jsonArrayNews.add(objNews);
 		        }
-
-		        
+   
 			} catch (IOException e1) {
 				e1.printStackTrace();
-			}
-			
-//			firstTime=false;
+			}		
 			doc=null;
 		}
-        
-
         writeJsonNewsOnFile(jsonArrayNews);
 
 		System.out.println("STOP SCRAPING NEWS");
 	}
 	
-	
-	
-	
+
 	//ciclo su tutte le parole e mi faccio tornare  una mappa con dentro l'indice di jaccard per ogni coppia di parole
 		public static Map<String,Double> jaccard(Map<String,Double> mapWords, Map<String,Double> mapTerms, String nameCandidate){
 			//num_docs(term1,term2)/(term1.docfreq+term2.docfreq - num_docs(term1,term2))
@@ -147,8 +127,6 @@ public class ScrapeNews {
 				 wordsArray.add(coupleWords);
 		 
 			 }
-				
-			
 			wordsArray = Util.sortJsonFileByValue(wordsArray,"jaccard");
 			
 			//prendo i primi NUM_ELEMENTS oggetti
@@ -156,38 +134,23 @@ public class ScrapeNews {
 			for (int i = 0; i < NUM_ELEMENTS; i++) {
 				
 				wordJaccIndexPortion.add(wordsArray.get(i));
-				
-				
-				
+
 			}
-			
-				
+
 			 wordsObject.put("TermsFor"+nameCandidate, wordJaccIndexPortion );
-			 
-			
-			
-			 
+
 			//scrivo json su file
 			Util.writeJsonJaccardCandidate(wordsObject,pathFileDestination);
-			
-			
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-			
-			
 			return wordJaccIndex;
 		}
-	
-	
-	
-	
-	
-	public static void writeJsonNewsOnFile(JSONArray jsonArrNews) throws IOException {
 
-		// inserire [] inizio e fine cosí da avere un json completo
+	public static void writeJsonNewsOnFile(JSONArray jsonArrNews) throws IOException {
 		loggerScraping.info(jsonArrNews.toString());
 	}
 	

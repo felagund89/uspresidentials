@@ -43,15 +43,9 @@ public class Util {
 	
 	
 	public static void main(String[] args) {
-
-		
-		
-		
-		//cleanFileUserFriendsTweets();
-			
+		//cleanFileUserFriendsTweets();			
 		//updateInfoFileJson();
-		
-		
+
 	}
 
 	public static boolean containsIllegals(String toExamine) {
@@ -61,20 +55,15 @@ public class Util {
 	}
 	
 	private static void cleanFileUserFriendsTweets(){
-		
-		
+			
 		JSONParser parser = new JSONParser();
 		List<String> idUserDaEliminareList = new ArrayList<String>();
         try {
  
             Object obj = parser.parse(new FileReader(PATH_FILE_FRIENDSHIP_JSON));
- 
-            JSONObject jsonObject = (JSONObject) obj;
-            
-            JSONArray listUsers = (JSONArray) jsonObject.get("ListUsers");
-            
-            List<String> idUserTotalList = new ArrayList<String>();
-           
+            JSONObject jsonObject = (JSONObject) obj;          
+            JSONArray listUsers = (JSONArray) jsonObject.get("ListUsers");            
+            List<String> idUserTotalList = new ArrayList<String>();           
             //prendo tutti gli id degli user
             for (int i = 0; i < listUsers.size(); i++) {
             	JSONObject userJsonObject = (JSONObject) listUsers.get(i);
@@ -99,17 +88,13 @@ public class Util {
             	}
 			}
             
-            
-            
             System.out.println("persone da togliere");
             //stampo la lista degli id degli utenti che vanno tolti dalle liste di friends dei vari utenti del file
             for (String string : idUserDaEliminareList) {
 				System.out.println(string);
 			}
             
-            
             //aggiorno il file  json 
-
             replace(idUserDaEliminareList);
             System.out.println("Fine replace");
   
@@ -117,11 +102,8 @@ public class Util {
             e.printStackTrace();
         }
     }	
-	
-	
-	
+
 	 private static void replace(List<String> idUserDaEliminareList) {
-	     
 
 	      BufferedReader br = null;
 	      BufferedWriter bw = null;
@@ -167,8 +149,7 @@ public class Util {
 	private static void updateInfoFileJson(){
 		//prendo il file json
 		JSONParser parser = new JSONParser();
-		
-		
+
         try {
  
             Object obj = parser.parse(new FileReader(PATH_FILE_FRIENDSHIP_JSON_UPDATED));
@@ -182,8 +163,6 @@ public class Util {
             Hashtable<String, String>userMentionsHashMap = new Hashtable();
             //prendo tutti gli i tweet degli user
             
-            
-
 	            //ciclo sul file contenenente le menzioni dei candidati per ogni utente e creo un hashmap
 	            try (BufferedReader br = new BufferedReader(new FileReader(PATH_FILE_USER_OCCURRENCE_TEST))) {
 	            	
@@ -196,26 +175,20 @@ public class Util {
 		            	userMentionsHashMap.put(userFile, splittedLineStrings[1]);
 		            	
 					}
-					
-
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-	            
-	            
+	                  
 	            for (int i = 0; i < listUsers.size(); i++) {
 	            	JSONObject userJsonObject = (JSONObject) listUsers.get(i);
 	            	String idUserJson = Long.toString((long) userJsonObject.get("idUser"));
 	            	//appena trovo la corrispondenza tramite idUser procedo ad aggiungere il json array all'object dell'utente già esistente
 	            
 	            	//System.out.println(idUserJson);
-	            	
-	            	
-	            	
+
 	            	String idUserHash =  userMentionsHashMap.get(idUserJson.trim());
 	            	String[] occurrenceStrings = idUserHash.split(" ");
 
-	
 	            	//creo il jsonarray che andra a contenere le nuove informazioni
 	            	JSONArray  jsonArrMentions = new JSONArray();
 	            	jsonArrMentions.add(occurrenceStrings[0]);
@@ -223,8 +196,7 @@ public class Util {
 	            	jsonArrMentions.add(occurrenceStrings[2]);
 	            	jsonArrMentions.add(occurrenceStrings[3]);
 
-	            	   	
-
+	            	 
             		userJsonObject.put("mentionsCandidates", jsonArrMentions);
 //		            System.out.println(count++ +")  idUserJson "+idUserJson+ "  userfile id "+userFile);
 
@@ -232,14 +204,11 @@ public class Util {
             		listUsersNew.add(userJsonObject);
 	            	//System.out.println("count utente aggiornato num :"+ count++);
 
-	                	
-	            	
 	            }
 	            
 				newJsonObject.put("ListUsers", listUsersNew);
 
 
-            
             System.out.println("Prima di aggiornare il json, size newJsonObject :"+newJsonObject.size());
             //aggiorno il file  json con i dati relativi alle menzioni dei candidati
             writeJsonUserOnFile(newJsonObject);
@@ -247,19 +216,15 @@ public class Util {
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        
+        } 
 	}
 	 
 	public static HashMap<String, String> getPartitionUsers(String candidateName){
 		
-		
 		HashMap<String, String> hashMapCandidateHashMap = new HashMap<>();
-		
 		
 		//prendo il file json
 		JSONParser parser = new JSONParser();
-		
 		
         try {
  
@@ -278,8 +243,7 @@ public class Util {
 
             	String[] mentionsNum;
             	String numString = null;
-        		
-                
+        	            
                 while (iterator.hasNext()) {
         			String string = iterator.next();
 
@@ -294,22 +258,12 @@ public class Util {
 					}		
 				}
                 
-            }
-            
-            
-            
+            }          
         }catch(Exception e){
         	e.printStackTrace();
         }
-		
-		
-		
 		return hashMapCandidateHashMap;
-		
-		
 	}
-	
-
 	
 	public static void writeJsonUserOnFile(JSONObject jsonUser) throws IOException {
 
@@ -324,7 +278,6 @@ public class Util {
 	public static void writeJsonJaccardCandidate(JSONObject jsonUser, String PATH_FILE_JACCARD_JSON) throws IOException {
 
 		// inserire [] inizio e fine cosí da avere un json completo
-
 		PrintWriter writer = new PrintWriter(new FileOutputStream(new File(PATH_FILE_JACCARD_JSON), true));
 		writer.println(jsonUser.toString());
 		writer.close();
@@ -342,14 +295,11 @@ public class Util {
 
 	    Collections.reverse(list);
 	    
-	    
-	    
 	    Map<K, V> result = new LinkedHashMap<>();
 	    for (Iterator<Entry<K, V>> it = list.iterator(); it.hasNext();) {
 	        Map.Entry<K, V> entry = (Map.Entry<K, V>) it.next();
 	        result.put(entry.getKey(), entry.getValue());
 	    }
-
 	    return result;
 	}
 	
@@ -369,7 +319,6 @@ public class Util {
 	public static JSONArray sortJsonFileByValue(JSONArray arrayTerms, final String KEY_NAME){
 		
 		JSONArray sortedJsonArray = new JSONArray();
-
 	    List<JSONObject> jsonValues = new ArrayList<JSONObject>();
 	    for (int i = 0; i < arrayTerms.size(); i++) {
 	        jsonValues.add((JSONObject) arrayTerms.get(i));
@@ -385,9 +334,7 @@ public class Util {
 	            try {
 	                valA = (double) a.get(KEY_NAME);
 	                valB = (double) b.get(KEY_NAME);
-	                
-	                
-	                
+
 	            } 
 	            catch (Exception e) {
 	            	e.printStackTrace();
@@ -398,36 +345,28 @@ public class Util {
 	            else if (valB > valA) {
 					return 1;
 				}
-	            else return 0;
-            	 
-	           
+	            else return 0;      
 	        }
 	    });
 
 	    for (int i = 0; i < arrayTerms.size(); i++) {
 	        sortedJsonArray.add(jsonValues.get(i));
 	    }
-		return sortedJsonArray;
-		
+		return sortedJsonArray;	
 	}
 	
-	
-	
+
 	public static Map<String, Double> readJsonFromFile(String pathJsonFile, String fieldJson){
 		
 		//prendo il file json
 		JSONParser parser = new JSONParser();
 		Map<String, Double> occurrenceWord = new HashMap<>();
 		
-        try {
- 
+        try { 
             Object obj = parser.parse(new FileReader(pathJsonFile));
- 
             JSONObject jsonObject = (JSONObject) obj;
- 
             JSONArray listWords = (JSONArray) jsonObject.get(fieldJson);
-            
-            
+         
             for (int i = 0; i < listWords.size(); i++) {
             	JSONObject userJsonObject = (JSONObject) listWords.get(i);
             	Double jaccardVal = (double) userJsonObject.get("jaccard");
@@ -443,21 +382,16 @@ public class Util {
         
 	}
 	
-	
-	
+
 	public static Map<String, String> readUsersFromJsonFile (){
 		
 		//prendo il file json
 		JSONParser parser = new JSONParser();
 		Map<String, String> tweetsText = new HashMap<>();
-
-		
         try {
  
             Object obj = parser.parse(new FileReader(PATH_FILE_USER_JSON_COMPLETE));
- 
             JSONObject jsonObject = (JSONObject) obj;
- 
             JSONArray listUsers = (JSONArray) jsonObject.get("ListUsers");
             //prendo tutti gli i tweet degli user
 
@@ -466,27 +400,19 @@ public class Util {
 	            JSONArray tweetsArray = (JSONArray) userJsonObject.get("tweets");
 	            Iterator<String> iterator = tweetsArray.iterator();
 	            String tweets = tweetsArray.toString();
-	
-	    		
-	            
+  
 	            while (iterator.hasNext()) {
 	    			String string = iterator.next();
 	
 						if(!tweets.equalsIgnoreCase("")){  
 							tweetsText.put(userJsonObject.get("userName")+";"+userJsonObject.get("idUser")+";", string);   
 							System.out.println();
-						}
-							
+						}						
 				}
 	        }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        
         return tweetsText;
 	}
-	
-	
-	 
 }

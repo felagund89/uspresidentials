@@ -562,36 +562,6 @@ public class FriendShipGraph {
 		return myGraph;
 	}
 
-//	public static void calculatePageRank(SparseMultigraph<String, DefaultEdge> graph) {
-//
-//		
-//		PageRank<String, DefaultEdge> rankerManager = new PageRank<String, DefaultEdge>(graph, 0.15);
-//		rankerManager.evaluate();
-//
-//		TreeSet<UserCustom> orderedPageRankUser = new TreeSet<UserCustom>(new ComparatorRank());
-//
-//		for (String v : graph.getVertices()) {
-//			double pageRankScore = rankerManager.getVertexScore(v);
-//			UserCustom user = new UserCustom(v, pageRankScore);
-//			orderedPageRankUser.add(user);
-//		}
-//		
-//		for(UserCustom u : orderedPageRankUser){
-//			
-//			loggerPageRank.info("Vertext: " + u.getUserName() + " score: " + u.getPageRank());
-//		}
-//	}
-//	
-//	
-//	public static void calculateCentrality(SparseMultigraph<String, DefaultEdge> graph) {
-//				
-//	      ClosenessCentrality<String,DefaultEdge> centralityUser = new ClosenessCentrality<String, DefaultEdge>(graph);
-//	      for (String v : graph.getVertices()){
-//	    	  double userCenScore = centralityUser.getVertexScore(v);
-//	    	  loggerCentrality.info("Vertext: " + v + " centrality-score: " + userCenScore);
-//	      }
-//	}
-	
 
 	public static void writeUsersOnFile(String content) throws FileNotFoundException, UnsupportedEncodingException {
 		// nomeUtente1:amico1;amico2;amico3
@@ -611,10 +581,5 @@ public class FriendShipGraph {
 				new File(PropertiesManager.getPropertiesFromFile("PATH_FILE_FRIENDSHIP_JSON")), true));
 		writer.println(jsonUser.toString() + ",");
 		writer.close();
-	}
-
-	public static void writeCandidatesOnFile() {
-		// trump:ut1;ut2;ut3
-		// clinton:ut2;ut8;ut6
 	}
 }

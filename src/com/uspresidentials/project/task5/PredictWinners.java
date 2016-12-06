@@ -17,7 +17,7 @@ import twitter4j.TwitterException;
 import com.uspresidentials.project.entity.UserCustom;
 import com.uspresidentials.project.task1.FriendShipGraph;
 import com.uspresidentials.project.task1.IdentifyUsers;
-import com.uspresidentials.project.task2.SentiWordNetDemoCode;
+import com.uspresidentials.project.task2.SentiWordNetMain;
 import com.uspresidentials.project.utils.PropertiesManager;
 
 import edu.uci.ics.jung.graph.SparseMultigraph;
@@ -83,8 +83,8 @@ public class PredictWinners {
 			loggerPredictWinner.info("Calcolando il valore del sentiment sul dataset per i candidati si ha che:");	
 
 			
-			double sentimentValueTrump = SentiWordNetDemoCode.processTweets(QUERY_STRING_CANDIDATES_NAME_TRUMP,rankedUsersName,trumpTopCentralityUsers );
-			double sentimentValueClinton = SentiWordNetDemoCode.processTweets(QUERY_STRING_CANDIDATES_NAME_CLINTON,rankedUsersName,clintonTopCentralityUsers );
+			double sentimentValueTrump = SentiWordNetMain.processTweets(QUERY_STRING_CANDIDATES_NAME_TRUMP,rankedUsersName,trumpTopCentralityUsers );
+			double sentimentValueClinton = SentiWordNetMain.processTweets(QUERY_STRING_CANDIDATES_NAME_CLINTON,rankedUsersName,clintonTopCentralityUsers );
 			
 			loggerPredictWinner.info("Sentiment per Donald Trump = "+sentimentValueTrump);	
 			loggerPredictWinner.info("Sentiment per Hillary Clinton = "+sentimentValueClinton);	
@@ -92,8 +92,8 @@ public class PredictWinners {
 
 			loggerPredictWinner.info("Calcolando il valore del sentiment sulle coppie di parole che co-occorrono di piu secondo l'indice di jaccard si ha:");	
 
-			double sentimentJaccardTrump = SentiWordNetDemoCode.processJaccardWords(pathFileJsonTrump, "TermsForTrump");
-			double sentimentJaccardClinton = SentiWordNetDemoCode.processJaccardWords(pathFileJsonClinton, "TermsForClinton");
+			double sentimentJaccardTrump = SentiWordNetMain.processJaccardWords(pathFileJsonTrump, "TermsForTrump");
+			double sentimentJaccardClinton = SentiWordNetMain.processJaccardWords(pathFileJsonClinton, "TermsForClinton");
 
 			loggerPredictWinner.info("Sentiment per le co-occurrence words per Donald Trump = "+sentimentJaccardTrump);	
 			loggerPredictWinner.info("Sentiment per le co-occurrence words per Hillary Clinton = "+sentimentJaccardClinton);	
@@ -159,11 +159,7 @@ public class PredictWinners {
 			loggerPredictWinner.info("*****                                         ********");
 			loggerPredictWinner.info("*****                                         ********");
 			loggerPredictWinner.info("******************************************************");
-			
-			
-			
+	
 	}
-	
-	
-	
+
 }

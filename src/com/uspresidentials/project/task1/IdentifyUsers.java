@@ -46,9 +46,6 @@ import edu.uci.ics.jung.graph.SparseMultigraph;
  *
  */
 
-
-
-
 public class IdentifyUsers {
 
 	/**
@@ -128,8 +125,6 @@ public class IdentifyUsers {
 			
 	}
 	
-	
-
 	public static TopDocs createDataset() throws ParseException {
 		
 		TopDocs resultDocs = null;
@@ -182,7 +177,6 @@ public class IdentifyUsers {
 	}
 	
 	
-
 	public static HashMap<String, ArrayList<String>> getHashMapUser_Tweets() throws IOException, ParseException {
 		//Richiamo il searcher con la query voluta
 		TopDocs resultDocs = LuceneCore.searchEngine(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
@@ -195,22 +189,17 @@ public class IdentifyUsers {
 	}
 	
 	
-	
 	public static void occurrenceCandidatesInTweets(){
-		
-		
+			
 		try {
 		//Richiamo il searcher con la query voluta
 		TopDocs resultDocs = LuceneCore.searchEngine(PATH_INDEXDIR_PRIMAR, "tweetText", QUERY_STRING_CANDIDATES_NAME_STRING);
 		
-
 		LuceneCore.occurrenceCandidates(PATH_FILE_IDUSER_IN_FILE_JSON, PATH_FILE_USER_OCCURRENCE, PATH_INDEXDIR_PRIMAR);
 		
 		} catch (ParseException | IOException e) {
 			e.printStackTrace();
-		}
-			
-		
+		}		
 	}
 	
 	
@@ -255,16 +244,14 @@ public class IdentifyUsers {
 		    	//loggerCentrality.info("Vertext: " + v + " centrality-score: " + userCenScore);
 		    	userCentrality.put(v, String.valueOf(userCenScore));
 	    	}
-	    }
-	     
+	    }     
 	    //ordino per valore l'hashmap delle centrality	
 	    userCentrality = (HashMap<String, String>) Util.sortByValue(userCentrality);  
 	    return userCentrality;
 	}
 	
 	
-	
-	
+
 	//*3.    Partition the users in M according to the candidates they mention (each user can mention more that one candidate more than one time). Identify the users mentioning more frequently each candidate and measure their centrality. 
 	//Find the 10 (for each candidate)  who both mention the candidate frequently and are highly central (define some combined measure to select such candidates). 
 	//	Let M' in M be these users.
@@ -282,22 +269,17 @@ public class IdentifyUsers {
 		hashClinton = Util.getPartitionUsers("Clinton");
 		hashRubio = Util.getPartitionUsers("Rubio");
 		hashSanders = Util.getPartitionUsers("Sanders");
-
 		
 		hashTrump = (HashMap<String, String>) Util.sortByValue(hashTrump);
 		hashClinton = (HashMap<String, String>) Util.sortByValue(hashClinton);
 		hashRubio = (HashMap<String, String>) Util.sortByValue(hashRubio);
 		hashSanders = (HashMap<String, String>) Util.sortByValue(hashSanders);
- 
-		
-		
+ 	
 		tableM.put("TRUMP", hashTrump);
 		tableM.put("CLINTON", hashClinton);
 		tableM.put("RUBIO", hashRubio);
 		tableM.put("SANDERS", hashSanders);
-		
-		
-		
+				
 		System.out.println("FINE PARTIZIONE UTENTI");
 		
 		return tableM;
@@ -318,16 +300,6 @@ public class IdentifyUsers {
 		List<String> firstTenCentr = new ArrayList<String>();
 		
 		hashApp = tableM.get(candidateName);
-		
-//		Map.Entry<String,String> entry=hashApp.entrySet().iterator().next();
-//		String keyMap= entry.getKey();
-//		double mMentions=Double.valueOf(entry.getValue());
-//		System.out.println("MEDIA MENZIONI HASHMAP ANALIZZATO"+mMentions);
-//		
-//		
-//		Map.Entry<String,String> userCentralityFirstVal=userCentrality.entrySet().iterator().next();
-//		double mCentr=Double.valueOf(userCentralityFirstVal.getValue());
-//		System.out.println("MEDIA CENTRALITY TUTTI GLI UTENTI"+mCentr);
 
 		List<String> userM = new ArrayList<>();
 		List<String> userC= new ArrayList<>();
@@ -343,7 +315,6 @@ public class IdentifyUsers {
 			userM.add(chiaveM);
 			count++;
 			
-			
 		}
 		count =0;
 		Iterator itC = userCentrality.entrySet().iterator();
@@ -355,7 +326,6 @@ public class IdentifyUsers {
 			userC.add(chiaveC);
 			count++;
 		}
-		
 		
 		int uCount=numUsers;
 		for (String stringM : userM) {		
@@ -371,11 +341,8 @@ public class IdentifyUsers {
 			}
 		}
 		
-		
-		
 	return firstTenCentr;
 		
 	}
-	
 	
 }

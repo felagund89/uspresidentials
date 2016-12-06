@@ -7,21 +7,8 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Properties;
 
-import com.uspresidentials.project.task2.SentimentsChecker;
-
 public class PropertiesManager {
 
-	
-	public static void main(String[] args) throws IOException {
-		String prop =  PropertiesManager.getPropertiesFromFile("PATH_TEST");
-		System.out.println("File path prop letto " + prop);
-		PrintWriter writer = new PrintWriter(new FileOutputStream(new File(prop + "/ciao.txt"),true));
-		
-		writer.println("Hello My World!");
-		writer.flush();
-		writer.close();
-	}
-	
 	public static String getPropertiesFromFile(String propName) {
 
 		Properties propFile = new Properties();

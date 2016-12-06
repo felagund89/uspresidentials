@@ -92,5 +92,4 @@ public final class AuthenticationManager {
 
 		twitter = (new TwitterFactory(configurationBuilder.build())).getInstance();
 	}
-
 }

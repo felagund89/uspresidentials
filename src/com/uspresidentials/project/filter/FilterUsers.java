@@ -23,16 +23,11 @@ import com.uspresidentials.project.utils.AuthenticationManager;
 import com.uspresidentials.project.utils.PropertiesManager;
 
 
-
-
-
-
 public class FilterUsers {
 	
 	
 	
-	final static String PATH_FILE_FILTER_U_BY_LAN_AND_LOC = PropertiesManager
-			.getPropertiesFromFile("PATH_FILE_FILTER_U_BY_LAN_AND_LOC");
+	final static String PATH_FILE_FILTER_U_BY_LAN_AND_LOC = PropertiesManager.getPropertiesFromFile("PATH_FILE_FILTER_U_BY_LAN_AND_LOC");
 	static int NUMERO_UTENTI;
 	final static Logger loggerFilteredUsers = Logger.getLogger("filteredUsers");
 
@@ -51,14 +46,12 @@ public class FilterUsers {
 			getUsersAfterFilter(authenticationManager.twitter);
 		
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 		   
 		   
-		   
-		   
+   
 	public static void getUsersAfterFilter(Twitter twitter)throws TwitterException, FileNotFoundException, IOException,JSONException, InterruptedException {
 
 		String line;
@@ -124,7 +117,6 @@ public class FilterUsers {
 									System.out.println(">>>>>>>>>>>>>>>>l'attesa è finita, ricomincio a filtrare ");
 								}
 									
-	
 							} catch (InterruptedException e1) {
 								e1.printStackTrace();
 							}
@@ -147,11 +139,7 @@ public class FilterUsers {
 		
 	}
 		 
-	
-	
-	
-	
-		   
+	 
 	  public static void writeUsersFilteredOnFile(String content) throws FileNotFoundException{ 
 	     
 	    PrintWriter writer = new PrintWriter(new FileOutputStream(new File(PropertiesManager.getPropertiesFromFile("PATH_FILE_FILTER_USERS")),true)); 

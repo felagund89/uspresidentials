@@ -24,7 +24,7 @@ import com.uspresidentials.project.lucene.LuceneCore;
 import com.uspresidentials.project.utils.PropertiesManager;
 import com.uspresidentials.project.utils.Util;
 
-public class SentiWordNetDemoCode {
+public class SentiWordNetMain {
 
 	private Map<String, Double> dictionary;
 	private static final String PATH_SENTIMENT_WORDNET_FILE = PropertiesManager.getPropertiesFromFile("PATH_SENTIMENT_WORDNET_FILE");
@@ -37,7 +37,7 @@ public class SentiWordNetDemoCode {
 	
 	public static final String[] negationWords = new String[] {"not" };
 	
-	public SentiWordNetDemoCode(String pathToSWN) throws IOException {
+	public SentiWordNetMain(String pathToSWN) throws IOException {
 		// This is our main dictionary representation
 		dictionary = new HashMap<String, Double>();
 
@@ -281,7 +281,7 @@ public class SentiWordNetDemoCode {
 	
 	public static double getSentimentWordValue(String s) throws IOException
 	{
-		SentiWordNetDemoCode sentiwordnet = new SentiWordNetDemoCode(PATH_SENTIMENT_WORDNET_FILE);
+		SentiWordNetMain sentiwordnet = new SentiWordNetMain(PATH_SENTIMENT_WORDNET_FILE);
 		String[] idsDB = new String[] {"a", "n", "r", "v" };
 		int moltiplic = 1;
 		int indexIds = 0;
@@ -305,7 +305,7 @@ public class SentiWordNetDemoCode {
 		
 		processTweets(QUERY_STRING_CANDIDATES_NAME_TRUMP, null, null);
 		
-		SentiWordNetDemoCode sentiwordnet = new SentiWordNetDemoCode(PATH_SENTIMENT_WORDNET_FILE);
+		SentiWordNetMain sentiwordnet = new SentiWordNetMain(PATH_SENTIMENT_WORDNET_FILE);
 		
 		System.out.println("good#a "+sentiwordnet.extract("good", "a"));
 		System.out.println("bad#a "+sentiwordnet.extract("bad", "a"));
