@@ -382,7 +382,41 @@ public class Util {
         
 	}
 	
-
+//	public static Map<String, String[]> readUsersAndTweetsFromFile(String pathJsonFile, String fieldJson){
+//		
+//		//prendo il file json
+//		JSONParser parser = new JSONParser();
+//		Map<String, String[]> userAndTweets = new HashMap<>();
+//		ArrayList<String> prova = new ArrayList<String>();
+//        try { 
+//            Object obj = parser.parse(new FileReader(pathJsonFile));
+//            JSONObject jsonObject = (JSONObject) obj;
+//            JSONArray listUsers = (JSONArray) jsonObject.get(fieldJson);
+//            for (int i = 0; i < listUsers.size(); i++) {
+//            	JSONObject userJsonObject = (JSONObject) listUsers.get(i);
+//            	String user = (String)userJsonObject.get("userName")+";"+userJsonObject.get("idUser")+";";
+//                JSONArray listTweets = (JSONArray) userJsonObject.get("tweets");
+//                
+//              
+//                String[] stringArray = list.toArray(new String[list.size()]);
+//                
+////                String[] tweets =listTweets.toString().replace("", "").split(" ");
+//
+//              
+//
+//            	userAndTweets.put(user,tweets);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//		return userAndTweets;
+//        
+//	}
+//	
+//	
+	
+	
+	
 	public static Map<String, String> readUsersFromJsonFile (){
 		
 		//prendo il file json

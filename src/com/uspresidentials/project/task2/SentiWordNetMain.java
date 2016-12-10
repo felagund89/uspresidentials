@@ -7,22 +7,32 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.FSDirectory;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.ListenableDirectedGraph;
 import org.json.simple.JSONObject;
+
+import twitter4j.TwitterException;
 
 import com.uspresidentials.project.entity.UserCustom;
 import com.uspresidentials.project.lucene.LuceneCore;
+import com.uspresidentials.project.task1.FriendShipGraph;
+import com.uspresidentials.project.task1.IdentifyUsers;
 import com.uspresidentials.project.utils.PropertiesManager;
 import com.uspresidentials.project.utils.Util;
+
+import edu.uci.ics.jung.graph.SparseMultigraph;
 
 public class SentiWordNetMain {
 
@@ -34,6 +44,9 @@ public class SentiWordNetMain {
 	final static String QUERY_STRING_CANDIDATES_NAME_CLINTON ="hillary* OR clinton*";
 	final static String QUERY_STRING_CANDIDATES_NAME_RUBIO ="rubio* OR Rubio*";
 	final static String QUERY_STRING_CANDIDATES_NAME_SANDERS ="Sanders* OR sanders*";
+	final static Logger loggerSentimentForM1 = Logger.getLogger("loggerSentimentForM1");
+	final static int NUM_USERS=10;
+	
 	
 	public static final String[] negationWords = new String[] {"not" };
 	
@@ -172,6 +185,44 @@ public class SentiWordNetMain {
 	}
 	
 	
+	public static void processTweetsM1Users(String queryStringCandidates, List<String> usersM1,String candidateName ) throws IOException, ParseException {
+		
+		loggerSentimentForM1.info("CANDIDATO -  "+candidateName);
+
+		IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(PATH_INDEXDIR_PRIMAR))));
+		ScoreDoc[] scoredocs = LuceneCore.getTweetsCoreForSentiment(PATH_INDEXDIR_PRIMAR, "tweetText", queryStringCandidates);
+	
+		for (String str : usersM1) {
+			
+			Double scoreUtenteTot = 0.0;
+			
+			for (ScoreDoc sd : scoredocs) {
+		    	Document d = searcher.doc(sd.doc);
+		    	String tweetCleaned = Util.deleteUnnecessaryWords(d.get("tweetText"));
+		    	String userScanned = d.get("tweetUser")+";"+d.get("tweetUserId")+";";
+		    	
+		    	
+			    	if(str.equalsIgnoreCase(userScanned)){
+			    		scoreUtenteTot+= analyzeSentimentPhrase(tweetCleaned, userScanned);
+					    	
+				    	}
+		    }
+			
+			
+			if(scoreUtenteTot == 0){
+				loggerSentimentForM1.info(str +" is Neutral!");
+			}else if(scoreUtenteTot > 0)
+				loggerSentimentForM1.info(str + " is a Supporter!");
+			else
+				loggerSentimentForM1.info(str + " is an Opponent!");
+    		System.out.println("utente: "+str+"processato");
+		    	
+	 	}
+
+	}
+	
+	
+	
 	
 	public static Double processJaccardWords(String pathFileJson, String fieldJson ) throws IOException, ParseException {
 		
@@ -255,11 +306,11 @@ public class SentiWordNetMain {
 		}
 		
 //		if(sumSentiment == 0){
-//			System.out.println("************\n" + user + " is Neutral!" + "************\n");
+//			loggerSentimentForM1.info("************\n" + user + " is Neutral!" + "************\n");
 //		}else if(sumSentiment > 0)
-//			System.out.println("************\n" + user + " is a Supporter!" + "************\n");
+//			loggerSentimentForM1.info("************\n" + user + " is a Supporter!" + "************\n");
 //		else
-//			System.out.println("************\n" + user + " is a Opponent!" + "************\n");
+//			loggerSentimentForM1.info("************\n" + user + " is a Opponent!" + "************\n");
 		
 		/*if((countPositive > countNegative) && (countPositive > countNeutral))
 			System.out.println("************\n" + user + " is a Supporter!" + "************\n");
@@ -303,18 +354,56 @@ public class SentiWordNetMain {
 	
 	public static void main(String [] args) throws IOException, ParseException {
 		
-		processTweets(QUERY_STRING_CANDIDATES_NAME_TRUMP, null, null);
 		
 		SentiWordNetMain sentiwordnet = new SentiWordNetMain(PATH_SENTIMENT_WORDNET_FILE);
 		
-		System.out.println("good#a "+sentiwordnet.extract("good", "a"));
-		System.out.println("bad#a "+sentiwordnet.extract("bad", "a"));
-		System.out.println("blue#a "+sentiwordnet.extract("blue", "a"));
-		System.out.println("blue#n "+sentiwordnet.extract("blue", "n"));
-		System.out.println("hello#a "+sentiwordnet.extract("good", "a"));
-		System.out.println("sad#a "+sentiwordnet.extract("sad", "a"));
-		System.out.println("beautiful#a "+sentiwordnet.extract("beautiful", "a"));
-		System.out.println("fuck#a "+sentiwordnet.extract("fucking", "a"));
+		
+		loggerSentimentForM1.info("SENTIMENT PER GLI M' UTENTI DI OGNI CANDIDATO:");
+
+		try {
+
+			ListenableDirectedGraph<String, DefaultEdge> graphFriendShip;
+			graphFriendShip = FriendShipGraph.createGraphFromFriendShip();
+			SparseMultigraph<String, DefaultEdge> graphSparse;
+			
+			graphSparse = FriendShipGraph.convertListenableGraph(graphFriendShip);
+			
+			HashMap<String, String> userCentrality = new HashMap<>();
+			userCentrality=IdentifyUsers.calculateCentrality(graphSparse);
+			
+//			Partion user in M
+			Hashtable<String, HashMap<String, String>> tableM = new Hashtable<>();
+			tableM = IdentifyUsers.partitionUsers();
+			
+//			cerco i 10  utenti per ogni candidato  che hanno la centrality piu alta e hanno menzionato di piu i candidati.
+			List<String> trumpTopCentralityUsers = IdentifyUsers.findUserByMentionsAndCentrality(tableM,userCentrality,"TRUMP",NUM_USERS);
+			List<String> clintonTopCentralityUsers = IdentifyUsers.findUserByMentionsAndCentrality(tableM,userCentrality,"CLINTON",NUM_USERS);
+			List<String> sandersTopCentralityUsers = IdentifyUsers.findUserByMentionsAndCentrality(tableM,userCentrality,"SANDERS",NUM_USERS);
+			List<String> rubioTopCentralityUsers = IdentifyUsers.findUserByMentionsAndCentrality(tableM,userCentrality,"RUBIO",NUM_USERS);
+
+		
+			//
+			processTweetsM1Users(QUERY_STRING_CANDIDATES_NAME_TRUMP, trumpTopCentralityUsers,"TRUMP");
+			processTweetsM1Users(QUERY_STRING_CANDIDATES_NAME_CLINTON, clintonTopCentralityUsers,"CLINTON");
+			processTweetsM1Users(QUERY_STRING_CANDIDATES_NAME_SANDERS, sandersTopCentralityUsers,"SANDERS");
+			processTweetsM1Users(QUERY_STRING_CANDIDATES_NAME_RUBIO, rubioTopCentralityUsers,"RUBIO");
+
+			
+			
+			
+			
+		} catch (org.json.simple.parser.ParseException e) {
+			e.printStackTrace();
+		} catch (TwitterException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+		
+		
+	
 	}
 	
 }

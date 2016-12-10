@@ -548,8 +548,11 @@ public class LuceneCore {
 						}
 				 	    //se i documenti trovati con entrambe le parole sono > 0 aggiorno la mappa, con la coppia di termini e il numero di documenti
 				 	    if(topDocs.totalHits != 0){
-				 	    	termsAndNumOfDocs.put(word1+";"+word2, (double)topDocs.totalHits);
-//				 	    	System.out.println(word1+";"+word2+"  "+topDocs.totalHits);
+				 	    	if(termsAndNumOfDocs.containsKey(word2+";"+word1)){
+					 	    	//coppia già presente
+				 	    	}else
+				 	    		termsAndNumOfDocs.put(word1+";"+word2, (double)topDocs.totalHits);
+	//				 	    	System.out.println(word1+";"+word2+"  "+topDocs.totalHits);
 				 	    }
 					}
 				}		

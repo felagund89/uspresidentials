@@ -84,7 +84,7 @@ public class IdentifyUsers {
 			//createDataset();
 		
 			//verifico il numero degli utenti e dei tweets realativi al dataset creato
-			//getTotNumbersUsersAndTweets();
+//			getTotNumbersUsersAndTweets();
 			
 			//costruisco un hashmap contenent gli utenti e i loro tweet
 		    //getHashMapUser_Tweets();
@@ -94,10 +94,10 @@ public class IdentifyUsers {
 		    
 		
 			ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = FriendShipGraph.createGraphFromFriendShip(); 																							
-			//System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip.toString());
+//			System.out.println("\n\n\n-----Graph FriendShip-----\n\n\n" + graphFriendShip.toString());
 	
 			// ********COMPONENTE CONNESSE - write in folder 'log4j_logs'
-//			FriendShipGraph.searchConnectedComponents(graphFriendShip);
+			FriendShipGraph.searchConnectedComponents(graphFriendShip);
 	
 			// ********PAGE RANK
 	
@@ -107,18 +107,18 @@ public class IdentifyUsers {
 			
 		
 			// ********CENTRALITY OF M' USERS (who mentioned a candidate)
-//			HashMap<String, String> userCentrality = new HashMap<>();
-//			userCentrality=calculateCentrality(graphSparse);
+			HashMap<String, String> userCentrality = new HashMap<>();
+			userCentrality=calculateCentrality(graphSparse);
 			
 //			Partion user in M
-//			Hashtable<String, HashMap<String, String>> tableM = new Hashtable<>();
-//			tableM = partitionUsers();
+			Hashtable<String, HashMap<String, String>> tableM = new Hashtable<>();
+			tableM = partitionUsers();
 			
 			//cerco i 10  utenti per ogni candidato  che hanno la centrality piu alta e hanno menzionato di piu i candidati.
-//			findUserByMentionsAndCentrality(tableM,userCentrality,"TRUMP",NUM_USERS);
-//			findUserByMentionsAndCentrality(tableM,userCentrality,"CLINTON",NUM_USERS);
-//			findUserByMentionsAndCentrality(tableM,userCentrality,"RUBIO",NUM_USERS);
-//			findUserByMentionsAndCentrality(tableM,userCentrality,"SANDERS",NUM_USERS);
+			findUserByMentionsAndCentrality(tableM,userCentrality,"TRUMP",NUM_USERS);
+			findUserByMentionsAndCentrality(tableM,userCentrality,"CLINTON",NUM_USERS);
+			findUserByMentionsAndCentrality(tableM,userCentrality,"RUBIO",NUM_USERS);
+			findUserByMentionsAndCentrality(tableM,userCentrality,"SANDERS",NUM_USERS);
 
 			
 			
@@ -334,7 +334,7 @@ public class IdentifyUsers {
 					//System.out.println(stringC);
 					if(uCount>0){
 						firstTenCentr.add(stringC);
-						loggerCentrality.info(stringC);
+						loggerCentrality.info(stringC+" "+hashApp.get(stringM)+" "+userCentrality.get(stringC));
 						uCount--;
 					}
 				}
