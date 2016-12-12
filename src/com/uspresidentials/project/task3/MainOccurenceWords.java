@@ -57,6 +57,31 @@ public class MainOccurenceWords {
 	}
 	
 
+    public static void findMainOccWords(){
+    	
+    	try {
+    	
+	    	//Devo richiamare su ogni candidato la ricerca con lucene e sui documenti trovati cercare le co-occurrence words.
+	    	//ogni documento equivale ad un tweet in Lucene	
+			for (int i = 0; i < queryCandidates.size(); i++) {
+					
+				
+				LuceneCore.createIndexForCandidates(PATH_INDEXDIR_PRIMAR_7NOV, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, queryCandidates.get(i));
+				
+				Map<String,Double> mapCandidate = getTermFrequencyByCandidate(PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE,"tweetTextIndexed");
+				Map<String,Double> mapTermsAndDocuments = getTermsDocFrequency(mapCandidate,PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, "tweetTextIndexed" );
+				jaccard(mapCandidate, mapTermsAndDocuments,nameCandidates.get(i));		
+			}		
+    	} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+    	
+    }
+    
+    
+    
 	//trovo tutti i termini e le rispettive frequenze di tutti i documenti trovati per ogni candidato.
 	//per jaccard si dovrebbe usare cosi : jaccard(term1,term2)=num_docs(term1,term2)/(term1.docfreq+term2.docfreq - num_docs(term1,term2))
 	public static Map<String,Double> getTermFrequencyByCandidate(String pathIndexForCandidate, String fieldForQuery){

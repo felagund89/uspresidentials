@@ -83,6 +83,7 @@ public class FriendShipGraph {
 	final static Logger loggerComponents = Logger.getLogger("loggerComponents");
 	final static Logger loggerPageRank = Logger.getLogger("loggerPageRank");
 	final static Logger loggerCentrality = Logger.getLogger("loggerCentrality");
+	final static Logger loggerUSPresidentials = Logger.getLogger("loggerUSPresidentials");
 
 	static Hashtable<String, String> hashMap_Id_Username;
 	static HashMap<String, ArrayList<String>> hashMapUsersTweets = new HashMap<>(); 
@@ -420,6 +421,7 @@ public class FriendShipGraph {
 		System.out.println("FINE ------ createGraphFromFriendShip");
 		
 		//loggerComponents.info("GRAFO: " + myGraph.toString());
+		loggerUSPresidentials.info("\n****** GRAFO RISULTANTE: " + myGraph.toString());
 		return myGraph;
 	}
 
@@ -496,7 +498,7 @@ public class FriendShipGraph {
 
 			if (listVertexConnected.size() > countMajorComponents) {
 				countMajorComponents = listVertexConnected.size();
-				majorComponents = "*****MAJOR_COMPONENTS - count: " + countMajorComponents + "\nStart Vertex:"
+				majorComponents = "\n*****MAJOR_COMPONENTS - count: " + countMajorComponents + "\nStart Vertex:"
 						+ currentVertex.toString() + "\nconnected components: " + listVertexConnected.toString()
 						+ "\n\n\n***********";
 			}
@@ -506,6 +508,7 @@ public class FriendShipGraph {
 
 		System.out.println("Search Connected Components COMPLETED!");
 		loggerComponents.info(majorComponents);
+		loggerUSPresidentials.info(majorComponents);
 	}
 
 	public static SparseMultigraph<String, DefaultEdge> convertListenableGraph(

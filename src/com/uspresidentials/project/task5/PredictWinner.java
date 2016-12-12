@@ -23,7 +23,7 @@ import com.uspresidentials.project.utils.PropertiesManager;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 
 
-public class PredictWinners {
+public class PredictWinner {
 
 	
 	/*
@@ -49,6 +49,14 @@ public class PredictWinners {
 	
 	public static void main(String[] args) {
 		
+	
+		PredictWinner.predict();
+		
+	
+	}
+		
+		
+	public static void predict(){
 		loggerPredictWinner.info("PREVISIONE DEL VINCITORE DELLE ELEZIONI PRESIDENZIALI AMERICANE 2016");
 		
 		

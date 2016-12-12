@@ -45,6 +45,8 @@ public class SentiWordNetMain {
 	final static String QUERY_STRING_CANDIDATES_NAME_RUBIO ="rubio* OR Rubio*";
 	final static String QUERY_STRING_CANDIDATES_NAME_SANDERS ="Sanders* OR sanders*";
 	final static Logger loggerSentimentForM1 = Logger.getLogger("loggerSentimentForM1");
+	final static Logger loggerUSPresidentials = Logger.getLogger("loggerUSPresidentials");
+
 	final static int NUM_USERS=10;
 	
 	
@@ -187,8 +189,9 @@ public class SentiWordNetMain {
 	
 	public static void processTweetsM1Users(String queryStringCandidates, List<String> usersM1,String candidateName ) throws IOException, ParseException {
 		
-		loggerSentimentForM1.info("CANDIDATO -  "+candidateName);
-
+		loggerSentimentForM1.info("\nCANDIDATO: "+candidateName);
+		loggerUSPresidentials.info("\nCANDIDATO: "+candidateName);
+		
 		IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(PATH_INDEXDIR_PRIMAR))));
 		ScoreDoc[] scoredocs = LuceneCore.getTweetsCoreForSentiment(PATH_INDEXDIR_PRIMAR, "tweetText", queryStringCandidates);
 	
@@ -211,11 +214,18 @@ public class SentiWordNetMain {
 			
 			if(scoreUtenteTot == 0){
 				loggerSentimentForM1.info(str +" is Neutral!");
-			}else if(scoreUtenteTot > 0)
+				loggerUSPresidentials.info(str +" is Neutral!");
+
+			}else if(scoreUtenteTot > 0){
 				loggerSentimentForM1.info(str + " is a Supporter!");
-			else
+				loggerUSPresidentials.info(str + " is a Supporter!");
+
+			}else{
 				loggerSentimentForM1.info(str + " is an Opponent!");
-    		System.out.println("utente: "+str+"processato");
+				loggerUSPresidentials.info(str + " is an Opponent!");
+			}
+			
+//    		System.out.println("utente: "+str+"processato");
 		    	
 	 	}
 

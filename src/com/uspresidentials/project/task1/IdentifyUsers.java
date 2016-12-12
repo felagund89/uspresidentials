@@ -77,6 +77,7 @@ public class IdentifyUsers {
 	final static Logger loggerComponents = Logger.getLogger("loggerComponents");
 	final static Logger loggerPageRank = Logger.getLogger("loggerPageRank");
 	final static Logger loggerCentrality = Logger.getLogger("loggerCentrality");
+	final static Logger loggerUSPresidentials = Logger.getLogger("loggerUSPresidentials");
 
 	public static void main(String[] args) throws CorruptIndexException, LockObtainFailedException, IOException, TwitterException, ParseException, org.json.simple.parser.ParseException {
 		
@@ -167,7 +168,8 @@ public class IdentifyUsers {
 		    //calcolo il numero totale dei tweets contenenti menzioni ai candidati
 		    long numeroTweet = LuceneCore.numberOfTweets(LuceneCore.getIndexSearcher(PATH_INDEXDIR_PRIMAR), resultDocs);
 			
-			System.out.println("NUMERO UTENTI = "+numeroUniqUser+ " NUMERO TOTALE TWEETS PER I CANDIDATI = "+numeroTweet);
+		    loggerUSPresidentials.info("NUMERO UTENTI = "+numeroUniqUser+ " NUMERO TOTALE TWEETS PER I CANDIDATI = "+numeroTweet+"\n");
+//			System.out.println("NUMERO UTENTI = "+numeroUniqUser+ " NUMERO TOTALE TWEETS PER I CANDIDATI = "+numeroTweet);
 		    
 		    
 		} catch (IOException | ParseException e) {
@@ -206,7 +208,7 @@ public class IdentifyUsers {
 	public static TreeSet<UserCustom> calculatePageRank(SparseMultigraph<String, DefaultEdge> graph, int numUsers) {
 
 		loggerPageRank.info("First"+ numUsers+" users for pageRank\n");
-
+		loggerUSPresidentials.info("Primi "+ numUsers+" utenti per page rank \n");
 		PageRank<String, DefaultEdge> rankerManager = new PageRank<String, DefaultEdge>(graph, 0.15);
 		rankerManager.evaluate();
 
@@ -225,6 +227,7 @@ public class IdentifyUsers {
 			if(max>=numUsers)
 				break;
 			loggerPageRank.info("User: " + u.getUserName() + " score: " + u.getPageRank());
+			loggerUSPresidentials.info("User: " + u.getUserName() + " score: " + u.getPageRank());
 			max++;
 		}
 		
@@ -234,6 +237,8 @@ public class IdentifyUsers {
 	
 	public static HashMap<String, String> calculateCentrality(SparseMultigraph<String, DefaultEdge> graph) {
 			
+		loggerUSPresidentials.info("Centrality");
+
 		HashMap<String, String> userCentrality = new HashMap<>();
 		
 	    ClosenessCentrality<String,DefaultEdge> centralityUser = new ClosenessCentrality<String, DefaultEdge>(graph);
@@ -293,8 +298,8 @@ public class IdentifyUsers {
 		
 //		double mValueCentrality =userCentrality.keySet(). userCentrality.size()
 		
-		loggerCentrality.info("\nTEN FIRST USERS FOR --> " +candidateName);
-		
+		loggerCentrality.info("\nPrimi 10 utenti per il candidato: " +candidateName);
+		loggerUSPresidentials.info("\nPrimi 10 utenti per il candidato: " +candidateName);
 		
 		HashMap<String, String> hashApp = new HashMap<>();
 		List<String> firstTenCentr = new ArrayList<String>();
@@ -335,6 +340,7 @@ public class IdentifyUsers {
 					if(uCount>0){
 						firstTenCentr.add(stringC);
 						loggerCentrality.info(stringC+" "+hashApp.get(stringM)+" "+userCentrality.get(stringC));
+						loggerUSPresidentials.info(stringC+" "+hashApp.get(stringM)+" "+userCentrality.get(stringC));
 						uCount--;
 					}
 				}
