@@ -143,7 +143,6 @@ public class ScrapeNews {
 			Util.writeJsonJaccardCandidate(wordsObject,pathFileDestination);
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

@@ -152,7 +152,7 @@ public class IdentifyUsers {
 	
 	
 	//1)How many users you get? How many tweets?
-	public static void  getTotNumbersUsersAndTweets(){
+	public static void  getTotNumbersUsersAndTweets(String PATH_INDEXDIR_PRIMAR){
 		
 		TopDocs resultDocs;
 		try {

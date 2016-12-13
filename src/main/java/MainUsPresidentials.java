@@ -28,6 +28,9 @@ import edu.uci.ics.jung.graph.SparseMultigraph;
 
 public class MainUsPresidentials {
 
+	final static String PATH_DATASET = "";
+	final static String PATH_INDEXER = "";
+	
 	final static String QUERY_STRING_CANDIDATES_NAME_TRUMP ="donald* OR trump*";
 	final static String QUERY_STRING_CANDIDATES_NAME_CLINTON ="hillary* OR clinton*";
 	final static String QUERY_STRING_CANDIDATES_NAME_RUBIO ="rubio* OR Rubio*";
@@ -51,9 +54,21 @@ public class MainUsPresidentials {
  * 1) Identify mentions of candidates
  * 
  */
+		
+		
+		//Creo indice  di Lucene  partendo dai file contenuti nei dataset
+		LuceneCore.createIndex(PATH_DATASET, PATH_INDEXER);
+		
+		//
+		
+		
+		
+		
+		
+		
 		loggerUSPresidentials.info("1) Identify mentions of candidates \n");
 		//verifico il numero degli utenti e dei tweets realativi al dataset creato
-		IdentifyUsers.getTotNumbersUsersAndTweets();
+		IdentifyUsers.getTotNumbersUsersAndTweets(PATH_INDEXER);
 	
 		ListenableDirectedGraph<String, DefaultEdge> graphFriendShip = FriendShipGraph.createGraphFromFriendShip(); 																							
 
@@ -88,10 +103,10 @@ public class MainUsPresidentials {
 		loggerUSPresidentials.info("2) Supporters and Opponents \n");
 
 		
-		SentiWordNetMain.processTweetsM1Users(QUERY_STRING_CANDIDATES_NAME_TRUMP, trumpTopCentralityUsers,"TRUMP");
-		SentiWordNetMain.processTweetsM1Users(QUERY_STRING_CANDIDATES_NAME_CLINTON, clintonTopCentralityUsers,"CLINTON");
-		SentiWordNetMain.processTweetsM1Users(QUERY_STRING_CANDIDATES_NAME_SANDERS, sandersTopCentralityUsers,"SANDERS");
-		SentiWordNetMain.processTweetsM1Users(QUERY_STRING_CANDIDATES_NAME_RUBIO, rubioTopCentralityUsers,"RUBIO");
+		SentiWordNetMain.processTweetsM1Users(PATH_INDEXER,QUERY_STRING_CANDIDATES_NAME_TRUMP, trumpTopCentralityUsers,"TRUMP");
+		SentiWordNetMain.processTweetsM1Users(PATH_INDEXER,QUERY_STRING_CANDIDATES_NAME_CLINTON, clintonTopCentralityUsers,"CLINTON");
+		SentiWordNetMain.processTweetsM1Users(PATH_INDEXER,QUERY_STRING_CANDIDATES_NAME_SANDERS, sandersTopCentralityUsers,"SANDERS");
+		SentiWordNetMain.processTweetsM1Users(PATH_INDEXER,QUERY_STRING_CANDIDATES_NAME_RUBIO, rubioTopCentralityUsers,"RUBIO");
 		
 /*		
  * 3)Co-occurrence analisys
@@ -104,7 +119,7 @@ public class MainUsPresidentials {
 		//Devo richiamare su ogni candidato la ricerca con lucene e sui documenti trovati cercare le co-occurrence words.
 		//ogni documento equivale ad un tweet in Lucene	
 //		for (int i = 0; i < queryCandidates.size(); i++) {				
-//			LuceneCore.createIndexForCandidates(PATH_INDEXDIR_PRIMAR_7NOV, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, queryCandidates.get(i));
+//			LuceneCore.createIndexForCandidates(PATH_INDEXER, PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, queryCandidates.get(i));
 //			Map<String,Double> mapCandidate = MainOccurenceWords.getTermFrequencyByCandidate(PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE,"tweetTextIndexed");
 //			Map<String,Double> mapTermsAndDocuments = MainOccurenceWords.getTermsDocFrequency(mapCandidate,PATH_INDEXDIR_CANDIDATE_FOR_OCCURRENCE, "tweetTextIndexed" );
 //			MainOccurenceWords.jaccard(mapCandidate, mapTermsAndDocuments,nameCandidates.get(i));		

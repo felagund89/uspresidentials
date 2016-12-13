@@ -187,7 +187,7 @@ public class SentiWordNetMain {
 	}
 	
 	
-	public static void processTweetsM1Users(String queryStringCandidates, List<String> usersM1,String candidateName ) throws IOException, ParseException {
+	public static void processTweetsM1Users(String PATH_INDEXDIR_PRIMAR, String queryStringCandidates, List<String> usersM1,String candidateName ) throws IOException, ParseException {
 		
 		loggerSentimentForM1.info("\nCANDIDATO: "+candidateName);
 		loggerUSPresidentials.info("\nCANDIDATO: "+candidateName);
@@ -393,10 +393,10 @@ public class SentiWordNetMain {
 
 		
 			//
-			processTweetsM1Users(QUERY_STRING_CANDIDATES_NAME_TRUMP, trumpTopCentralityUsers,"TRUMP");
-			processTweetsM1Users(QUERY_STRING_CANDIDATES_NAME_CLINTON, clintonTopCentralityUsers,"CLINTON");
-			processTweetsM1Users(QUERY_STRING_CANDIDATES_NAME_SANDERS, sandersTopCentralityUsers,"SANDERS");
-			processTweetsM1Users(QUERY_STRING_CANDIDATES_NAME_RUBIO, rubioTopCentralityUsers,"RUBIO");
+			processTweetsM1Users(PATH_INDEXDIR_PRIMAR,QUERY_STRING_CANDIDATES_NAME_TRUMP, trumpTopCentralityUsers,"TRUMP");
+			processTweetsM1Users(PATH_INDEXDIR_PRIMAR,QUERY_STRING_CANDIDATES_NAME_CLINTON, clintonTopCentralityUsers,"CLINTON");
+			processTweetsM1Users(PATH_INDEXDIR_PRIMAR,QUERY_STRING_CANDIDATES_NAME_SANDERS, sandersTopCentralityUsers,"SANDERS");
+			processTweetsM1Users(PATH_INDEXDIR_PRIMAR,QUERY_STRING_CANDIDATES_NAME_RUBIO, rubioTopCentralityUsers,"RUBIO");
 
 			
 			
@@ -407,11 +407,6 @@ public class SentiWordNetMain {
 		} catch (TwitterException e) {
 			e.printStackTrace();
 		}
-		
-		
-		
-		
-		
 		
 	
 	}
