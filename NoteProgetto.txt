@@ -1,0 +1,60 @@
+NOTE per il lancio Progetto US Presidentials
+
+Contenuto della cartella "USPresidentialsAcciardoCampanelli2016"
+.
+├── files
+│   ├── Dataset
+│   │   └── resultQuery
+│   │       ├── pathForCandidateOccurrence
+│   │       ├── resultQueryIndexer
+│   │       ├── resultQueryScrapingNews    
+│   ├── Jaccard
+│   │   ├── Clinton_jaccard.json
+│   │   ├── Rubio_jaccard.json
+│   │   ├── Sanders_jaccard.json
+│   │   ├── scrapingNewsJaccard.json
+│   │   └── Trump_jaccard.json
+│   ├── logFinale
+│   │   └── loggerUSPresidentials.log
+│   ├── Scraping
+│   │   └── scrapingNews.json
+│   ├── SentimentWordnet
+│   │   └── SentiWordNet_3.0.0_20130122.txt
+│   └── Utenti
+│       ├── friendship
+│       │   ├── friendshipTwitterAll.txt
+│       │   ├── userFriendshipJsonComplete.json
+│       ├── log4j_logs
+│       │   ├── loggerPredictWinner.log
+│       └── utentiTwitter.txt
+│ 
+├── USPresidentials (cartella di progetto)
+│
+├── FileGeneratiDuranteLoSviluppo
+│		   ├── centralityUserMentionedCand.log
+│          ├── connectedComponents.log
+│          ├── filteredUsers.log
+│          ├── loggerOccurrenceMentions.log
+│          ├── loggerPredictWinner.log
+│          ├── loggerSentimentForM1.log
+│          ├── pageRankScore.log
+│          ├── scrapingNewsCand.log
+│          └── usersAndTweets.log
+│ 
+└── USPresidentials.zip
+
+
+1) Scompattare UsPresidentials.zip, affinchè il progetto possa essere lanciato è necessario che la directory "UsPresidentials" si trovi nello stesso path della cartella "files".
+
+2) Per avviare il progetto aprire la classe "MainUsPresidentials" e modificare la variabile statica che punta il path del dataset 
+
+	-PATH_DATASET es. /home/pcMario/Scrivania/cartellaFileDataset  ovvero la cartella contenente i file txt forniti all'assegnazione del progetto
+
+3) In MainUsPresidentials sono contenute in cascata tutte le chiamate ai metodi per la risoluzione dei vari punti del progetto ad eccezione dei
+punti che richiedono tempi di esecuzione elevati dovuti alla mole di dati utilizzata. In questo caso nella directory files nelle sottocartelle specifiche
+sono contenuti i file di riferimento con i risultati ottenuti dopo le esecuzioni puntuali.
+
+4) Al termine dell'esecuzione viene generato un file di log contenente tutte le informazioni ottenute in fase di esecuzione.
+Il log può essere trovato al nella directory "\files\LogFinale\" 
+
+5) Nella directory "FileGeneratiDuranteLoSviluppo" è possibile visionare i file di log con le informazioni raccolte durante gli sviluppi, su tutto il dataset di 2000 utenti presi in esame.
