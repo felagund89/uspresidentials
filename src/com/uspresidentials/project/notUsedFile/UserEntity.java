@@ -1,7 +1,9 @@
-package com.uspresidentials.project.entity;
+package com.uspresidentials.project.notUsedFile;
 
 import java.io.Serializable;
 import java.util.List;
+
+import com.uspresidentials.project.entity.TweetInfoEntity;
 
 public class UserEntity implements Serializable{
 

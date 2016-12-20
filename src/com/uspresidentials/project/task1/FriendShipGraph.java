@@ -10,21 +10,12 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
-import javax.xml.transform.Transformer;
-
-import com.uspresidentials.project.entity.UserCustom;
-import com.uspresidentials.project.lucene.LuceneCore;
-
-import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
-import org.apache.lucene.search.TopDocs;
 import org.jgrapht.ListenableGraph;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
@@ -35,11 +26,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.uspresidentials.project.utils.AuthenticationManager;
-import com.uspresidentials.project.utils.ComparatorRank;
 import com.uspresidentials.project.utils.PropertiesManager;
 
-import edu.uci.ics.jung.algorithms.scoring.PageRank;
-import edu.uci.ics.jung.algorithms.scoring.ClosenessCentrality;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import twitter4j.IDs;
@@ -48,7 +36,6 @@ import twitter4j.PagableResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.User;
-import twitter4j.StreamController.FriendsIDs;
 
 /*
  * Costruire grafo delle amicizie e cercare la componente connessa piu grande, 

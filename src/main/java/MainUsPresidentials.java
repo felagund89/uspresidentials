@@ -6,25 +6,20 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 import org.json.simple.parser.ParseException;
 
-import twitter4j.TwitterException;
-
 import com.uspresidentials.project.lucene.LuceneCore;
 import com.uspresidentials.project.task1.FriendShipGraph;
 import com.uspresidentials.project.task1.IdentifyUsers;
 import com.uspresidentials.project.task2.SentiWordNetMain;
-import com.uspresidentials.project.task3.MainOccurenceWords;
-import com.uspresidentials.project.task4.ScrapeNews;
-import com.uspresidentials.project.task5.PredictWinner;
 import com.uspresidentials.project.utils.PropertiesManager;
 
 import edu.uci.ics.jung.graph.SparseMultigraph;
+import twitter4j.TwitterException;
 
 public class MainUsPresidentials {
 

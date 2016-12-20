@@ -7,20 +7,19 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.uspresidentials.project.utils.AuthenticationManager;
+import com.uspresidentials.project.utils.PropertiesManager;
+
 import twitter4j.JSONException;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.User;
-
-import com.uspresidentials.project.utils.AuthenticationManager;
-import com.uspresidentials.project.utils.PropertiesManager;
 
 
 public class FilterUsers {

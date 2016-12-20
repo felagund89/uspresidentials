@@ -1,23 +1,15 @@
 package com.uspresidentials.project.task3;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.lucene.analysis.util.TokenizerFactory;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.uspresidentials.project.entity.WordEntity;
 import com.uspresidentials.project.lucene.LuceneCore;
 import com.uspresidentials.project.utils.PropertiesManager;
 import com.uspresidentials.project.utils.Util;

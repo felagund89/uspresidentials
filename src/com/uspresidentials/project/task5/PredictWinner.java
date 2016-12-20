@@ -12,8 +12,6 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 import org.json.simple.parser.ParseException;
 
-import twitter4j.TwitterException;
-
 import com.uspresidentials.project.entity.UserCustom;
 import com.uspresidentials.project.task1.FriendShipGraph;
 import com.uspresidentials.project.task1.IdentifyUsers;
@@ -21,6 +19,7 @@ import com.uspresidentials.project.task2.SentiWordNetMain;
 import com.uspresidentials.project.utils.PropertiesManager;
 
 import edu.uci.ics.jung.graph.SparseMultigraph;
+import twitter4j.TwitterException;
 
 
 public class PredictWinner {

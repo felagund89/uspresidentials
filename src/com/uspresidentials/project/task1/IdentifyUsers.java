@@ -19,8 +19,6 @@ import org.apache.lucene.store.LockObtainFailedException;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
-import twitter4j.TwitterException;
-
 import com.uspresidentials.project.entity.UserCustom;
 import com.uspresidentials.project.lucene.LuceneCore;
 import com.uspresidentials.project.utils.ComparatorRank;
@@ -30,6 +28,7 @@ import com.uspresidentials.project.utils.Util;
 import edu.uci.ics.jung.algorithms.scoring.ClosenessCentrality;
 import edu.uci.ics.jung.algorithms.scoring.PageRank;
 import edu.uci.ics.jung.graph.SparseMultigraph;
+import twitter4j.TwitterException;
 /**
  * 
  * @author felagund89

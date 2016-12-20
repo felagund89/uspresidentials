@@ -4,13 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
@@ -21,11 +18,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.FSDirectory;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
-import org.json.simple.JSONObject;
 
-import twitter4j.TwitterException;
-
-import com.uspresidentials.project.entity.UserCustom;
 import com.uspresidentials.project.lucene.LuceneCore;
 import com.uspresidentials.project.task1.FriendShipGraph;
 import com.uspresidentials.project.task1.IdentifyUsers;
@@ -33,6 +26,7 @@ import com.uspresidentials.project.utils.PropertiesManager;
 import com.uspresidentials.project.utils.Util;
 
 import edu.uci.ics.jung.graph.SparseMultigraph;
+import twitter4j.TwitterException;
 
 public class SentiWordNetMain {
 
